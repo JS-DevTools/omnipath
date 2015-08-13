@@ -929,7 +929,7 @@ describe('OmniPath.parse() - URLs', function() {
     it('should parse a URL with non-encoded special characters', function() {
       var omniPath = OmniPath.parse('-9a.t+8r://_-9a.t8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__');
 
-      if (userAgent.isNode && process.version.substr(0, 4) === '0.10') {
+      if (userAgent.isNode && process.version.substr(0, 5) === 'v0.10') {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
