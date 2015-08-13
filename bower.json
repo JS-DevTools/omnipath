@@ -1,0 +1,47 @@
+{
+  "name": "omnipath",
+  "description": "A consolidated API for working with POSIX paths, Windows paths, and URLs",
+  "keywords": [
+    "file",
+    "path",
+    "url",
+    "posix",
+    "mac",
+    "linux",
+    "windows",
+    "browser",
+    "browserify",
+    "parse",
+    "format",
+    "normalize"
+  ],
+  "authors": [
+    {
+      "name": "James Messinger",
+      "homepage": "http://jamesmessinger.com"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/BigstickCarpet/omnipath",
+  "main": "dist/omnipath.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BigstickCarpet/omnipath.git"
+  },
+  "ignore": [
+    "/bower_components",
+    "/lib",
+    "/www",
+    "/tests",
+    "/karma.conf.js",
+    "/.*",
+    "/index.html",
+    "/package.json"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "sinon-js": "*"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "name": "omnipath",
+  "version": "0.0.1",
+  "description": "A consolidated API for working with POSIX paths, Windows paths, and URLs",
+  "keywords": [
+    "file",
+    "path",
+    "url",
+    "posix",
+    "mac",
+    "linux",
+    "windows",
+    "browser",
+    "browserify",
+    "parse",
+    "format",
+    "normalize"
+  ],
+  "author": {
+    "name": "James Messinger",
+    "url": "http://jamesmessinger.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/bigstickcarpet/omnipath",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "jshint . --verbose && jscs . --verbose",
+    "build": "npm run lint && npm run browserify",
+    "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
+    "watch": "npm run browserify -- --watch",
+    "test": "istanbul cover _mocha -- --bail --recursive tests && npm run karma",
+    "mocha": "mocha --bail --recursive tests",
+    "karma": "karma start --single-run",
+    "upgrade": "ncu --upgradeAll && npm update && bower update",
+    "bump": "bump --prompt --grep lib/index.js dist/* --tag --push --all",
+    "release": "npm run upgrade && npm run build && npm test && npm run bump && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigstickcarpet/omnipath.git"
+  },
+  "devDependencies": {
+    "simplifyify": "^1.4.1",
+    "bower": "^1.4.1",
+    "karma": "^0.13.8",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-cli": "0.1.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-ie-launcher": "^0.2.0",
+    "karma-mocha": "^0.2.0",
+    "karma-mocha-reporter": "^1.1.1",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.2.14",
+    "istanbul": "^0.3.17",
+    "coveralls": "^2.11.3",
+    "mocha": "^2.2.5",
+    "chai": "^3.2.0",
+    "sinon": "^1.15.4",
+    "jscs": "^2.0.0",
+    "jshint": "^2.8.0",
+    "npm-check-updates": "^2.2.0",
+    "version-bump-prompt": "^1.5.1"
+  },
+  "dependencies": {}
+}

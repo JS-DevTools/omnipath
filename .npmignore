@@ -1,0 +1,10 @@
+**/*~
+**/._*
+**/.DS_Store
+npm-debug.log
+/.idea
+/coverage
+/dist/*.test.js
+/tests
+/www
+/.*
