@@ -466,23 +466,23 @@ describe('OmniPath.parse() - URLs', function() {
   // otherwise, they will be treated as relative file paths
   helper.describeIfBrowser('relative URLs', function() {
     it('should parse a relative URL with all parts', function() {
-      var omniPath = OmniPath.parse('/p/a/t/h?foo=bar&biz=baz#page1');
+      var omniPath = OmniPath.parse('p/a/t/h?foo=bar&biz=baz#page1');
 
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
         sep: '/',
-        href: helper.server() + '/p/a/t/h?foo=bar&biz=baz#page1',
+        href: helper.server() + helper.dirname() + '/p/a/t/h?foo=bar&biz=baz#page1',
         protocol: location.protocol,
         slashes: true,
         auth: '',
         host: location.host,
         hostname: location.hostname,
         port: location.port,
-        path: '/p/a/t/h?foo=bar&biz=baz',
-        pathname: '/p/a/t/h',
+        path: helper.dirname() + '/p/a/t/h?foo=bar&biz=baz',
+        pathname: helper.dirname() + '/p/a/t/h',
         root: '/',
-        dir: '/p/a/t',
+        dir: helper.dirname() + '/p/a/t',
         base: 'h',
         name: 'h',
         ext: '',
@@ -573,7 +573,7 @@ describe('OmniPath.parse() - URLs', function() {
       });
     });
 
-    it('should parse a relative URL with a root directory path', function() {
+    it('should parse a host-relative URL with a root directory path', function() {
       var omniPath = OmniPath.parse('/');
 
       helper.inspect(omniPath, {
@@ -600,7 +600,7 @@ describe('OmniPath.parse() - URLs', function() {
       });
     });
 
-    it('should parse a relative URL with a root file path', function() {
+    it('should parse a host-relative URL with a root file path', function() {
       var omniPath = OmniPath.parse('/somefile.gif');
 
       helper.inspect(omniPath, {
