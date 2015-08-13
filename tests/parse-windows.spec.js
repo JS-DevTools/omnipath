@@ -11,7 +11,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\',
           protocol: '',
@@ -28,7 +27,7 @@ if (userAgent.isWindows) {
           name: '',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -39,7 +38,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\somefile.txt',
           protocol: '',
@@ -56,7 +54,7 @@ if (userAgent.isWindows) {
           name: 'somefile',
           ext: '.txt',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -67,7 +65,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\directory\\',
           protocol: '',
@@ -84,7 +81,7 @@ if (userAgent.isWindows) {
           name: 'directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -95,7 +92,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\direc.tory\\',
           protocol: '',
@@ -112,7 +108,7 @@ if (userAgent.isWindows) {
           name: 'direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -123,7 +119,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\.directory\\',
           protocol: '',
@@ -140,7 +135,7 @@ if (userAgent.isWindows) {
           name: '.directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -151,7 +146,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\.direc.tory\\',
           protocol: '',
@@ -168,7 +162,7 @@ if (userAgent.isWindows) {
           name: '.direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -179,7 +173,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\di.rec.tory\\',
           protocol: '',
@@ -196,7 +189,7 @@ if (userAgent.isWindows) {
           name: 'di.rec',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -207,7 +200,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\file',
           protocol: '',
@@ -224,7 +216,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -235,7 +227,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\file.foo',
           protocol: '',
@@ -252,7 +243,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -263,7 +254,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\.file',
           protocol: '',
@@ -280,7 +270,7 @@ if (userAgent.isWindows) {
           name: '.file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -291,7 +281,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\.file.foo',
           protocol: '',
@@ -308,7 +297,7 @@ if (userAgent.isWindows) {
           name: '.file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -319,7 +308,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\file.foo.bar',
           protocol: '',
@@ -336,7 +324,7 @@ if (userAgent.isWindows) {
           name: 'file.foo',
           ext: '.bar',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -347,7 +335,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\?to=a\\#file',
           protocol: '',
@@ -364,7 +351,7 @@ if (userAgent.isWindows) {
           name: '#file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -375,7 +362,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz',
           protocol: '',
@@ -392,7 +378,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.html',
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: ''
         });
       });
@@ -403,7 +389,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\direc.tory\\#page1?not=a&query',
           protocol: '',
@@ -420,7 +405,7 @@ if (userAgent.isWindows) {
           name: 'direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: '#page1?not=a&query'
         });
       });
@@ -431,7 +416,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query',
           protocol: '',
@@ -448,7 +432,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.html',
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: '#page1?not=a&query'
         });
       });
@@ -464,7 +448,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\directory\\'),
           protocol: '',
@@ -481,7 +464,7 @@ if (userAgent.isWindows) {
           name: 'directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -492,7 +475,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\direc.tory\\'),
           protocol: '',
@@ -509,7 +491,7 @@ if (userAgent.isWindows) {
           name: 'direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -520,7 +502,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\.directory\\'),
           protocol: '',
@@ -537,7 +518,7 @@ if (userAgent.isWindows) {
           name: '.directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -548,7 +529,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\.direc.tory\\'),
           protocol: '',
@@ -565,7 +545,7 @@ if (userAgent.isWindows) {
           name: '.direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -576,7 +556,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\di.rec.tory\\'),
           protocol: '',
@@ -593,7 +572,7 @@ if (userAgent.isWindows) {
           name: 'di.rec',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -604,7 +583,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\file'),
           protocol: '',
@@ -621,7 +599,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -632,7 +610,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\file.foo'),
           protocol: '',
@@ -649,7 +626,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -660,7 +637,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\.file'),
           protocol: '',
@@ -677,7 +653,7 @@ if (userAgent.isWindows) {
           name: '.file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -688,7 +664,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\.file.foo'),
           protocol: '',
@@ -705,7 +680,7 @@ if (userAgent.isWindows) {
           name: '.file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -716,7 +691,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\file.foo.bar'),
           protocol: '',
@@ -733,7 +707,7 @@ if (userAgent.isWindows) {
           name: 'file.foo',
           ext: '.bar',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -744,7 +718,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\?to=a\\#file'),
           protocol: '',
@@ -761,7 +734,7 @@ if (userAgent.isWindows) {
           name: '#file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -772,7 +745,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz'),
           protocol: '',
@@ -789,7 +761,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.html',
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: ''
         });
       });
@@ -800,7 +772,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: true,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\direc.tory\\#page1?not=a&query'),
           protocol: '',
@@ -817,7 +788,7 @@ if (userAgent.isWindows) {
           name: 'direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: '#page1?not=a&query'
         });
       });
@@ -828,7 +799,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query'),
           protocol: '',
@@ -845,7 +815,7 @@ if (userAgent.isWindows) {
           name: 'file',
           ext: '.html',
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: '#page1?not=a&query'
         });
       });
@@ -858,7 +828,6 @@ if (userAgent.isWindows) {
         helper.inspect(omniPath, {
           isUrl: false,
           isFile: true,
-          isDirectory: false,
           sep: 'C:\\',
           href: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
           protocol: '',
@@ -875,7 +844,7 @@ if (userAgent.isWindows) {
           name: '__({[ ! % , ',
           ext: '. > < ? & $ # @ ` ~ ,)}]__',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });

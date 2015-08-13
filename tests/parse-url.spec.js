@@ -8,7 +8,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1',
         protocol: 'https:',
@@ -25,7 +24,7 @@ describe('OmniPath.parse()', function() {
         name: 'h',
         ext: '',
         search: '?foo=bar&biz=baz',
-        query: 'foo=bar&biz=baz',
+        query: {foo: 'bar', biz: 'baz'},
         hash: '#page1'
       });
     });
@@ -36,7 +35,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'foobar://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1',
         protocol: 'foobar:',
@@ -53,7 +51,7 @@ describe('OmniPath.parse()', function() {
         name: 'h',
         ext: '',
         search: '?foo=bar&biz=baz',
-        query: 'foo=bar&biz=baz',
+        query: {foo: 'bar', biz: 'baz'},
         hash: '#page1'
       });
     });
@@ -64,7 +62,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/',
         protocol: 'http:',
@@ -81,7 +78,7 @@ describe('OmniPath.parse()', function() {
         name: '',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -92,7 +89,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/?foo=bar',
         protocol: 'http:',
@@ -109,7 +105,7 @@ describe('OmniPath.parse()', function() {
         name: '',
         ext: '',
         search: '?foo=bar',
-        query: 'foo=bar',
+        query: {foo: 'bar'},
         hash: ''
       });
     });
@@ -120,7 +116,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'ftp://server/#page1?not=a&query',
         protocol: 'ftp:',
@@ -137,7 +132,7 @@ describe('OmniPath.parse()', function() {
         name: '',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: '#page1?not=a&query'
       });
     });
@@ -148,7 +143,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'gopher://server/',
         protocol: 'gopher:',
@@ -165,7 +159,7 @@ describe('OmniPath.parse()', function() {
         name: '',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -176,7 +170,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/index.html',
         protocol: 'http:',
@@ -193,7 +186,7 @@ describe('OmniPath.parse()', function() {
         name: 'index',
         ext: '.html',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -204,7 +197,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/path/to/a/directory/',
         protocol: 'http:',
@@ -221,7 +213,7 @@ describe('OmniPath.parse()', function() {
         name: 'directory',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -232,7 +224,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/path/to/a/direc.tory/',
         protocol: 'http:',
@@ -249,7 +240,7 @@ describe('OmniPath.parse()', function() {
         name: 'direc',
         ext: '.tory',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -260,7 +251,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/path/to/a/.directory/',
         protocol: 'http:',
@@ -277,7 +267,7 @@ describe('OmniPath.parse()', function() {
         name: '.directory',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -288,7 +278,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/path/to/a/.direc.tory/',
         protocol: 'http:',
@@ -305,7 +294,7 @@ describe('OmniPath.parse()', function() {
         name: '.direc',
         ext: '.tory',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -316,7 +305,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: true,
         sep: '/',
         href: 'http://server/path/to/a/di.rec.tory/',
         protocol: 'http:',
@@ -333,7 +321,7 @@ describe('OmniPath.parse()', function() {
         name: 'di.rec',
         ext: '.tory',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -344,7 +332,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/path/to/a/file',
         protocol: 'http:',
@@ -361,7 +348,7 @@ describe('OmniPath.parse()', function() {
         name: 'file',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -372,7 +359,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/path/to/a/file.foo',
         protocol: 'http:',
@@ -389,7 +375,7 @@ describe('OmniPath.parse()', function() {
         name: 'file',
         ext: '.foo',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -400,7 +386,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/path/to/a/.file',
         protocol: 'http:',
@@ -417,7 +402,7 @@ describe('OmniPath.parse()', function() {
         name: '.file',
         ext: '',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -428,7 +413,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/path/to/a/.file.foo',
         protocol: 'http:',
@@ -445,7 +429,7 @@ describe('OmniPath.parse()', function() {
         name: '.file',
         ext: '.foo',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -456,7 +440,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: 'http://server/path/to/a/file.foo.bar',
         protocol: 'http:',
@@ -473,7 +456,7 @@ describe('OmniPath.parse()', function() {
         name: 'file.foo',
         ext: '.bar',
         search: '',
-        query: '',
+        query: {},
         hash: ''
       });
     });
@@ -489,7 +472,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + '/p/a/t/h?foo=bar&biz=baz#page1',
           protocol: location.protocol,
@@ -506,7 +488,7 @@ describe('OmniPath.parse()', function() {
           name: 'h',
           ext: '',
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: '#page1'
         });
       });
@@ -517,7 +499,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.page() + '?foo=bar&biz=baz',
           protocol: location.protocol,
@@ -529,12 +510,12 @@ describe('OmniPath.parse()', function() {
           path: location.pathname + '?foo=bar&biz=baz',
           pathname: location.pathname,
           root: '/',
-          dir: helper.dirname(),
+          dir: helper.dirname() || '/',
           base: helper.basename(),
           name: helper.name(),
           ext: helper.ext(),
           search: '?foo=bar&biz=baz',
-          query: 'foo=bar&biz=baz',
+          query: {foo: 'bar', biz: 'baz'},
           hash: ''
         });
       });
@@ -545,7 +526,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.page() + location.search + '#page1?not=a&query',
           protocol: location.protocol,
@@ -557,12 +537,12 @@ describe('OmniPath.parse()', function() {
           path: location.pathname + location.search,
           pathname: location.pathname,
           root: '/',
-          dir: helper.dirname(),
+          dir: helper.dirname() || '/',
           base: helper.basename(),
           name: helper.name(),
           ext: helper.ext(),
           search: location.search,
-          query: location.search.substr(1),
+          query: {},
           hash: '#page1?not=a&query'
         });
       });
@@ -573,7 +553,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.page() + location.search,  // The hash gets removed
           protocol: location.protocol,
@@ -585,12 +564,12 @@ describe('OmniPath.parse()', function() {
           path: location.pathname + location.search,
           pathname: location.pathname,
           root: '/',
-          dir: helper.dirname(),
+          dir: helper.dirname() || '/',
           base: helper.basename(),
           name: helper.name(),
           ext: helper.ext(),
           search: location.search,
-          query: location.search.substr(1),
+          query: {},
           hash: ''
         });
       });
@@ -601,7 +580,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + '/',
           protocol: location.protocol,
@@ -618,7 +596,7 @@ describe('OmniPath.parse()', function() {
           name: '',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -629,7 +607,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + '/somefile.gif',
           protocol: location.protocol,
@@ -646,7 +623,7 @@ describe('OmniPath.parse()', function() {
           name: 'somefile',
           ext: '.gif',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -657,7 +634,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/directory/',
           protocol: location.protocol,
@@ -674,7 +650,7 @@ describe('OmniPath.parse()', function() {
           name: 'directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -685,7 +661,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/direc.tory/',
           protocol: location.protocol,
@@ -702,7 +677,7 @@ describe('OmniPath.parse()', function() {
           name: 'direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -713,7 +688,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/.directory/',
           protocol: location.protocol,
@@ -730,7 +704,7 @@ describe('OmniPath.parse()', function() {
           name: '.directory',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -741,7 +715,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/.direc.tory/',
           protocol: location.protocol,
@@ -758,7 +731,7 @@ describe('OmniPath.parse()', function() {
           name: '.direc',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -769,7 +742,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: true,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/di.rec.tory/',
           protocol: location.protocol,
@@ -786,7 +758,7 @@ describe('OmniPath.parse()', function() {
           name: 'di.rec',
           ext: '.tory',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -797,7 +769,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/file',
           protocol: location.protocol,
@@ -814,7 +785,7 @@ describe('OmniPath.parse()', function() {
           name: 'file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -825,7 +796,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/file.foo',
           protocol: location.protocol,
@@ -842,7 +812,7 @@ describe('OmniPath.parse()', function() {
           name: 'file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -853,7 +823,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/.file',
           protocol: location.protocol,
@@ -870,7 +839,7 @@ describe('OmniPath.parse()', function() {
           name: '.file',
           ext: '',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -881,7 +850,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/.file.foo',
           protocol: location.protocol,
@@ -898,7 +866,7 @@ describe('OmniPath.parse()', function() {
           name: '.file',
           ext: '.foo',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -909,7 +877,6 @@ describe('OmniPath.parse()', function() {
         helper.inspect(omniPath, {
           isUrl: true,
           isFile: false,
-          isDirectory: false,
           sep: '/',
           href: helper.server() + helper.dirname() + '/path/to/a/file.foo.bar',
           protocol: location.protocol,
@@ -926,7 +893,7 @@ describe('OmniPath.parse()', function() {
           name: 'file.foo',
           ext: '.bar',
           search: '',
-          query: '',
+          query: {},
           hash: ''
         });
       });
@@ -940,7 +907,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: '-9a.t+8r://_-9a.t/+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__',
         protocol: '-9a.t+8r:',
@@ -957,7 +923,7 @@ describe('OmniPath.parse()', function() {
         name: '+8r_(%7B[%20!%20%%20,%20',
         ext: '.%20%3E%20%3C%20',
         search: '?%20&%20$%20',
-        query: '%20&%20$%20',
+        query: { ' ': '', ' $ ': '' },
         hash: '#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__'
       });
     });
@@ -968,7 +934,6 @@ describe('OmniPath.parse()', function() {
       helper.inspect(omniPath, {
         isUrl: true,
         isFile: false,
-        isDirectory: false,
         sep: '/',
         href: '-9a.t+8r://_-9a.t8r_/(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__',
         protocol: '-9a.t+8r:',
@@ -985,7 +950,7 @@ describe('OmniPath.parse()', function() {
         name: '(%7B[%20!%20%%20,%20',
         ext: '.%20%3E%20%3C%20',
         search: '?%20&%20$%20',
-        query: '%20&%20$%20',
+        query: { ' ': '', ' $ ': '' },
         hash: '#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__'
       });
     });

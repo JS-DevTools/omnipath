@@ -96,7 +96,7 @@
         return;
       }
       var href = omniPath.format();
-      var parsed = omniPath.isFile ? require('path').parse(href) : require('url').parse(href);
+      var parsed = omniPath.isFile ? require('path').parse(href) : require('url').parse(href, true);
       equals(omniPath, parsed, true);
     }
   }
@@ -119,7 +119,7 @@
         return;
       }
 
-      expect(actualValue).to.equal(expectedValue,
+      expect(actualValue).to.deep.equal(expectedValue,
         '"' + key + '" does not match' +
         (isNative ? ' Node\'s native behavior' : '')
       );
