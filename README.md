@@ -2,12 +2,11 @@ OmniPath
 ============================
 #### A consolidated API for working with POSIX paths, Windows paths, and URLs
 
-<!--
 [![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg)](https://travis-ci.org/BigstickCarpet/omnipath)
 [![Dependencies](https://david-dm.org/BigstickCarpet/omnipath.svg)](https://david-dm.org/BigstickCarpet/omnipath)
 [![Coverage Status](https://coveralls.io/repos/BigstickCarpet/omnipath/badge.svg?branch=master&service=github)](https://coveralls.io/r/BigstickCarpet/omnipath)
 [![Code Climate Score](https://codeclimate.com/github/BigstickCarpet/omnipath/badges/gpa.svg)](https://codeclimate.com/github/BigstickCarpet/omnipath)
-[![Codacy Score](https://www.codacy.com/project/badge/XXXXXXXXXXXXXXXXXXXXXXXXXXXX)](https://www.codacy.com/public/jamesmessinger/omnipath)
+[![Codacy Score](https://www.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/jamesmessinger/omnipath)
 [![Inline docs](http://inch-ci.org/github/BigstickCarpet/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/BigstickCarpet/omnipath)
 
 [![npm](http://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
@@ -15,7 +14,6 @@ OmniPath
 [![License](https://img.shields.io/npm/l/omnipath.svg)](LICENSE)
 
 [![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](http://bigstickcarpet.github.io/omnipath)
--->
 
 OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2-options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they work _consistently_ for POSIX paths, Windows paths, and URLs, in Node and in web browsers.
 
