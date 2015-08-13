@@ -32,6 +32,8 @@
     global.OmniPath = require('../');
     global.expect = require('chai').expect;
     global.sinon = require('sinon');
+    global.path = require('path');
+    global.cwd = process.cwd();
 
     global.userAgent = {
       isNode: true,

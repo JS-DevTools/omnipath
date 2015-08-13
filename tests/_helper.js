@@ -5,6 +5,9 @@
    * Helper methods for use in tests
    */
   global.helper = {
+    describeIfBrowser: describeIfBrowser,
+    describeIfPosix: describeIfPosix,
+    describeIfWindows: describeIfWindows,
     server: server,
     page: page,
     dirname: dirname,
@@ -13,6 +16,42 @@
     ext: ext,
     inspect: inspect
   };
+
+  /**
+   * Runs the given test suite in web browsers. Skips the test suite when running in Node.
+   */
+  function describeIfBrowser(description, suite) {
+    if (userAgent.isBrowser) {
+      return describe.call(null, description, suite);
+    }
+    else {
+      return describe.skip.call(describe, description, suite);
+    }
+  }
+
+  /**
+   * Runs the given test suite when running in Node on a POSIX system; otherwise, skips the test suite.
+   */
+  function describeIfPosix(description, suite) {
+    if (userAgent.isPosix) {
+      return describe.call(null, description, suite);
+    }
+    else {
+      return describe.skip.call(describe, description, suite);
+    }
+  }
+
+  /**
+   * Runs the given test suite when running in Node on a Windows system; otherwise, skips the test suite.
+   */
+  function describeIfWindows(description, suite) {
+    if (userAgent.isWindows) {
+      return describe.call(null, description, suite);
+    }
+    else {
+      return describe.skip.call(describe, description, suite);
+    }
+  }
 
   /**
    * Returns the current server URL (e.g. "http://localhost:1234")

@@ -28,11 +28,11 @@
     "build": "npm run lint && npm run browserify",
     "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
     "watch": "npm run browserify -- --watch",
-    "test": "istanbul cover _mocha -- --bail --recursive tests && npm run karma",
-    "mocha": "mocha --bail --recursive tests",
+    "test": "istanbul cover _mocha -- --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\" && npm run karma",
+    "mocha": "mocha --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\"",
     "karma": "karma start --single-run",
     "upgrade": "ncu --upgradeAll && npm update && bower update",
-    "bump": "bump --prompt --grep lib/index.js dist/* --tag --push --all",
+    "bump": "bump --prerelease --grep lib/index.js dist/* --tag --push --all",
     "release": "npm run upgrade && npm run build && npm test && npm run bump && npm publish"
   },
   "repository": {
