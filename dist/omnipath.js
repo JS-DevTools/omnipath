@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (process){
 /**!
- * OmniPath v1.0.0-beta.2
+ * OmniPath v1.0.0-beta.1
  *
  * @link https://github.com/BigstickCarpet/omnipath
  * @license MIT
@@ -12,7 +12,8 @@ var path            = require('path'),
     url             = require('url'),
     querystring     = require('querystring'),
     isWindows       = /^win/.test(process.platform),
-    protocolPattern = /^[a-z0-9.+-]{2,}:/i;
+    protocolPattern = /^[a-z0-9.+-]+:/i,
+    windowsPattern  = /^[a-z]:(\\|\/(?!\/))/i;  // This distinguishes between Windows paths ("C:\") and single-letter protocols ("X://")
 
 module.exports = OmniPath;
 
@@ -106,8 +107,8 @@ OmniPath.prototype.toJSON = function() {
  *
  * {@link https://nodejs.org/api/path.html#path_path_dirname_p}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to parse
- * @param   {Options}               [options] - Options that determine how paths are parsed
+ * @param   {string|Url|OmniPath} p         - The file path or URL to parse
+ * @param   {Options}             [options] - Options that determine how paths are parsed
  * @returns {string}
  */
 OmniPath.dirname = function(p, options) {
@@ -131,9 +132,9 @@ OmniPath.prototype.dirname = function() {
  *
  * {@link https://nodejs.org/api/path.html#path_path_basename_p_ext}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to parse
- * @param   {string}                [ext]     - The portion of the file extension to leave off
- * @param   {Options}               [options] - Options that determine how paths are parsed
+ * @param   {string|Url|OmniPath}  p          - The file path or URL to parse
+ * @param   {string}               [ext]      - The portion of the file extension to leave off
+ * @param   {Options}              [options]  - Options that determine how paths are parsed
  * @returns {string}
  */
 OmniPath.basename = function(p, ext, options) {
@@ -167,7 +168,7 @@ OmniPath.prototype.basename = function(ext) {
  *
  * {@link https://nodejs.org/api/path.html#path_path_extname_p}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to parse
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
  * @param   {Options}               [options] - Options that determine how paths are parsed
  * @returns {string}
  */
@@ -225,7 +226,7 @@ OmniPath.resolve = function(from, to, options) {
  * path.resolve:  {@link https://nodejs.org/api/path.html#path_path_resolve_from_to}
  * url.resolve    {@link https://nodejs.org/api/url.html#url_url_resolve_from_to}
  *
- * @param   {string|Url|OmniPath}  relative  - The file path or URL to resolve, relative to this one
+ * @param   {string|Url|OmniPath}   relative  - The file path or URL to resolve, relative to this one
  * @param   {Options}               options   - Options that determine how paths are parsed
  * @returns {string}
  */
@@ -243,7 +244,7 @@ OmniPath.prototype.resolve = function(relative, options) {
     relative = relative.format();
   }
 
-  if (this.isUrl || protocolPattern.test(relative)) {
+  if (this.isUrl || isAbsoluteUrl(relative)) {
     // The result will be a URL if `relative` is any of:
     //  - an absolute url (e.g. "http://www.google.com")
     //  - a relative url  (e.g. "../path/file.html")
@@ -270,7 +271,7 @@ OmniPath.prototype.resolve = function(relative, options) {
  * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
  * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to format
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
  * @param   {Options}               [options] - Options that determine how paths are parsed
  * @returns {string}
  */
@@ -291,19 +292,19 @@ OmniPath.prototype.format = function() {
 
   // Build the `pathname` property
   if (clone.dir || clone.base || clone.name || clone.ext) {
-    var isDirectory = endsWithSeparator(clone.pathname);
     clone.base = clone.base || (clone.name + clone.ext) || '';
     if (startsWithSeparator(clone.base)) {
       clone.base = clone.base.substr(1);
     }
     clone.dir = clone.dir || '';
+    var trailingSlash = endsWithSeparator(clone.pathname);
     if (endsWithSeparator(clone.dir)) {
       clone.pathname = clone.dir + clone.base;
     }
     else {
       clone.pathname = clone.dir + clone.sep + clone.base;
     }
-    if (isDirectory && !endsWithSeparator(clone.pathname)) {
+    if (trailingSlash && !endsWithSeparator(clone.pathname)) {
       clone.pathname += clone.sep;
     }
   }
@@ -361,7 +362,7 @@ OmniPath.prototype.valueOf = OmniPath.prototype.format;
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to parse
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
  * @param   {Options}               [options] - Options that determine how paths are parsed
  * @returns {OmniPath}
  */
@@ -376,7 +377,7 @@ OmniPath.parse = function(p, options) {
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to parse
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
  * @param   {Options}               [options] - Options that determine how paths are parsed
  */
 OmniPath.prototype.parse = function(p, options) {
@@ -385,6 +386,10 @@ OmniPath.prototype.parse = function(p, options) {
   if (process.browser) {
     // We're running in a browser, so treat all paths as a URLs
     parseUrl(this, url.parse(url.resolve(window.location.href, p), true));
+  }
+  else if (isWindows && startsWithSeparator(p)) {
+    // It's drive-relative Windows path (e.g. "\\dir\\subdir" => "C:\\dir\\subdir")
+    parseRelativeFile(this, OmniPath.cwd(), p, options);
   }
   else if (getRoot(p)) {
     // It's an absolute file path
@@ -403,7 +408,7 @@ OmniPath.prototype.parse = function(p, options) {
 /**
  * Returns the given path or URL as a {@link Url} object. File paths will be returned as "file://" URLs.
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to format
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
  * @param   {Options}               [options] - Options that determine how paths are parsed
  * @returns {Url}
  */
@@ -424,7 +429,7 @@ OmniPath.prototype.toUrl = function() {
 /**
  * Returns the given path or URL to a formatted URL string. File paths will be returned as "file://" URLs.
  *
- * @param   {string|Url|OmniPath}  p      - The file path or URL to format
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
  * @param   {Options}               [options] - Options that determine how paths are parsed
  * @returns {string}
  */
@@ -487,16 +492,11 @@ OmniPath.cwd = function() {
 /**
  * Parses the given {@link Url} object, and sets the corresponding properties of the given object.
  *
- * @param   {OmniPath|object}  target  - The object whose properties will be set
+ * @param   {OmniPath|object}   target  - The object whose properties will be set
  * @param   {Url}               url     - The {@link Url} object to parse
  * @returns {OmniPath|object}
  */
 function parseUrl(target, url) {
-  var file = {};
-  if (url.pathname) {
-    parseFile(file, url.pathname);
-  }
-
   target.isUrl = true;
   target.isFile = false;
   target.sep = '/';
@@ -509,27 +509,24 @@ function parseUrl(target, url) {
   target.port = url.port || '';
   target.path = url.path || '';
   target.pathname = url.pathname || '';
-  target.root = file.root || '';
-  target.dir = file.dir || '';
-  target.base = file.base || '';
-  target.name = file.name || '';
-  target.ext = file.ext || '';
   target.search = url.search || '';
   target.query = url.query || {};
   target.hash = url.hash || '';
+
+  parsePathname(target, target.pathname);
   return target;
 }
 
 /**
  * Parses the given file path, and sets the corresponding properties of the given object.
  *
- * @param   {OmniPath|object}  target    - The object whose properties will be set
+ * @param   {OmniPath|object}   target    - The object whose properties will be set
  * @param   {string}            file      - The file path to parse
  * @param   {Options}           [options] - Options that determine how paths are parsed
  * @returns {OmniPath|object}
  */
 function parseFile(target, file, options) {
-  var hash = '', search = '', query = {}, href = file;
+  var hash = '', search = '', query = {};
   options = options || {};
 
   if (options.allowFileHash) {
@@ -551,25 +548,15 @@ function parseFile(target, file, options) {
     }
   }
 
-  // Parse the file path
-  var root, dir, base, name, ext;
-  root = getRoot(file);
-  if (file === root) {
-    // It's the root directory
-    dir = root;
-    base = name = ext = '';
-  }
-  else {
-    dir = path.dirname(file);
-    base = path.basename(file);
-    ext = path.extname(file);
-    name = path.basename(file, ext);
+  if (isWindows) {
+    // Normalize Windows path separators
+    file = file.replace(/\//g, '\\');
   }
 
   target.isUrl = false;
   target.isFile = true;
   target.sep = path.sep;
-  target.href = href || '';
+  target.href = file + search + hash;
   target.protocol = '';
   target.slashes = false;
   target.auth = '';
@@ -578,14 +565,11 @@ function parseFile(target, file, options) {
   target.port = '';
   target.path = file + search;
   target.pathname = file;
-  target.root = root;
-  target.dir = dir;
-  target.base = base;
-  target.name = name;
-  target.ext = ext;
   target.search = search;
   target.query = query;
   target.hash = hash;
+
+  parsePathname(target, target.pathname);
   return target;
 }
 
@@ -595,8 +579,8 @@ function parseFile(target, file, options) {
  *
  * @param   {OmniPath|object}  target    - The object whose properties will be set
  * @param   {OmniPath}         base      - The base file path
- * @param   {string}            relative  - The path to resolve from `base`
- * @param   {Options}           [options] - Options that determine how paths are parsed
+ * @param   {string}           relative  - The path to resolve from `base`
+ * @param   {Options}          [options] - Options that determine how paths are parsed
  * @returns {OmniPath|object}
  */
 function parseRelativeFile(target, base, relative, options) {
@@ -605,7 +589,7 @@ function parseRelativeFile(target, base, relative, options) {
   var absolute;
   if (relative.pathname) {
     absolute = path.resolve(base.pathname, relative.pathname);
-    if (endsWithSeparator(relative.pathname)) {
+    if (endsWithSeparator(relative.pathname) && !endsWithSeparator(absolute)) {
       absolute += relative.sep;
     }
     absolute += relative.search + relative.hash;
@@ -618,6 +602,30 @@ function parseRelativeFile(target, base, relative, options) {
   }
 
   return parseFile(target, absolute, options);
+}
+
+/**
+ * Parses the given pathname, and sets the corresponding properties of the given object.
+ *
+ * @param   {OmniPath|object}   target    - The object whose properties will be set
+ * @param   {string}            pathname  - The pathname to parse
+ * @returns {OmniPath|object}
+ */
+function parsePathname(target, pathname) {
+  target.root = getRoot(pathname);
+  if (pathname === target.root) {
+    // The pathname is the root
+    target.dir = target.root;
+    target.base = target.name = target.ext = '';
+  }
+  else {
+    target.dir = path.dirname(pathname);
+    target.base = path.basename(pathname);
+    target.ext = path.extname(pathname);
+    target.name = path.basename(pathname, target.ext);
+  }
+
+  return target;
 }
 
 /**
@@ -652,24 +660,34 @@ function copy(src, dest) {
 }
 
 /**
- * Returns the {@link OmniPath#root} of the given pathname, based on the current environment
+ * Determines whether the first character(s) of the given path are its root.
+ * If they are, then the root character(s) are returned.
  *
- * @param   {string} pathname - A pathname, such as "/foo/bar" or "C:\foo\bar"
+ * @param   {string} p - A path, such as "/foo/bar" or "C:\foo\bar"
  * @returns {string}
  */
-function getRoot(pathname) {
+function getRoot(p) {
   // Check for an absolute URL or POSIX path
-  if (pathname[0] === '/') {
+  if (p[0] === '/') {
     return '/';
   }
 
-  // Check for an absolute Windows path
-  var delimiter = pathname.substr(1, 2);
-  if (isWindows && (delimiter === ':\\' || delimiter === ':/')) {
-    return pathname.substr(0, 3);
+  if (isWindows) {
+    // Check for an absolute Windows path
+    var match = windowsPattern.exec(p);
+    if (match) {
+      return match[0];
+    }
   }
 
   return '';
+}
+
+/**
+ * Determines whether
+ */
+function isAbsoluteUrl(p) {
+  return protocolPattern.test(p) && !windowsPattern.test(p);
 }
 
 /**
