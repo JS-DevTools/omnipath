@@ -1,6 +1,6 @@
 'use strict';
 
-describe('OmniPath.basename()', function() {
+describe('OmniPath.basename', function() {
   describe('URLs', function() {
     it('should return an empty string if the URL has no path', function() {
       var omniBase = OmniPath.basename('http://localhost');

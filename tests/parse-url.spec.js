@@ -1,6 +1,6 @@
 'use strict';
 
-describe('OmniPath.parse() - URLs', function() {
+describe('OmniPath.parse - URLs', function() {
   describe('absolute URLs', function() {
     it('should parse an absolute URL with all parts', function() {
       var omniPath = OmniPath.parse('https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1');

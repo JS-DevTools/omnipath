@@ -1,6 +1,6 @@
 'use strict';
 
-describe('OmniPath.dirname()', function() {
+describe('OmniPath.dirname', function() {
   describe('URLs', function() {
     it('should return the root directory', function() {
       var omniDir = OmniPath.dirname('http://localhost');

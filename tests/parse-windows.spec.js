@@ -2,7 +2,7 @@
 
 // Windows paths can only be tested when running in Node on a Windows OS,
 // otherwise, they'll be treated as relative URLs
-helper.describeIfWindows('OmniPath.parse() - Windows', function() {
+helper.describeIfWindows('OmniPath.parse - Windows', function() {
   describe('absolute paths', function() {
     it('should parse an absolute root directory path', function() {
       var omniPath = OmniPath.parse('C:\\');

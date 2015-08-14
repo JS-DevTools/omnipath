@@ -2,7 +2,7 @@
 
 // POSIX paths can only be tested when running in Node on a POSIX OS,
 // otherwise, they'll be treated as relative URLs
-helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
+helper.describeIfPosix('OmniPath.parse - POSIX', function() {
   describe('absolute paths', function() {
     it('should parse an absolute root directory path', function() {
       var omniPath = OmniPath.parse('/');
