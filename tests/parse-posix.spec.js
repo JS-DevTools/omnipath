@@ -329,25 +329,25 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
     });
 
     it('should parse an absolute path containing # and ? characters', function() {
-      var omniPath = OmniPath.parse('/path/?to=a/#file');
+      var omniPath = OmniPath.parse('/path/?to=a/#file\\with#/slashes');
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: '/path/?to=a/#file',
+        href: '/path/?to=a/#file\\with#/slashes',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: '/path/?to=a/#file',
-        pathname: '/path/?to=a/#file',
+        path: '/path/?to=a/#file\\with#/slashes',
+        pathname: '/path/?to=a/#file\\with#/slashes',
         root: '/',
-        dir: '/path/?to=a',
-        base: '#file',
-        name: '#file',
+        dir: '/path/?to=a/#file\\with#',
+        base: 'slashes',
+        name: 'slashes',
         ext: '',
         search: '',
         query: {},
@@ -356,40 +356,40 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
     });
 
     it('should parse an absolute path with a query', function() {
-      var omniPath = OmniPath.parse('/path/to/a/file.html?foo=bar&biz=baz', {allowFileQuery: true});
+      var omniPath = OmniPath.parse('/path/to/a/file.html?foo=\\bar&biz=/baz', {allowFileQuery: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: '/path/to/a/file.html?foo=bar&biz=baz',
+        href: '/path/to/a/file.html?foo=\\bar&biz=/baz',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: '/path/to/a/file.html?foo=bar&biz=baz',
+        path: '/path/to/a/file.html?foo=\\bar&biz=/baz',
         pathname: '/path/to/a/file.html',
         root: '/',
         dir: '/path/to/a',
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
         hash: ''
       });
     });
 
     it('should parse an absolute path with a hash', function() {
-      var omniPath = OmniPath.parse('/path/to/a/direc.tory/#page1?not=a&query', {allowFileHash: true});
+      var omniPath = OmniPath.parse('/path/to/a/direc.tory/#page1\\?not=a/&query', {allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: '/path/to/a/direc.tory/#page1?not=a&query',
+        href: '/path/to/a/direc.tory/#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
@@ -405,34 +405,34 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
         ext: '.tory',
         search: '',
         query: {},
-        hash: '#page1?not=a&query'
+        hash: '#page1\\?not=a/&query'
       });
     });
 
     it('should parse an absolute path with a query and hash', function() {
-      var omniPath = OmniPath.parse('/path/to/a/file.html?foo=bar&biz=baz#page1?not=a&query', {allowFileQuery: true, allowFileHash: true});
+      var omniPath = OmniPath.parse('/path/to/a/file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: '/path/to/a/file.html?foo=bar&biz=baz#page1?not=a&query',
+        href: '/path/to/a/file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: '/path/to/a/file.html?foo=bar&biz=baz',
+        path: '/path/to/a/file.html?foo=\\bar&biz=/baz',
         pathname: '/path/to/a/file.html',
         root: '/',
         dir: '/path/to/a',
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
-        hash: '#page1?not=a&query'
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
+        hash: '#page1\\?not=a/&query'
       });
     });
   });
@@ -709,25 +709,25 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
     });
 
     it('should parse a relative path containing # and ? characters', function() {
-      var omniPath = OmniPath.parse('path/?to=a/#file');
+      var omniPath = OmniPath.parse('path/?to=a/#file\\with#/slashes');
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: path.join(cwd, 'path/?to=a/#file'),
+        href: path.join(cwd, 'path/?to=a/#file\\with#/slashes'),
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path/?to=a/#file'),
-        pathname: path.join(cwd, 'path/?to=a/#file'),
+        path: path.join(cwd, 'path/?to=a/#file\\with#/slashes'),
+        pathname: path.join(cwd, 'path/?to=a/#file\\with#/slashes'),
         root: '/',
-        dir: path.join(cwd, 'path/?to=a'),
-        base: '#file',
-        name: '#file',
+        dir: path.join(cwd, 'path/?to=a/#file\\with#'),
+        base: 'slashes',
+        name: 'slashes',
         ext: '',
         search: '',
         query: {},
@@ -736,40 +736,40 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
     });
 
     it('should parse a relative path with a query', function() {
-      var omniPath = OmniPath.parse('path/to/a/file.html?foo=bar&biz=baz', {allowFileQuery: true});
+      var omniPath = OmniPath.parse('path/to/a/file.html?foo=\\bar&biz=/baz', {allowFileQuery: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: path.join(cwd, 'path/to/a/file.html?foo=bar&biz=baz'),
+        href: path.join(cwd, 'path/to/a/file.html') + '?foo=\\bar&biz=/baz',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path/to/a/file.html?foo=bar&biz=baz'),
+        path: path.join(cwd, 'path/to/a/file.html') + '?foo=\\bar&biz=/baz',
         pathname: path.join(cwd, 'path/to/a/file.html'),
         root: '/',
         dir: path.join(cwd, 'path/to/a'),
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
         hash: ''
       });
     });
 
     it('should parse a relative path with a hash', function() {
-      var omniPath = OmniPath.parse('path/to/a/direc.tory/#page1?not=a&query', {allowFileHash: true});
+      var omniPath = OmniPath.parse('path/to/a/direc.tory/#page1\\?not=a/&query', {allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: path.join(cwd, 'path/to/a/direc.tory/#page1?not=a&query'),
+        href: path.join(cwd, 'path/to/a/direc.tory/') + '#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
@@ -785,34 +785,34 @@ helper.describeIfPosix('OmniPath.parse() - POSIX', function() {
         ext: '.tory',
         search: '',
         query: {},
-        hash: '#page1?not=a&query'
+        hash: '#page1\\?not=a/&query'
       });
     });
 
     it('should parse a relative path with a query and hash', function() {
-      var omniPath = OmniPath.parse('path/to/a/file.html?foo=bar&biz=baz#page1?not=a&query', {allowFileQuery: true, allowFileHash: true});
+      var omniPath = OmniPath.parse('path/to/a/file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '/',
-        href: path.join(cwd, 'path/to/a/file.html?foo=bar&biz=baz#page1?not=a&query'),
+        href: path.join(cwd, 'path/to/a/file.html') + '?foo=\\bar&biz=/baz#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path/to/a/file.html?foo=bar&biz=baz'),
+        path: path.join(cwd, 'path/to/a/file.html') + '?foo=\\bar&biz=/baz',
         pathname: path.join(cwd, 'path/to/a/file.html'),
         root: '/',
         dir: path.join(cwd, 'path/to/a'),
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
-        hash: '#page1?not=a&query'
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
+        hash: '#page1\\?not=a/&query'
       });
     });
   });

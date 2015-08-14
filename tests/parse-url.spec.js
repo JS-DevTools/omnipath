@@ -56,6 +56,34 @@ describe('OmniPath.parse() - URLs', function() {
       });
     });
 
+    it('should parse an absolute URL with a single-letter protocol', function() {
+      // This should be parsed as a URL, NOT a Windows path
+      var omniPath = OmniPath.parse('c://p/a/t/h');
+
+      helper.inspect(omniPath, {
+        isUrl: true,
+        isFile: false,
+        sep: '/',
+        href: 'c://p/a/t/h',
+        protocol: 'c:',
+        slashes: true,
+        auth: '',
+        host: 'p',
+        hostname: 'p',
+        port: '',
+        path: '/a/t/h',
+        pathname: '/a/t/h',
+        root: '/',
+        dir: '/a/t',
+        base: 'h',
+        name: 'h',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
     it('should parse an absolute URL with only hostname', function() {
       var omniPath = OmniPath.parse('http://server');
 

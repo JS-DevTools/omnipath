@@ -31,6 +31,87 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
       });
     });
 
+    it('should parse an absolute root directory path with forward slashes', function() {
+      var omniPath = OmniPath.parse('C:/');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\',
+        pathname: 'C:\\',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: '',
+        name: '',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute root directory path with forward slashes and no drive letter', function() {
+      var omniPath = OmniPath.parse('/');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\',
+        pathname: 'C:\\',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: '',
+        name: '',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute root directory path with no drive letter', function() {
+      var omniPath = OmniPath.parse('\\');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\',
+        pathname: 'C:\\',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: '',
+        name: '',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
     it('should parse an absolute root file path', function() {
       var omniPath = OmniPath.parse('C:\\somefile.txt');
 
@@ -58,8 +139,143 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
       });
     });
 
+    it('should parse an absolute root file path with forward slashes', function() {
+      var omniPath = OmniPath.parse('C:/somefile.txt');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\somefile.txt',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\somefile.txt',
+        pathname: 'C:\\somefile.txt',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: 'somefile.txt',
+        name: 'somefile',
+        ext: '.txt',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute root file path with no drive letter', function() {
+      var omniPath = OmniPath.parse('\\somefile.txt');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\somefile.txt',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\somefile.txt',
+        pathname: 'C:\\somefile.txt',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: 'somefile.txt',
+        name: 'somefile',
+        ext: '.txt',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute root file path with forward slashes and no drive letter', function() {
+      var omniPath = OmniPath.parse('/somefile.txt');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\somefile.txt',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\somefile.txt',
+        pathname: 'C:\\somefile.txt',
+        root: 'C:\\',
+        dir: 'C:\\',
+        base: 'somefile.txt',
+        name: 'somefile',
+        ext: '.txt',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
     it('should parse an absolute directory path', function() {
       var omniPath = OmniPath.parse('C:\\path\\to\\a\\directory\\');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\path\\to\\a\\directory\\',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\path\\to\\a\\directory\\',
+        pathname: 'C:\\path\\to\\a\\directory\\',
+        root: 'C:\\',
+        dir: 'C:\\path\\to\\a',
+        base: 'directory',
+        name: 'directory',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute directory path with forward slashes', function() {
+      var omniPath = OmniPath.parse('C:/path/to\\a/directory/');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\path\\to\\a\\directory\\',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\path\\to\\a\\directory\\',
+        pathname: 'C:\\path\\to\\a\\directory\\',
+        root: 'C:\\',
+        dir: 'C:\\path\\to\\a',
+        base: 'directory',
+        name: 'directory',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute directory path with forward slashes and no drive letter', function() {
+      var omniPath = OmniPath.parse('/path/to/a/directory/');
 
       helper.inspect(omniPath, {
         isUrl: false,
@@ -220,6 +436,60 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
       });
     });
 
+    it('should parse an absolute file path with forward slashes', function() {
+      var omniPath = OmniPath.parse('C:/path\\to/a/file');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\path\\to\\a\\file',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\path\\to\\a\\file',
+        pathname: 'C:\\path\\to\\a\\file',
+        root: 'C:\\',
+        dir: 'C:\\path\\to\\a',
+        base: 'file',
+        name: 'file',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse an absolute file path with forward slashes and no drive letter', function() {
+      var omniPath = OmniPath.parse('/path/to/a/file');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: 'C:\\path\\to\\a\\file',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: 'C:\\path\\to\\a\\file',
+        pathname: 'C:\\path\\to\\a\\file',
+        root: 'C:\\',
+        dir: 'C:\\path\\to\\a',
+        base: 'file',
+        name: 'file',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
     it('should parse an absolute file path, with an extension', function() {
       var omniPath = OmniPath.parse('C:\\path\\to\\a\\file.foo');
 
@@ -329,25 +599,25 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
     });
 
     it('should parse an absolute path containing # and ? characters', function() {
-      var omniPath = OmniPath.parse('C:\\path\\?to=a\\#file');
+      var omniPath = OmniPath.parse('C:\\path\\?to=a\\#file\\with#/slashes');
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: 'C:\\path\\?to=a\\#file',
+        href: 'C:\\path\\?to=a\\#file\\with#\\slashes',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: 'C:\\path\\?to=a\\#file',
-        pathname: 'C:\\path\\?to=a\\#file',
+        path: 'C:\\path\\?to=a\\#file\\with#\\slashes',
+        pathname: 'C:\\path\\?to=a\\#file\\with#\\slashes',
         root: 'C:\\',
-        dir: 'C:\\path\\?to=a',
-        base: '#file',
-        name: '#file',
+        dir: 'C:\\path\\?to=a\\#file\\with#',
+        base: 'slashes',
+        name: 'slashes',
         ext: '',
         search: '',
         query: {},
@@ -356,40 +626,40 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
     });
 
     it('should parse an absolute path with a query', function() {
-      var omniPath = OmniPath.parse('C:\\path\\to\\a\\file.html?foo=bar&biz=baz', {allowFileQuery: true});
+      var omniPath = OmniPath.parse('C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz', {allowFileQuery: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz',
+        href: 'C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz',
+        path: 'C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz',
         pathname: 'C:\\path\\to\\a\\file.html',
         root: 'C:\\',
         dir: 'C:\\path\\to\\a',
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
         hash: ''
       });
     });
 
     it('should parse an absolute path with a hash', function() {
-      var omniPath = OmniPath.parse('C:\\path\\to\\a\\direc.tory\\#page1?not=a&query', {allowFileHash: true});
+      var omniPath = OmniPath.parse('C:\\path\\to\\a\\direc.tory\\#page1\\?not=a/&query', {allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: 'C:\\path\\to\\a\\direc.tory\\#page1?not=a&query',
+        href: 'C:\\path\\to\\a\\direc.tory\\#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
@@ -405,34 +675,34 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
         ext: '.tory',
         search: '',
         query: {},
-        hash: '#page1?not=a&query'
+        hash: '#page1\\?not=a/&query'
       });
     });
 
     it('should parse an absolute path with a query and hash', function() {
-      var omniPath = OmniPath.parse('C:\\path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query', {allowFileQuery: true, allowFileHash: true});
+      var omniPath = OmniPath.parse('C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query',
+        href: 'C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: 'C:\\path\\to\\a\\file.html?foo=bar&biz=baz',
+        path: 'C:\\path\\to\\a\\file.html?foo=\\bar&biz=/baz',
         pathname: 'C:\\path\\to\\a\\file.html',
         root: 'C:\\',
         dir: 'C:\\path\\to\\a',
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
-        hash: '#page1?not=a&query'
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
+        hash: '#page1\\?not=a/&query'
       });
     });
   });
@@ -440,6 +710,33 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
   describe('relative paths', function() {
     it('should parse a relative directory path', function() {
       var omniPath = OmniPath.parse('path\\to\\a\\directory\\');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: path.join(cwd, 'path\\to\\a\\directory\\'),
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: path.join(cwd, 'path\\to\\a\\directory\\'),
+        pathname: path.join(cwd, 'path\\to\\a\\directory\\'),
+        root: 'C:\\',
+        dir: path.join(cwd, 'path\\to\\a'),
+        base: 'directory',
+        name: 'directory',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
+    it('should parse a relative directory path with forward slashes', function() {
+      var omniPath = OmniPath.parse('path/to/a/directory/');
 
       helper.inspect(omniPath, {
         isUrl: false,
@@ -600,6 +897,33 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
       });
     });
 
+    it('should parse a relative file path with forward slashes', function() {
+      var omniPath = OmniPath.parse('path/to\\a/file');
+
+      helper.inspect(omniPath, {
+        isUrl: false,
+        isFile: true,
+        sep: '\\',
+        href: path.join(cwd, 'path\\to\\a\\file'),
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: path.join(cwd, 'path\\to\\a\\file'),
+        pathname: path.join(cwd, 'path\\to\\a\\file'),
+        root: 'C:\\',
+        dir: path.join(cwd, 'path\\to\\a'),
+        base: 'file',
+        name: 'file',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      });
+    });
+
     it('should parse a relative file path, with an extension', function() {
       var omniPath = OmniPath.parse('path\\to\\a\\file.foo');
 
@@ -709,25 +1033,25 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
     });
 
     it('should parse a relative path containing # and ? characters', function() {
-      var omniPath = OmniPath.parse('path\\?to=a\\#file');
+      var omniPath = OmniPath.parse('path\\?to=a\\#file\\with#/slashes');
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: path.join(cwd, 'path\\?to=a\\#file'),
+        href: path.join(cwd, 'path\\?to=a\\#file\\with#\\slashes'),
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path\\?to=a\\#file'),
-        pathname: path.join(cwd, 'path\\?to=a\\#file'),
+        path: path.join(cwd, 'path\\?to=a\\#file\\with#/slashes'),
+        pathname: path.join(cwd, 'path\\?to=a\\#file\\with#/slashes'),
         root: 'C:\\',
-        dir: path.join(cwd, 'path\\?to=a'),
-        base: '#file',
-        name: '#file',
+        dir: path.join(cwd, 'path\\?to=a\\#file\\with#'),
+        base: 'slashes',
+        name: 'slashes',
         ext: '',
         search: '',
         query: {},
@@ -736,40 +1060,40 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
     });
 
     it('should parse a relative path with a query', function() {
-      var omniPath = OmniPath.parse('path\\to\\a\\file.html?foo=bar&biz=baz', {allowFileQuery: true});
+      var omniPath = OmniPath.parse('path\\to\\a\\file.html?foo=\\bar&biz=/baz', {allowFileQuery: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz'),
+        href: path.join(cwd, 'path\\to\\a\\file.html') + '?foo=\\bar&biz=/baz',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz'),
+        path: path.join(cwd, 'path\\to\\a\\file.html') + '?foo=\\bar&biz=/baz',
         pathname: path.join(cwd, 'path\\to\\a\\file.html'),
         root: 'C:\\',
         dir: path.join(cwd, 'path\\to\\a'),
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
         hash: ''
       });
     });
 
     it('should parse a relative path with a hash', function() {
-      var omniPath = OmniPath.parse('path\\to\\a\\direc.tory\\#page1?not=a&query', {allowFileHash: true});
+      var omniPath = OmniPath.parse('path\\to\\a\\direc.tory\\#page1\\?not=a/&query', {allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: path.join(cwd, 'path\\to\\a\\direc.tory\\#page1?not=a&query'),
+        href: path.join(cwd, 'path\\to\\a\\direc.tory') + '\\#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
@@ -785,55 +1109,55 @@ helper.describeIfWindows('OmniPath.parse() - Windows', function() {
         ext: '.tory',
         search: '',
         query: {},
-        hash: '#page1?not=a&query'
+        hash: '#page1\\?not=a/&query'
       });
     });
 
     it('should parse a relative path with a query and hash', function() {
-      var omniPath = OmniPath.parse('path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query', {allowFileQuery: true, allowFileHash: true});
+      var omniPath = OmniPath.parse('path\\to\\a\\file.html?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true});
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz#page1?not=a&query'),
+        href: path.join(cwd, 'path\\to\\a\\file.html') + '?foo=\\bar&biz=/baz#page1\\?not=a/&query',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: path.join(cwd, 'path\\to\\a\\file.html?foo=bar&biz=baz'),
+        path: path.join(cwd, 'path\\to\\a\\file.html') + '?foo=\\bar&biz=/baz',
         pathname: path.join(cwd, 'path\\to\\a\\file.html'),
         root: 'C:\\',
         dir: path.join(cwd, 'path\\to\\a'),
         base: 'file.html',
         name: 'file',
         ext: '.html',
-        search: '?foo=bar&biz=baz',
-        query: {foo: 'bar', biz: 'baz'},
-        hash: '#page1?not=a&query'
+        search: '?foo=\\bar&biz=/baz',
+        query: {foo: '\\bar', biz: '/baz'},
+        hash: '#page1\\?not=a/&query'
       });
     });
   });
 
   describe('special characters', function() {
     it('should parse a path with special characters', function() {
-      var omniPath = OmniPath.parse('C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__');
+      var omniPath = OmniPath.parse('C:/_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__');
 
       helper.inspect(omniPath, {
         isUrl: false,
         isFile: true,
         sep: '\\',
-        href: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
+        href: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
         protocol: '',
         slashes: false,
         auth: '',
         host: '',
         hostname: '',
         port: '',
-        path: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
-        pathname: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
+        path: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
+        pathname: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
         root: 'C:\\',
         dir: 'C:\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
         base: '__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__',
