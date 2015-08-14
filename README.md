@@ -15,7 +15,7 @@ OmniPath
 
 [![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](http://bigstickcarpet.github.io/omnipath)
 
-OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2-options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, and URLs, in Node, IO.js, and web browsers.
+OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, and URLs, in Node, IO.js, and web browsers.
 
 
 Example
@@ -97,9 +97,10 @@ API
 ### `parse(path, [options])`
 Parses a path or URL string and returns an object with all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring).
 
+If the path is relative, then it will be resolved relative to [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd) in Node, or the current page URL when running in a web browser.  Thus, the parsed path will _always_ be absolute, not relative.
+
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
-A POSIX path, Windows path, or URL to be parsed.  This parameter will usually be a string, but can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost)) or an existng `OmniPath` object.<br><br>
-If the path is relative, then it will be resolved relative to [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd) in Node, or the current page when running in a web browser.  Thus, the parsed path will _always_ be absolute, not relative.
+A POSIX path, Windows path, or URL to be parsed.  This parameter will usually be a string, but can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost)) or an existng `OmniPath` object.
 
 - **options** (_optional_) - `object`<br>
 Options that determine how the path is parsed. See [options](#options) below.
@@ -192,6 +193,10 @@ OmniPath.normalize("C:\\dir\\.\\subdir\\..\\file.html");                       /
 ### `dirname(path, [options])`
 Returns the path's directory name.
 
+If the path is relative, then it will be resolved relative to [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd) in Node, or the current page URL when running in a web browser.  Thus, the returned value will _always_ be absolute, not relative.
+
+The result will never have a trailing slash.
+
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 A POSIX path, Windows path, or URL. See [`parse`](#parsepath-options) for details.
 
@@ -203,6 +208,7 @@ Options that determine how the path is parsed. See [options](#options) below.
 ```javascript
 OmniPath.dirname("http://server.com/dir/subdir/file.html");  // => "/dir/subdir"
 OmniPath.dirname("C:\\dir\\subdir\\file.html");              // => "C:\\dir\\subdir"
+OmniPath.dirname("/dir/subdir/");                            // => "/dir"
 ```
 
 
@@ -281,7 +287,7 @@ var path = new OmniPath("/dir/subdir/file.html#page1", {allowFileHash: true});
 
 
 ### `OmniPath` object
-`OmniPath` objects have instances methods corresponding to each of the static methods listed above, such as [`format`](#formatpath-options), [`join`](#joinpath1-path2-options), [`resolve`](#resolvefrom-to-options), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.  When calling these instance methods, you don't need to specify the `path` or `options` parameters, since you already passed those to the [constructor](#OmniPathpath-options).
+`OmniPath` objects have instances methods corresponding to each of the static methods listed above, such as [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.  When calling these instance methods, you don't need to specify the `path` or `options` parameters, since you already passed those to the [constructor](#OmniPathpath-options).
 
 `OmniPath` objects also have all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring), plus a few extra helper properties:
 
