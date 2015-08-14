@@ -13,9 +13,11 @@ OmniPath
 [![Bower](http://img.shields.io/bower/v/omnipath.svg)](#bower)
 [![License](https://img.shields.io/npm/l/omnipath.svg)](LICENSE)
 
-[![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](http://bigstickcarpet.github.io/omnipath)
+[![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](https://saucelabs.com/u/omnipath)
 
-OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, and URLs, in Node, IO.js, and web browsers.
+OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, and URLs.
+
+[Tested](http://bigstickcarpet.github.io/omnipath/tests/) in Node, IO.js, and all modern web browsers on Mac, Windows, and Linux.
 
 
 Example
@@ -46,7 +48,7 @@ path.basename(".html");
 ...
 
 // OmniPath instances have all properties of url.parse() AND path.parse()
-path.protocol;   // e.g. "http:", "file:"
+path.protocol;   // e.g. "http:", "file:", etc.
 path.hostname;   // e.g. "www.google.com"
 path.query;      // e.g. "name=Joe&age=45"
 path.hash;       // e.g. "#page1"
