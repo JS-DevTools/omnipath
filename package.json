@@ -1,6 +1,6 @@
 {
   "name": "omnipath",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "A consolidated API for working with POSIX paths, Windows paths, and URLs",
   "keywords": [
     "file",
