@@ -1,6 +1,6 @@
 OmniPath
 ============================
-#### A consolidated API for working with file paths and URLs on Mac, Linux, Windows, and web browsers
+#### A consolidated API for file paths and URLs
 
 [![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg)](https://travis-ci.org/BigstickCarpet/omnipath)
 [![Dependencies](https://david-dm.org/BigstickCarpet/omnipath.svg)](https://david-dm.org/BigstickCarpet/omnipath)
@@ -99,10 +99,8 @@ API
 ### `parse(path, [options])`
 Parses a path or URL string and returns an object with all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring).
 
-If the path is relative, then it will be resolved relative to [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd) in Node, or the current page URL when running in a web browser.  Thus, the parsed path will _always_ be absolute, not relative.
-
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
-The path to be parsed.  This parameter will usually be a string, but can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost)) or an existng `OmniPath` object.
+The path to be parsed.  This parameter will usually be a string, but can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost)) or an existing `OmniPath` object.
 
 - **options** (_optional_) - `object`<br>
 Options that determine how the path is parsed. See [options](#options) below.
@@ -194,11 +192,7 @@ OmniPath.normalize("C:\\dir\\.\\subdir\\..\\file.html");                       /
 
 
 ### `dirname(path, [options])`
-Returns the path's directory name.
-
-If the path is relative, then it will be resolved relative to [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd) in Node, or the current page URL when running in a web browser.  Thus, the returned value will _always_ be absolute, not relative.
-
-The result will never have a trailing slash.
+Returns the path's directory name. The result will never have a trailing slash.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed. See [`parse`](#parsepath-options) for details.

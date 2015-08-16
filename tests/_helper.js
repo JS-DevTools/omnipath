@@ -5,52 +5,93 @@
    * Helper methods for use in tests
    */
   global.helper = {
-    describeIfBrowser: describeIfBrowser,
-    describeIfPosix: describeIfPosix,
-    describeIfWindows: describeIfWindows,
+    equals: equals,
+    equalsNative: equalsNative,
     server: server,
     page: page,
     dirname: dirname,
     basename: basename,
     name: name,
-    ext: ext,
-    inspect: inspect
+    ext: ext
   };
 
   /**
-   * Runs the given test suite in web browsers. Skips the test suite when running in Node.
+   * Asserts that an {@link OmniPath} object has the same properties and values as the expected object.
+   * Also verifies that the object serializes and deserializes properly.
+   *
+   * @param {OmniPath} omniPath - The {@link OmniPath} object to check
+   * @param {object} expected - The expected properties & values
    */
-  function describeIfBrowser(description, suite) {
-    if (userAgent.isBrowser) {
-      return describe.call(null, description, suite);
-    }
-    else {
-      return describe.skip.call(describe, description, suite);
-    }
+  function equals(omniPath, expected) {
+    // Use default values for anything that wasn't specified
+    var defaults = {
+      isUrl: false,
+      isFS: false,
+      isPosix: false,
+      isWindows: false,
+      isUnc: false,
+      isAbsolute: false,
+      sep: '',
+      href: '',
+      protocol: '',
+      slashes: false,
+      auth: '',
+      host: '',
+      hostname: '',
+      port: '',
+      path: '',
+      pathname: '',
+      root: '',
+      dir: '',
+      base: '',
+      name: '',
+      ext: '',
+      search: '',
+      query: {},
+      hash: ''
+    };
+
+    // Check all property values
+    Object.keys(defaults).forEach(function(key) {
+      if (expected[key] === undefined) {
+        expected[key] = defaults[key];
+      }
+      var actualValue = omniPath[key];
+      var expectedValue = expected[key];
+      expect(actualValue).to.deep.equal(expectedValue, '"' + key + '" does not match');
+    });
+
+    // Test JSON serialization
+    var serialized = JSON.stringify(omniPath);
+    var deserialized = JSON.parse(serialized);
+    expect(deserialized).to.deep.equal(expected);
   }
 
   /**
-   * Runs the given test suite when running in Node on a POSIX system; otherwise, skips the test suite.
+   * Asserts that an {@link OmniPath} object has the same properties and values as the given
+   * native Node object.
+   *
+   * @param {OmniPath} omniPath - The {@link OmniPath} object to check
+   * @param {object} expected - The expected properties & values
    */
-  function describeIfPosix(description, suite) {
-    if (userAgent.isPosix) {
-      return describe.call(null, description, suite);
+  function equalsNative(omniPath, expected) {
+    if (userAgent.isBrowser && !expected) {
+      // We're running in a web browser, so we can't test Node's native behavior
+      return;
     }
-    else {
-      return describe.skip.call(describe, description, suite);
-    }
-  }
 
-  /**
-   * Runs the given test suite when running in Node on a Windows system; otherwise, skips the test suite.
-   */
-  function describeIfWindows(description, suite) {
-    if (userAgent.isWindows) {
-      return describe.call(null, description, suite);
-    }
-    else {
-      return describe.skip.call(describe, description, suite);
-    }
+    Object.keys(expected).forEach(function(key) {
+      var actualValue = omniPath[key];
+      var expectedValue = expected[key];
+
+      if (!actualValue && expectedValue === null) {
+        // Node's native url.parse() uses nulls instead of empty strings, and false booleans.
+        // So ignore this difference.
+        return;
+      }
+
+      expect(actualValue).to.deep.equal(expectedValue, '"' + key + '" does not match Node\'s native behavior');
+    });
   }
 
   /**
@@ -107,62 +148,6 @@
   function ext() {
     var base = basename();
     return base.substr(base.lastIndexOf('.'));
-  }
-
-  /**
-   * Inspects the given {@link OmniPath} object, to ensure that it matches the the expected object,
-   * as well as Node's native behaviors.  Also verifies that the object serializes and deserializes
-   * properly.
-   *
-   * @param {OmniPath} omniPath - The {@link OmniPath} object to check
-   * @param {object} expected - The expected properties & values
-   */
-  function inspect(omniPath, expected) {
-    expect(omniPath).to.be.an.instanceOf(OmniPath);
-
-    // Test each expected property
-    equals(omniPath, expected);
-
-    // Test JSON serialization
-    var serialized = JSON.stringify(omniPath);
-    var deserialized = JSON.parse(serialized);
-    expect(deserialized).to.deep.equal(expected);
-
-    // Make sure OmniPath matches the behavior of Node's native "path" and "url" modules
-    if (userAgent.isNode) {
-      if (omniPath.isFile && (omniPath.query || omniPath.hash)) {
-        // Skip this check, since Node doesn't support file paths with queries or hashes
-        return;
-      }
-      var href = omniPath.format();
-      var parsed = omniPath.isFile ? require('path').parse(href) : require('url').parse(href, true);
-      equals(omniPath, parsed, true);
-    }
-  }
-
-  /**
-   * Asserts that a {@link OmniPath} object has the same values as the expected object.
-   *
-   * @param {OmniPath} omniPath - The {@link OmniPath} object to check
-   * @param {object} expected - The expected properties & values
-   * @param {boolean} [isNative] - Whether the expected object is Node's native behavior
-   */
-  function equals(omniPath, expected, isNative) {
-    Object.keys(expected).forEach(function(key) {
-      var actualValue = omniPath[key];
-      var expectedValue = expected[key];
-
-      if (isNative && actualValue === '' && expectedValue === null) {
-        // OmniPath uses empty strings instead of nulls,
-        // so ignore this difference
-        return;
-      }
-
-      expect(actualValue).to.deep.equal(expectedValue,
-        '"' + key + '" does not match' +
-        (isNative ? ' Node\'s native behavior' : '')
-      );
-    });
   }
 
 })();

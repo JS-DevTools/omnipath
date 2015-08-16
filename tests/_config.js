@@ -20,6 +20,18 @@
     // Expose Browser globals
     window.global = window;
     window.expect = chai.expect;
+    window.path = window.url = {
+      normalize: function() {},
+      join: function() {},
+      resolve: function() {},
+      isAbsolute: function() {},
+      relative: function() {},
+      dirname: function() {},
+      basename: function() {},
+      extname: function() {},
+      parse: function() {},
+      format: function() {}
+    };
     window.userAgent = {
       isNode: false,
       isWindows: false,
@@ -33,7 +45,7 @@
     global.expect = require('chai').expect;
     global.sinon = require('sinon');
     global.path = require('path');
-    global.cwd = process.cwd();
+    global.url = require('url');
 
     global.userAgent = {
       isNode: true,

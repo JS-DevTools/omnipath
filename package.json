@@ -1,7 +1,7 @@
 {
   "name": "omnipath",
   "version": "1.0.0-beta.4",
-  "description": "A consolidated API for working with file paths and URLs on Mac, Linux, Windows, and web browsers",
+  "description": "A consolidated API for file paths and URLs",
   "keywords": [
     "file",
     "path",
