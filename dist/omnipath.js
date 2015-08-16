@@ -8,12 +8,13 @@
  */
 'use strict';
 
-var path            = require('path'),
-    url             = require('url'),
-    querystring     = require('querystring'),
-    isWindows       = /^win/.test(process.platform),
-    protocolPattern = /^[a-z0-9.+-]+:/i,
-    windowsPattern  = /^[a-z]:(\\|\/(?!\/))/i;  // This distinguishes between Windows paths ("C:\") and single-letter protocols ("X://")
+var path                = require('path'),
+    url                 = require('url'),
+    querystring         = require('querystring'),
+    isWindows           = /^win/.test(process.platform),
+    protocolPattern     = /^[a-z0-9.+-]+:/i,
+    windowsDrivePattern = /^[a-z]:(\\|\/(?!\/))/i, // This distinguishes between Windows drive letters ("C:\") and single-letter protocols ("X://")
+    windowsUncPattern   = /^[\\\/]{2}[^\\\/]+([\\\/]+[^\\\/]+)?/;
 
 module.exports = OmniPath;
 
@@ -189,12 +190,49 @@ OmniPath.prototype.extname = function() {
   return this.ext;
 };
 
-OmniPath.join = function(p1, p2, options) {
+/**
+ * Joins all arguments together, and normalizes the resulting path.
+ *
+ * @param   {...string|...Url|...OmniPath}  p         - The paths (or path parts) to join
+ * @param   {Options}                       [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPath.join = function(p, options) {
+  var paths = [];
+  var result = '';
 
+  // Check if the last parameter is an options object
+  options = arguments[arguments.length - 1];
+  if (options && typeof(options) === 'object' && !(options instanceof url.Url) && !(options instanceof OmniPath)) {
+    // The last parameter is the options object
+    paths = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+  }
+  else {
+    // There is no options argument.
+    paths = Array.prototype.slice.call(arguments);
+  }
+
+  paths.forEach(function(p) {
+    if (typeof(p) === 'string') {
+    }
+    else if (p instanceof url.Url) {
+    }
+    else if (p instanceof OmniPath) {
+    }
+    else {
+      throw new Error('Expected a file path or URL, but got ' + typeof(p) + ' ' + p);
+    }
+  });
 };
 
-OmniPath.prototype.join = function(p2) {
-
+/**
+ * Joins all arguments to this path, and normalizes the resulting path.
+ *
+ * @param   {...string|...Url|...OmniPath} p - The paths (or path parts) to join to this path
+ * @returns {string}
+ */
+OmniPath.prototype.join = function(p) {
+  return OmniPath.join.apply(OmniPath, [this].concat(arguments));
 };
 
 /**
@@ -387,13 +425,13 @@ OmniPath.prototype.parse = function(p, options) {
     // We're running in a browser, so treat all paths as a URLs
     parseUrl(this, url.parse(url.resolve(window.location.href, p), true));
   }
-  else if (isWindows && startsWithSeparator(p)) {
-    // It's drive-relative Windows path (e.g. "\\dir\\subdir" => "C:\\dir\\subdir")
-    parseRelativeFile(this, OmniPath.cwd(), p, options);
-  }
   else if (getRoot(p)) {
     // It's an absolute file path
     parseFile(this, p, options);
+  }
+  else if (isWindows && startsWithSeparator(p)) {
+    // It's drive-relative Windows path (e.g. "\\dir\\subdir" => "C:\\dir\\subdir")
+    parseRelativeFile(this, OmniPath.cwd(), p, options);
   }
   else if (protocolPattern.test(p)) {
     // It's a full URL (e.g. https://host.com)
@@ -663,21 +701,26 @@ function copy(src, dest) {
  * Determines whether the first character(s) of the given path are its root.
  * If they are, then the root character(s) are returned.
  *
- * @param   {string} p - A path, such as "/foo/bar" or "C:\foo\bar"
+ * @param   {string} p - A path, such as "/foo/bar" or "C:\foo\bar" or "\\server\\dir"
  * @returns {string}
  */
 function getRoot(p) {
-  // Check for an absolute URL or POSIX path
-  if (p[0] === '/') {
-    return '/';
-  }
-
   if (isWindows) {
-    // Check for an absolute Windows path
-    var match = windowsPattern.exec(p);
+    var match = windowsDrivePattern.exec(p);
     if (match) {
+      // It's an absolute Windows drive path
       return match[0];
     }
+
+    match = windowsUncPattern.exec(p);
+    if (match) {
+      // It's a UNC path
+      return match[0];
+    }
+  }
+  else if (p[0] === '/') {
+    // It's an absolute POSIX path
+    return '/';
   }
 
   return '';
@@ -687,7 +730,7 @@ function getRoot(p) {
  * Determines whether
  */
 function isAbsoluteUrl(p) {
-  return protocolPattern.test(p) && !windowsPattern.test(p);
+  return protocolPattern.test(p) && !windowsDrivePattern.test(p);
 }
 
 /**

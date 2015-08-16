@@ -11,7 +11,7 @@
   </head>
   <body>
     <div id="mocha">
-    <small>Note: Some tests are skipped in web browsers, because they require Node.</small>
+    <small>Note: POSIX and Windows tests require Node, so they are skipped in web browsers.</small>
     </div>
 
     <!-- Third-Party Libraries -->
@@ -27,6 +27,8 @@
     <script src="_helper.js"></script>
     <script src="basename.spec.js"></script>
     <script src="dirname.spec.js"></script>
+    <script src="extname.spec.js"></script>
+    <script src="join.spec.js"></script>
     <script src="parse-url.spec.js"></script>
     <script src="parse-posix.spec.js"></script>
     <script src="parse-windows.spec.js"></script>

@@ -1,6 +1,6 @@
 {
   "name": "omnipath",
-  "description": "A consolidated API for working with POSIX paths, Windows paths, and URLs",
+  "description": "A consolidated API for working with file paths and URLs on Mac, Linux, Windows, and web browsers",
   "keywords": [
     "file",
     "path",
