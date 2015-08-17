@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var url             = require('url'),
+var path            = require('path'),
     util            = require('./util'),
     protocolPattern = /^[a-z0-9.+-]+:\/\//i;
 
@@ -16,7 +16,7 @@ module.exports = OmniPath;
 
 /**
  * A parsed URL or file path. This object has the same properties as a parsed URL (via {@link url.parse},
- * plus the properties of a parsed file path (via {@link path.parse}.
+ * plus the properties of a parsed file path (via {@link posix.parse}.
  *
  * Parsed URL:  {@link https://nodejs.org/api/url.html#url_url}
  * Parsed Path: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
@@ -64,7 +64,7 @@ OmniPath.dirname = OmniPath.dir;
 OmniPath.extname = OmniPath.ext;
 
 /**
- * Returns the last portion of the given path or URL. Similar to Node's {@link path.basename}.
+ * Returns the last portion of the given path or URL. Similar to Node's {@link posix.basename}.
  *
  * {@link https://nodejs.org/api/path.html#path_path_basename_p_ext}
  *
@@ -368,12 +368,12 @@ OmniPath.cwd = function() {
   }
 
   var Class = this;
-  return new Class(cwd);
+  return new Class(cwd);  // jscs:disable jsDoc
 };
 
 /**
  * Parses the given path or URL, and returns a {@link OmniPath} object. Similar to Node's
- * {@link path.parse} and {@link url.parse}.
+ * {@link posix.parse} and {@link url.parse}.
  *
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
@@ -389,7 +389,7 @@ OmniPath.parse = function(p, options) {
 
 /**
  * Parses the given path or URL, and sets the corresponding properties of this {@link OmniPath} object.
- * Similar to Node's {@link path.parse} and {@link url.parse}.
+ * Similar to Node's {@link posix.parse} and {@link url.parse}.
  *
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
@@ -476,11 +476,643 @@ OmniPath.Url = OmniPath.url = require('./url');
 
 }).call(this,require('_process'))
 
-},{"./posix":2,"./url":3,"./util":4,"./windows":5,"_process":7,"url":12}],2:[function(require,module,exports){
+},{"./posix":3,"./url":4,"./util":5,"./windows":6,"_process":8,"path":2}],2:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 'use strict';
 
-var path     = require('path'),
-    url      = require('url'),
+
+var isWindows = process.platform === 'win32';
+var util = require('util');
+
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  var res = [];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+
+    // ignore empty parts
+    if (!p || p === '.')
+      continue;
+
+    if (p === '..') {
+      if (res.length && res[res.length - 1] !== '..') {
+        res.pop();
+      } else if (allowAboveRoot) {
+        res.push('..');
+      }
+    } else {
+      res.push(p);
+    }
+  }
+
+  return res;
+}
+
+// returns an array with empty elements removed from either end of the input
+// array or the original array if no elements need to be removed
+function trimArray(arr) {
+  var lastIndex = arr.length - 1;
+  var start = 0;
+  for (; start <= lastIndex; start++) {
+    if (arr[start])
+      break;
+  }
+
+  var end = lastIndex;
+  for (; end >= 0; end--) {
+    if (arr[end])
+      break;
+  }
+
+  if (start === 0 && end === lastIndex)
+    return arr;
+  if (start > end)
+    return [];
+  return arr.slice(start, end + 1);
+}
+
+// Regex to split a windows path into three parts: [*, device, slash,
+// tail] windows-only
+var splitDeviceRe =
+    /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
+
+// Regex to split the tail part of the above into [*, dir, basename, ext]
+var splitTailRe =
+    /^([\s\S]*?)((?:\.{1,2}|[^\\\/]+?|)(\.[^.\/\\]*|))(?:[\\\/]*)$/;
+
+var win32 = {};
+
+// Function to split a filename into [root, dir, basename, ext]
+function win32SplitPath(filename) {
+  // Separate device+slash from tail
+  var result = splitDeviceRe.exec(filename),
+      device = (result[1] || '') + (result[2] || ''),
+      tail = result[3] || '';
+  // Split the tail into dir, basename and extension
+  var result2 = splitTailRe.exec(tail),
+      dir = result2[1],
+      basename = result2[2],
+      ext = result2[3];
+  return [device, dir, basename, ext];
+}
+
+function win32StatPath(path) {
+  var result = splitDeviceRe.exec(path),
+      device = result[1] || '',
+      isUnc = !!device && device[1] !== ':';
+  return {
+    device: device,
+    isUnc: isUnc,
+    isAbsolute: isUnc || !!result[2], // UNC paths are always absolute
+    tail: result[3]
+  };
+}
+
+function normalizeUNCRoot(device) {
+  return '\\\\' + device.replace(/^[\\\/]+/, '').replace(/[\\\/]+/g, '\\');
+}
+
+// path.resolve([from ...], to)
+win32.resolve = function() {
+  var resolvedDevice = '',
+      resolvedTail = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1; i--) {
+    var path;
+    if (i >= 0) {
+      path = arguments[i];
+    } else if (!resolvedDevice) {
+      path = process.cwd();
+    } else {
+      // Windows has the concept of drive-specific current working
+      // directories. If we've resolved a drive letter but not yet an
+      // absolute path, get cwd for that drive. We're sure the device is not
+      // an unc path at this points, because unc paths are always absolute.
+      path = process.env['=' + resolvedDevice];
+      // Verify that a drive-local cwd was found and that it actually points
+      // to our drive. If not, default to the drive's root.
+      if (!path || path.substr(0, 3).toLowerCase() !==
+          resolvedDevice.toLowerCase() + '\\') {
+        path = resolvedDevice + '\\';
+      }
+    }
+
+    // Skip empty and invalid entries
+    if (!util.isString(path)) {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    var result = win32StatPath(path),
+        device = result.device,
+        isUnc = result.isUnc,
+        isAbsolute = result.isAbsolute,
+        tail = result.tail;
+
+    if (device &&
+        resolvedDevice &&
+        device.toLowerCase() !== resolvedDevice.toLowerCase()) {
+      // This path points to another device so it is not applicable
+      continue;
+    }
+
+    if (!resolvedDevice) {
+      resolvedDevice = device;
+    }
+    if (!resolvedAbsolute) {
+      resolvedTail = tail + '\\' + resolvedTail;
+      resolvedAbsolute = isAbsolute;
+    }
+
+    if (resolvedDevice && resolvedAbsolute) {
+      break;
+    }
+  }
+
+  // Convert slashes to backslashes when `resolvedDevice` points to an UNC
+  // root. Also squash multiple slashes into a single one where appropriate.
+  if (isUnc) {
+    resolvedDevice = normalizeUNCRoot(resolvedDevice);
+  }
+
+  // At this point the path should be resolved to a full absolute path,
+  // but handle relative paths to be safe (might happen when process.cwd()
+  // fails)
+
+  // Normalize the tail path
+  resolvedTail = normalizeArray(resolvedTail.split(/[\\\/]+/),
+                                !resolvedAbsolute).join('\\');
+
+  return (resolvedDevice + (resolvedAbsolute ? '\\' : '') + resolvedTail) ||
+         '.';
+};
+
+
+win32.normalize = function(path) {
+  var result = win32StatPath(path),
+      device = result.device,
+      isUnc = result.isUnc,
+      isAbsolute = result.isAbsolute,
+      tail = result.tail,
+      trailingSlash = /[\\\/]$/.test(tail);
+
+  // Normalize the tail path
+  tail = normalizeArray(tail.split(/[\\\/]+/), !isAbsolute).join('\\');
+
+  if (!tail && !isAbsolute) {
+    tail = '.';
+  }
+  if (tail && trailingSlash) {
+    tail += '\\';
+  }
+
+  // Convert slashes to backslashes when `device` points to an UNC root.
+  // Also squash multiple slashes into a single one where appropriate.
+  if (isUnc) {
+    device = normalizeUNCRoot(device);
+  }
+
+  return device + (isAbsolute ? '\\' : '') + tail;
+};
+
+
+win32.isAbsolute = function(path) {
+  return win32StatPath(path).isAbsolute;
+};
+
+win32.join = function() {
+  var paths = [];
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i];
+    if (!util.isString(arg)) {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    if (arg) {
+      paths.push(arg);
+    }
+  }
+
+  var joined = paths.join('\\');
+
+  // Make sure that the joined path doesn't start with two slashes, because
+  // normalize() will mistake it for an UNC path then.
+  //
+  // This step is skipped when it is very clear that the user actually
+  // intended to point at an UNC path. This is assumed when the first
+  // non-empty string arguments starts with exactly two slashes followed by
+  // at least one more non-slash character.
+  //
+  // Note that for normalize() to treat a path as an UNC path it needs to
+  // have at least 2 components, so we don't filter for that here.
+  // This means that the user can use join to construct UNC paths from
+  // a server name and a share name; for example:
+  //   path.join('//server', 'share') -> '\\\\server\\share\')
+  if (!/^[\\\/]{2}[^\\\/]/.test(paths[0])) {
+    joined = joined.replace(/^[\\\/]{2,}/, '\\');
+  }
+
+  return win32.normalize(joined);
+};
+
+
+// path.relative(from, to)
+// it will solve the relative path from 'from' to 'to', for instance:
+// from = 'C:\\orandea\\test\\aaa'
+// to = 'C:\\orandea\\impl\\bbb'
+// The output of the function should be: '..\\..\\impl\\bbb'
+win32.relative = function(from, to) {
+  from = win32.resolve(from);
+  to = win32.resolve(to);
+
+  // windows is not case sensitive
+  var lowerFrom = from.toLowerCase();
+  var lowerTo = to.toLowerCase();
+
+  var toParts = trimArray(to.split('\\'));
+
+  var lowerFromParts = trimArray(lowerFrom.split('\\'));
+  var lowerToParts = trimArray(lowerTo.split('\\'));
+
+  var length = Math.min(lowerFromParts.length, lowerToParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (lowerFromParts[i] !== lowerToParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  if (samePartsLength == 0) {
+    return to;
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < lowerFromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('\\');
+};
+
+
+win32._makeLong = function(path) {
+  // Note: this will *probably* throw somewhere.
+  if (!util.isString(path))
+    return path;
+
+  if (!path) {
+    return '';
+  }
+
+  var resolvedPath = win32.resolve(path);
+
+  if (/^[a-zA-Z]\:\\/.test(resolvedPath)) {
+    // path is local filesystem path, which needs to be converted
+    // to long UNC path.
+    return '\\\\?\\' + resolvedPath;
+  } else if (/^\\\\[^?.]/.test(resolvedPath)) {
+    // path is network UNC path, which needs to be converted
+    // to long UNC path.
+    return '\\\\?\\UNC\\' + resolvedPath.substring(2);
+  }
+
+  return path;
+};
+
+
+win32.dirname = function(path) {
+  var result = win32SplitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+win32.basename = function(path, ext) {
+  var f = win32SplitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+win32.extname = function(path) {
+  return win32SplitPath(path)[3];
+};
+
+
+win32.format = function(pathObject) {
+  if (!util.isObject(pathObject)) {
+    throw new TypeError(
+        "Parameter 'pathObject' must be an object, not " + typeof pathObject
+    );
+  }
+
+  var root = pathObject.root || '';
+
+  if (!util.isString(root)) {
+    throw new TypeError(
+        "'pathObject.root' must be a string or undefined, not " +
+        typeof pathObject.root
+    );
+  }
+
+  var dir = pathObject.dir;
+  var base = pathObject.base || '';
+  if (!dir) {
+    return base;
+  }
+  if (dir[dir.length - 1] === win32.sep) {
+    return dir + base;
+  }
+  return dir + win32.sep + base;
+};
+
+
+win32.parse = function(pathString) {
+  if (!util.isString(pathString)) {
+    throw new TypeError(
+        "Parameter 'pathString' must be a string, not " + typeof pathString
+    );
+  }
+  var allParts = win32SplitPath(pathString);
+  if (!allParts || allParts.length !== 4) {
+    throw new TypeError("Invalid path '" + pathString + "'");
+  }
+  return {
+    root: allParts[0],
+    dir: allParts[0] + allParts[1].slice(0, -1),
+    base: allParts[2],
+    ext: allParts[3],
+    name: allParts[2].slice(0, allParts[2].length - allParts[3].length)
+  };
+};
+
+
+win32.sep = '\\';
+win32.delimiter = ';';
+
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var posix = {};
+
+
+function posixSplitPath(filename) {
+  return splitPathRe.exec(filename).slice(1);
+}
+
+
+// path.resolve([from ...], to)
+// posix version
+posix.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (!util.isString(path)) {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path[0] === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(resolvedPath.split('/'),
+                                !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+posix.normalize = function(path) {
+  var isAbsolute = posix.isAbsolute(path),
+      trailingSlash = path && path[path.length - 1] === '/';
+
+  // Normalize the path
+  path = normalizeArray(path.split('/'), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+posix.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+posix.join = function() {
+  var path = '';
+  for (var i = 0; i < arguments.length; i++) {
+    var segment = arguments[i];
+    if (!util.isString(segment)) {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    if (segment) {
+      if (!path) {
+        path += segment;
+      } else {
+        path += '/' + segment;
+      }
+    }
+  }
+  return posix.normalize(path);
+};
+
+
+// path.relative(from, to)
+// posix version
+posix.relative = function(from, to) {
+  from = posix.resolve(from).substr(1);
+  to = posix.resolve(to).substr(1);
+
+  var fromParts = trimArray(from.split('/'));
+  var toParts = trimArray(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+
+posix._makeLong = function(path) {
+  return path;
+};
+
+
+posix.dirname = function(path) {
+  var result = posixSplitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+posix.basename = function(path, ext) {
+  var f = posixSplitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+posix.extname = function(path) {
+  return posixSplitPath(path)[3];
+};
+
+
+posix.format = function(pathObject) {
+  if (!util.isObject(pathObject)) {
+    throw new TypeError(
+        "Parameter 'pathObject' must be an object, not " + typeof pathObject
+    );
+  }
+
+  var root = pathObject.root || '';
+
+  if (!util.isString(root)) {
+    throw new TypeError(
+        "'pathObject.root' must be a string or undefined, not " +
+        typeof pathObject.root
+    );
+  }
+
+  var dir = pathObject.dir ? pathObject.dir + posix.sep : '';
+  var base = pathObject.base || '';
+  return dir + base;
+};
+
+
+posix.parse = function(pathString) {
+  if (!util.isString(pathString)) {
+    throw new TypeError(
+        "Parameter 'pathString' must be a string, not " + typeof pathString
+    );
+  }
+  var allParts = posixSplitPath(pathString);
+  if (!allParts || allParts.length !== 4) {
+    throw new TypeError("Invalid path '" + pathString + "'");
+  }
+  allParts[1] = allParts[1] || '';
+  allParts[2] = allParts[2] || '';
+  allParts[3] = allParts[3] || '';
+
+  return {
+    root: allParts[0],
+    dir: allParts[0] + allParts[1].slice(0, -1),
+    base: allParts[2],
+    ext: allParts[3],
+    name: allParts[2].slice(0, allParts[2].length - allParts[3].length)
+  };
+};
+
+
+posix.sep = '/';
+posix.delimiter = ':';
+
+
+if (isWindows)
+  module.exports = win32;
+else /* posix */
+  module.exports = posix;
+
+module.exports.posix = posix;
+module.exports.win32 = win32;
+
+}).call(this,require('_process'))
+
+},{"_process":8,"util":15}],3:[function(require,module,exports){
+'use strict';
+
+var posix    = require('path').posix || require('./path').posix,
     OmniPath = require('./index'),
     util     = require('./util');
 
@@ -491,8 +1123,8 @@ function PosixPath(p, options) {
 }
 
 util.inherits(PosixPath, OmniPath);
-PosixPath.sep = path.sep;
-PosixPath.delimiter = path.delimiter;
+PosixPath.sep = posix.sep;
+PosixPath.delimiter = posix.delimiter;
 
 /**
  * Returns the last portion of the path or URL
@@ -501,7 +1133,7 @@ PosixPath.delimiter = path.delimiter;
  * @returns {string}
  */
 PosixPath.prototype.basename = function(ext) {
-  return path.basename(this.base, ext);
+  return posix.basename(this.base, ext);
 };
 
 /**
@@ -514,12 +1146,12 @@ PosixPath.prototype.parse = function(p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
   if (p) {
     var split = util.splitFile(p, options);
-    var parsed = path.parse(split.pathname);
+    var parsed = posix.parse(split.pathname);
 
     this.isFS = true;
     this.isPosix = true;
-    this.isAbsolute = path.isAbsolute(p);
-    this.sep = path.sep;
+    this.isAbsolute = posix.isAbsolute(split.pathname);
+    this.sep = posix.sep;
     this.href = p;
     this.path = split.pathname + split.search;
     this.pathname = split.pathname;
@@ -534,10 +1166,10 @@ PosixPath.prototype.parse = function(p, options) {
   }
 };
 
-},{"./index":1,"./util":4,"path":6,"url":12}],3:[function(require,module,exports){
+},{"./index":1,"./path":2,"./util":5,"path":2}],4:[function(require,module,exports){
 'use strict';
 
-var path     = require('path').posix || require('path'),
+var posix    = require('path').posix || require('./path').posix,
     url      = require('url'),
     OmniPath = require('./index'),
     util     = require('./util');
@@ -560,62 +1192,27 @@ UrlPath.sep = '/';
 UrlPath.prototype.parse = function(p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
   if (p) {
-    var parsed = url.parse(p, true);
-    var split = splitPathname(parsed.pathname);
+    var parsedUrl = url.parse(p, true);
+    var parsedPath = posix.parse(parsedUrl.pathname);
 
     this.isUrl = true;
-    this.isAbsolute = !!parsed.protocol || !!parsed.host || path.isAbsolute(parsed.pathname);
+    this.isAbsolute = !!parsedUrl.protocol || !!parsedUrl.host || posix.isAbsolute(parsedUrl.pathname);
     this.sep = '/';
-    this.href = parsed.href || '';
-    this.path = parsed.path || '';
-    this.pathname = parsed.pathname || '';
-    this.root = split.root;
-    this.dir = split.dir;
-    this.base = split.base;
-    this.name = split.name;
-    this.ext = split.ext;
-    this.search = parsed.search || '';
-    this.query = parsed.query || {};
-    this.hash = parsed.hash || '';
+    this.href = parsedUrl.href || '';
+    this.path = parsedUrl.path || '';
+    this.pathname = parsedUrl.pathname || '';
+    this.root = parsedPath.root;
+    this.dir = parsedPath.dir;
+    this.base = parsedPath.base;
+    this.name = parsedPath.name;
+    this.ext = parsedPath.ext;
+    this.search = parsedUrl.search || '';
+    this.query = parsedUrl.query || {};
+    this.hash = parsedUrl.hash || '';
   }
 };
 
-/**
- * Splits the given pathname into root, dir, base, name, and ext.
- *
- * @param {string} p - The pathname to split
- * @returns {object}
- */
-function splitPathname(p) {
-  // If the `path.parse()` method exists, then just use it
-  if (typeof(path.parse) === 'function') {
-    return path.parse(p);
-  }
-
-  // `path.parse()` doesn't exist, so we have to do it manually
-  var root = '', dir = '', base = '', ext = '', name = '';
-  if (p) {
-    root = p[0] === '/' ? '/' : '';
-    dir = path.dirname(p);
-    if (dir === '.') {
-      // Difference between `path.dirname()` and `path.parse()`
-      dir = '';
-    }
-    base = path.basename(p);
-    ext = path.extname(p);
-    name = path.basename(p, ext);
-  }
-
-  return {
-    root: root,
-    dir: dir,
-    base: base,
-    name: name,
-    ext: ext
-  };
-}
-
-},{"./index":1,"./util":4,"path":6,"url":12}],4:[function(require,module,exports){
+},{"./index":1,"./path":2,"./util":5,"path":2,"url":13}],5:[function(require,module,exports){
 'use strict';
 
 var querystring = require('querystring');
@@ -668,7 +1265,7 @@ function inherits(Child, Super) {
   staticMembers.forEach(function(staticMember) {
     if (typeof(Super[staticMember]) === 'function') {
       Child[staticMember] = function() {
-        Super[staticMember].apply(Child, arguments);
+        return Super[staticMember].apply(Child, arguments);
       };
     }
     else {
@@ -733,13 +1330,13 @@ function splitFile(file, options) {
   };
 }
 
-},{"querystring":11}],5:[function(require,module,exports){
+},{"querystring":12}],6:[function(require,module,exports){
 'use strict';
 
-var path     = require('path'),
-    url      = require('url'),
-    OmniPath = require('./index'),
-    util     = require('./util');
+var win32      = require('path').win32 || require('./path').win32,
+    OmniPath   = require('./index'),
+    util       = require('./util'),
+    uncPattern = /^[\\\/]{2}[^\\\/]+([\\\/]+[^\\\/]+)?/;
 
 module.exports = WindowsPath;
 
@@ -748,993 +1345,76 @@ function WindowsPath(p, options) {
 }
 
 util.inherits(WindowsPath, OmniPath);
+WindowsPath.sep = win32.sep;
+WindowsPath.delimiter = win32.delimiter;
 
-//
-//var path                = require('path'),
-//    url                 = require('url'),
-//    querystring         = require('querystring'),
-//    isWindows           = /^win/.test(process.platform),
-//    protocolPattern     = /^[a-z0-9.+-]+:/i,
-//    windowsDrivePattern = /^[a-z]:(\\|\/(?!\/))/i, // This distinguishes between Windows drive letters ("C:\") and single-letter protocols ("X://")
-//    windowsUncPattern   = /^[\\\/]{2}[^\\\/]+([\\\/]+[^\\\/]+)?/;
-//
-//module.exports = OmniPath;
-//
-///**
-// * A parsed URL or file path. This object has the same properties as a parsed URL (via {@link url.parse},
-// * plus the properties of a parsed file path (via {@link path.parse}.
-// *
-// * Parsed URL:  {@link https://nodejs.org/api/url.html#url_url}
-// * Parsed Path: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
-// *
-// * @param {string|Url|OmniPath} p
-// * - The file path or URL to parse. If the path/url is relative,
-// * then it will be resolved relative to {@link OmniPath#cwd}
-// *
-// * @param {PathOptions} [options]
-// * - Options that determine whether "#" and "?" in file paths should be interpreted
-// * as hashes and queries, like URLs, or as part of the file path.
-// *
-// * @constructor
-// */
-//function OmniPath(p, options) {
-//  this._options = options;
-//
-//  this.isUrl = false;
-//  this.isFile = false;
-//  this.sep = '';
-//  this.href = '';
-//  this.protocol = '';
-//  this.slashes = false;
-//  this.auth = '';
-//  this.host = '';
-//  this.hostname = '';
-//  this.port = '';
-//  this.path = '';
-//  this.pathname = '';
-//  this.root = '';
-//  this.dir = '';
-//  this.base = '';
-//  this.name = '';
-//  this.ext = '';
-//  this.search = '';
-//  this.query = {};
-//  this.hash = '';
-//
-//  if (typeof(p) === 'string') {
-//    this.parse(p, options);
-//  }
-//  else if (p instanceof url.Url) {
-//    this.parse(p.format(), options);
-//  }
-//  else if (p instanceof OmniPath) {
-//    copy(p, this);
-//  }
-//  else {
-//    throw new Error('Expected a file path or URL, but got ' + typeof(p) + ' ' + p);
-//  }
-//}
-//
-///**
-// * Returns an POJO (plain old JavaScript object) for serialization as JSON.
-// *
-// * @returns {object}
-// */
-//OmniPath.prototype.toJSON = function() {
-//  return {
-//    isUrl: this.isUrl,
-//    isFile: this.isFile,
-//    sep: this.sep,
-//    href: this.href,
-//    protocol: this.protocol,
-//    slashes: this.slashes,
-//    auth: this.auth,
-//    host: this.host,
-//    hostname: this.hostname,
-//    port: this.port,
-//    path: this.path,
-//    pathname: this.pathname,
-//    root: this.root,
-//    dir: this.dir,
-//    base: this.base,
-//    name: this.name,
-//    ext: this.ext,
-//    search: this.search,
-//    query: this.query,
-//    hash: this.hash
-//  };
-//};
-//
-///**
-// * Return the directory name of the given path or URL. Similar to Node's {@link path.dirname}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_dirname_p}
-// *
-// * @param   {string|Url|OmniPath} p         - The file path or URL to parse
-// * @param   {PathOptions}         [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.dirname = function(p, options) {
-//  return new OmniPath(p, options).dirname();
-//};
-//
-///**
-// * Return the directory name. This is the same as {@link OmniPath#dir}, but is included here for
-// * consistency with Node's {@link path.dirname}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_dirname_p}
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.dirname = function() {
-//  return this.dir;
-//};
-//
-///**
-// * Return the last portion of the given path or URL. Similar to Node's {@link path.basename}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_basename_p_ext}
-// *
-// * @param   {string|Url|OmniPath}  p          - The file path or URL to parse
-// * @param   {string}               [ext]      - The portion of the file extension to leave off
-// * @param   {PathOptions}          [options]  - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.basename = function(p, ext, options) {
-//  if (typeof(ext) === 'object') {
-//    options = ext;
-//    ext = undefined;
-//  }
-//  return new OmniPath(p, options).basename(ext);
-//};
-//
-///**
-// * Return the last portion of the path or URL. Similar to Node's {@link path.basename}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_basename_p_ext}
-// *
-// * @param   {string} [ext] - The portion of the file extension to leave off
-// * @returns {string}
-// */
-//OmniPath.prototype.basename = function(ext) {
-//  if (ext && this.base.substr(-ext.length) === ext) {
-//    return this.base.substr(0, this.base.length - ext.length);
-//  }
-//  else {
-//    return this.base;
-//  }
-//};
-//
-///**
-// * Return the extension of the given path or URL, from the last "." to the end of the {@link OmniPath#base}.
-// * Similar to Node's {@link path.extname}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_extname_p}
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.extname = function(p, options) {
-//  return new OmniPath(p, options).ext;
-//};
-//
-///**
-// * Return the extension, from the last "." to the end of the {@link OmniPath#base}.
-// * This is the same as {@link OmniPath#ext}, but is included here for consistency
-// * with Node's {@link path.extname}.
-// *
-// * {@link https://nodejs.org/api/path.html#path_path_extname_p}
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.extname = function() {
-//  return this.ext;
-//};
-//
-///**
-// * Joins all arguments together, and normalizes the resulting path.
-// *
-// * @param   {...string|...Url|...OmniPath}  p         - The paths (or path parts) to join
-// * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.join = function(p, options) {
-//  var paths = [];
-//  var result = '';
-//
-//  // Check if the last parameter is an options object
-//  options = arguments[arguments.length - 1];
-//  if (options && typeof(options) === 'object' && !(options instanceof url.Url) && !(options instanceof OmniPath)) {
-//    // The last parameter is the options object
-//    paths = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
-//  }
-//  else {
-//    // There is no options argument.
-//    paths = Array.prototype.slice.call(arguments);
-//  }
-//
-//  paths.forEach(function(p) {
-//    if (typeof(p) === 'string') {
-//    }
-//    else if (p instanceof url.Url) {
-//    }
-//    else if (p instanceof OmniPath) {
-//    }
-//    else {
-//      throw new Error('Expected a file path or URL, but got ' + typeof(p) + ' ' + p);
-//    }
-//  });
-//};
-//
-///**
-// * Joins all arguments to this path, and normalizes the resulting path.
-// *
-// * @param   {...string|...Url|...OmniPath} p - The paths (or path parts) to join to this path
-// * @returns {string}
-// */
-//OmniPath.prototype.join = function(p) {
-//  return OmniPath.join.apply(OmniPath, [this].concat(arguments));
-//};
-//
-///**
-// * Resolves `to` to an absolute path. Similar to Node's {@link path.resolve} or {@link url.resolve}.
-// *
-// * path.resolve: {@link https://nodejs.org/api/path.html#path_path_resolve_from_to}
-// * url.resolve {@link https://nodejs.org/api/url.html#url_url_resolve_from_to}
-// *
-// * @param   {string|Url|OmniPath}  from
-// * - The file path or URL to resolve from. If the path/url is relative,
-// * then it will be resolved relative to {@link OmniPath#cwd}.
-// *
-// * @param   {string|Url|OmniPath}  to
-// * - The file path or URL to resolve, relative to `from`.
-// *
-// * @param   {PathOptions} options
-// * - Options that determine how paths are parsed
-// *
-// * @returns {string}
-// */
-//OmniPath.resolve = function(from, to, options) {
-//  return new OmniPath(from, options).resolve(to, options);
-//};
-//
-///**
-// * Resolves the given path or url, relative to this one. Similar to Node's {@link path.resolve}
-// * or {@link url.resolve}.
-// *
-// * path.resolve:  {@link https://nodejs.org/api/path.html#path_path_resolve_from_to}
-// * url.resolve    {@link https://nodejs.org/api/url.html#url_url_resolve_from_to}
-// *
-// * @param   {string|Url|OmniPath}   relative  - The file path or URL to resolve, relative to this one
-// * @param   {PathOptions}           options   - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.prototype.resolve = function(relative, options) {
-//  var resolved;
-//  options = options || this._options;
-//
-//  if (relative instanceof OmniPath) {
-//    // OmniPath objects are always absolute, so just return it as-is
-//    return relative.format();
-//  }
-//
-//  if (relative instanceof url.Url) {
-//    // Urls can be absolute or relative, so treat it like a string
-//    relative = relative.format();
-//  }
-//
-//  if (this.isUrl || isAbsoluteUrl(relative)) {
-//    // The result will be a URL if `relative` is any of:
-//    //  - an absolute url (e.g. "http://www.google.com")
-//    //  - a relative url  (e.g. "../path/file.html")
-//    //  - an absolute POSIX path (e.g. "/path/file")
-//    //  - a relative POSIX path (e.g. "path/file")
-//    //  - a relative Windows path (e.g. "path\\file.txt")
-//    //
-//    // The result will be a file path if `relative` is:
-//    //  - an absolute Windows path (e.g. "C:\\path\\file.txt")
-//    resolved = url.resolve(this.format(), relative);
-//  }
-//  else {
-//    // The result will always be a file path
-//    var parsed = parseRelativeFile({}, this, relative, options);
-//    resolved = OmniPath.prototype.format.call(parsed);
-//  }
-//
-//  return resolved;
-//};
-//
-///**
-// * Returns the given path or URL as a formatted string. Similar to Node's {@link path.format} or {@link url.format}.
-// *
-// * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
-// * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.format = function(p, options) {
-//  return new OmniPath(p, options).format();
-//};
-//
-///**
-// * Returns the formatted path or URL string. Similar to Node's {@link path.format} or {@link url.format}.
-// *
-// * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
-// * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.format = function() {
-//  var clone = copy(this, {});
-//
-//  // Build the `pathname` property
-//  if (clone.dir || clone.base || clone.name || clone.ext) {
-//    clone.base = clone.base || (clone.name + clone.ext) || '';
-//    if (startsWithSeparator(clone.base)) {
-//      clone.base = clone.base.substr(1);
-//    }
-//    clone.dir = clone.dir || '';
-//    var trailingSlash = endsWithSeparator(clone.pathname);
-//    if (endsWithSeparator(clone.dir)) {
-//      clone.pathname = clone.dir + clone.base;
-//    }
-//    else {
-//      clone.pathname = clone.dir + clone.sep + clone.base;
-//    }
-//    if (trailingSlash && !endsWithSeparator(clone.pathname)) {
-//      clone.pathname += clone.sep;
-//    }
-//  }
-//
-//  if (clone.isUrl) {
-//    // Format as a URL
-//    return url.format(clone);
-//  }
-//
-//  if (clone.search) {
-//    if (clone.search[0] !== '?') {
-//      clone.search = '?' + clone.search;
-//    }
-//  }
-//  else if (clone.query) {
-//    // Build the `search` property from the `query` property
-//    clone.search = '?' + querystring.stringify(clone.query);
-//  }
-//
-//  // If the file has a hash, then format the `hash` property
-//  if (clone.hash && clone.hash[0] !== '#') {
-//    clone.hash = '#' + clone.hash;
-//  }
-//
-//  // Format as a file path
-//  return path.normalize(clone.pathname) + clone.search + clone.hash;
-//};
-//
-//OmniPath.normalize = function(p, options) {
-//
-//};
-//
-//OmniPath.prototype.normalize = function() {
-//
-//};
-//
-///**
-// * Returns the formatted path or URL string, by calling {@link OmniPath#format}.
-// *
-// * @type {Function}
-// */
-//OmniPath.prototype.toString = OmniPath.prototype.format;
-//
-///**
-// * Returns the primitive string value, by calling {@link OmniPath#format}.
-// *
-// * @type {Function}
-// */
-//OmniPath.prototype.valueOf = OmniPath.prototype.format;
-//
-///**
-// * Parses the given path or URL, and returns a {@link OmniPath} object. Similar to Node's
-// * {@link path.parse} or {@link url.parse}.
-// *
-// * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
-// * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {OmniPath}
-// */
-//OmniPath.parse = function(p, options) {
-//  return new OmniPath(p, options);
-//};
-//
-///**
-// * Parses the given path or URL, and sets the corresponding properties of this {@link OmniPath} object.
-// * Similar to Node's {@link path.parse} or {@link url.parse}.
-// *
-// * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
-// * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to parse
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// */
-//OmniPath.prototype.parse = function(p, options) {
-//  options = options || this._options;
-//
-//  if (process.browser) {
-//    // We're running in a browser, so treat all paths as a URLs
-//    parseUrl(this, url.parse(url.resolve(window.location.href, p), true));
-//  }
-//  else if (getRoot(p)) {
-//    // It's an absolute file path
-//    parseFile(this, p, options);
-//  }
-//  else if (isWindows && startsWithSeparator(p)) {
-//    // It's drive-relative Windows path (e.g. "\\dir\\subdir" => "C:\\dir\\subdir")
-//    parseRelativeFile(this, OmniPath.cwd(), p, options);
-//  }
-//  else if (protocolPattern.test(p)) {
-//    // It's a full URL (e.g. https://host.com)
-//    parseUrl(this, url.parse(p, true));
-//  }
-//  else {
-//    // It's a relative file path
-//    parseRelativeFile(this, OmniPath.cwd(), p, options);
-//  }
-//};
-//
-///**
-// * Returns the given path or URL as a {@link Url} object. File paths will be returned as "file://" URLs.
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {Url}
-// */
-//OmniPath.toUrl = function(p, options) {
-//  return new OmniPath(p, options).toUrl();
-//};
-//
-///**
-// * Returns the path or URL as a {@link Url} object. If {@link OmniPath#isFile} is true,
-// * then the returned value will be a "file://" URL.
-// *
-// * @returns {Url}
-// */
-//OmniPath.prototype.toUrl = function() {
-//  return url.parse(this.toUrlString(), true);
-//};
-//
-///**
-// * Returns the given path or URL to a formatted URL string. File paths will be returned as "file://" URLs.
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.toUrlString = function(p, options) {
-//  return new OmniPath(p, options).toUrlString();
-//};
-//
-///**
-// * Returns a formatted URL string. If {@link OmniPath#isFile} is true, then the returned value
-// * will be a "file://" URL.
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.toUrlString = function() {
-//  if (this.isUrl) {
-//    return url.format(this);
-//  }
-//  else {
-//    var pathname = this.pathname;
-//
-//    // Normalize path separators (e.g. Windows backslashes)
-//    if (this.sep !== '/') {
-//      pathname = pathname.replace(new RegExp('\\' + this.sep, 'g'), '/');
-//    }
-//
-//    return url.format({
-//      protocol: 'file:',
-//      slashes: true,
-//      pathname: pathname,
-//      search: this.search,
-//      hash: this.hash
-//    });
-//  }
-//};
-//
-///**
-// * Returns the current working directory as a {@link OmniPath} object. If running in a web browser,
-// * then the working directory is based on the current page's URL.
-// *
-// * The returned path always includes a trailing slash, which ensures that it behaves properly
-// * with methods like {@link url.resolve}.
-// *
-// * @returns {OmniPath}
-// */
-//OmniPath.cwd = function() {
-//  var cwd;
-//
-//  if (process.browser) {
-//    var page = window.location.pathname;
-//    var lastSlash = page.lastIndexOf('/');
-//    cwd = page.substr(0, lastSlash + 1);
-//  }
-//  else {
-//    cwd = process.cwd() + path.sep;
-//  }
-//
-//  return new OmniPath(cwd);
-//};
-//
-///**
-// * Parses the given {@link Url} object, and sets the corresponding properties of the given object.
-// *
-// * @param   {OmniPath|object}   target  - The object whose properties will be set
-// * @param   {Url}               url     - The {@link Url} object to parse
-// * @returns {OmniPath|object}
-// */
-//function parseUrl(target, url) {
-//  target.isUrl = true;
-//  target.isFile = false;
-//  target.sep = '/';
-//  target.href = url.href || '';
-//  target.protocol = url.protocol || '';
-//  target.slashes = url.slashes || false;
-//  target.auth = url.auth || '';
-//  target.host = url.host || '';
-//  target.hostname = url.hostname || '';
-//  target.port = url.port || '';
-//  target.path = url.path || '';
-//  target.pathname = url.pathname || '';
-//  target.search = url.search || '';
-//  target.query = url.query || {};
-//  target.hash = url.hash || '';
-//
-//  parsePathname(target, target.pathname);
-//  return target;
-//}
-//
-///**
-// * Parses the given file path, and sets the corresponding properties of the given object.
-// *
-// * @param   {OmniPath|object}   target    - The object whose properties will be set
-// * @param   {string}            file      - The file path to parse
-// * @param   {PathOptions}       [options] - Options that determine how paths are parsed
-// * @returns {OmniPath|object}
-// */
-//function parseFile(target, file, options) {
-//  var hash = '', search = '', query = {};
-//  options = options || {};
-//
-//  if (options.allowFileHash) {
-//    // Separate the hash from the file path
-//    var hashIndex = file.indexOf('#');
-//    if (hashIndex >= 0) {
-//      hash = file.substr(hashIndex);
-//      file = file.substr(0, hashIndex);
-//    }
-//  }
-//
-//  if (options.allowFileQuery) {
-//    // Separate the query from the file path
-//    var queryIndex = file.lastIndexOf('?');
-//    if (queryIndex >= 0) {
-//      search = file.substr(queryIndex);
-//      query = querystring.parse(search.substr(1));
-//      file = file.substr(0, queryIndex);
-//    }
-//  }
-//
-//  if (isWindows) {
-//    // Normalize Windows path separators
-//    file = file.replace(/\//g, '\\');
-//  }
-//
-//  target.isUrl = false;
-//  target.isFile = true;
-//  target.sep = path.sep;
-//  target.href = file + search + hash;
-//  target.protocol = '';
-//  target.slashes = false;
-//  target.auth = '';
-//  target.host = '';
-//  target.hostname = '';
-//  target.port = '';
-//  target.path = file + search;
-//  target.pathname = file;
-//  target.search = search;
-//  target.query = query;
-//  target.hash = hash;
-//
-//  parsePathname(target, target.pathname);
-//  return target;
-//}
-//
-///**
-// * Parses the given file path, relative to a base path,
-// * and sets the corresponding properties of the given object.
-// *
-// * @param   {OmniPath|object}  target    - The object whose properties will be set
-// * @param   {OmniPath}         base      - The base file path
-// * @param   {string}           relative  - The path to resolve from `base`
-// * @param   {PathOptions}      [options] - Options that determine how paths are parsed
-// * @returns {OmniPath|object}
-// */
-//function parseRelativeFile(target, base, relative, options) {
-//  relative = parseFile({}, relative, options);
-//
-//  var absolute;
-//  if (relative.pathname) {
-//    absolute = path.resolve(base.pathname, relative.pathname);
-//    if (endsWithSeparator(relative.pathname) && !endsWithSeparator(absolute)) {
-//      absolute += relative.sep;
-//    }
-//    absolute += relative.search + relative.hash;
-//  }
-//  else if (relative.search) {
-//    absolute = base.pathname + relative.search + relative.hash;
-//  }
-//  else {
-//    absolute = base.pathname + base.search + (relative.hash || base.hash);
-//  }
-//
-//  return parseFile(target, absolute, options);
-//}
-//
-///**
-// * Parses the given pathname, and sets the corresponding properties of the given object.
-// *
-// * @param   {OmniPath|object}   target    - The object whose properties will be set
-// * @param   {string}            pathname  - The pathname to parse
-// * @returns {OmniPath|object}
-// */
-//function parsePathname(target, pathname) {
-//  target.root = getRoot(pathname);
-//  if (pathname === target.root) {
-//    // The pathname is the root
-//    target.dir = target.root;
-//    target.base = target.name = target.ext = '';
-//  }
-//  else {
-//    target.dir = path.dirname(pathname);
-//    target.base = path.basename(pathname);
-//    target.ext = path.extname(pathname);
-//    target.name = path.basename(pathname, target.ext);
-//  }
-//
-//  return target;
-//}
-//
-///**
-// * Copies the properties of one {@link OmniPath} object to another.
-// *
-// * @param   {OmniPath} src   - The source object, whose properties will be copied
-// * @param   {OmniPath} dest  - The destination object, whose properties will be set
-// * @returns {OmniPath}
-// */
-//function copy(src, dest) {
-//  dest.isUrl = src.isUrl;
-//  dest.isFile = src.isFile;
-//  dest.sep = src.sep;
-//  dest.href = src.href;
-//  dest.protocol = src.protocol;
-//  dest.slashes = src.slashes;
-//  dest.auth = src.auth;
-//  dest.host = src.host;
-//  dest.hostname = src.hostname;
-//  dest.port = src.port;
-//  dest.path = src.path;
-//  dest.pathname = src.pathname;
-//  dest.root = src.root;
-//  dest.dir = src.dir;
-//  dest.base = src.base;
-//  dest.name = src.name;
-//  dest.ext = src.ext;
-//  dest.search = src.search;
-//  dest.query = src.query;
-//  dest.hash = src.hash;
-//  return dest;
-//}
-//
-///**
-// * Determines whether the first character(s) of the given path are its root.
-// * If they are, then the root character(s) are returned.
-// *
-// * @param   {string} p - A path, such as "/foo/bar" or "C:\foo\bar" or "\\server\\dir"
-// * @returns {string}
-// */
-//function getRoot(p) {
-//  if (isWindows) {
-//    var match = windowsDrivePattern.exec(p);
-//    if (match) {
-//      // It's an absolute Windows drive path
-//      return match[0];
-//    }
-//
-//    match = windowsUncPattern.exec(p);
-//    if (match) {
-//      // It's a UNC path
-//      return match[0];
-//    }
-//  }
-//  else if (p[0] === '/') {
-//    // It's an absolute POSIX path
-//    return '/';
-//  }
-//
-//  return '';
-//}
-//
-///**
-// * Determines whether
-// */
-//function isAbsoluteUrl(p) {
-//  return protocolPattern.test(p) && !windowsDrivePattern.test(p);
-//}
-//
-///**
-// * Determines whether the given path (or path part) begins with a separator
-// *
-// * @param {string} p - A path or path part
-// * @returns {boolean}
-// */
-//function startsWithSeparator(p) {
-//  return isSeparator(p[0]);
-//}
-//
-///**
-// * Determines whether the given path (or path part) ends with a separator
-// *
-// * @param {string} p - A path or path part
-// * @returns {boolean}
-// */
-//function endsWithSeparator(p) {
-//  return isSeparator(p.substr(-1));
-//}
-//
-///**
-// * Determines whether the given character is a path separator
-// *
-// * @param {string} p - A single character
-// * @returns {boolean}
-// */
-//function isSeparator(p) {
-//  return p === '/' || (isWindows && p === '\\');
-//}
+/**
+ * Returns the last portion of the path or URL
+ *
+ * @param   {string} [ext] - The portion of the file extension to leave off
+ * @returns {string}
+ */
+WindowsPath.prototype.basename = function(ext) {
+  return win32.basename(this.base, ext);
+};
 
-},{"./index":1,"./util":4,"path":6,"url":12}],6:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * Parses the given path as a WINDOWS path, and sets the corresponding properties of this {@link WindowsPath} object.
+ *
+ * @param   {string|Url|WindowsPath}  p         - The file path or URL to parse
+ * @param   {PathOptions}             [options] - Options that determine how paths are parsed
+ */
+WindowsPath.prototype.parse = function(p, options) {
+  p = OmniPath.prototype.parse.apply(this, arguments);
+  if (p) {
+    var split = util.splitFile(p, options);
+    var parsed = win32.parse(split.pathname);
 
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
+    this.isFS = true;
+    this.isWindows = true;
+    this.isAbsolute = win32.isAbsolute(split.pathname);
+    this.isUnc = uncPattern.test(split.pathname);
+    this.sep = win32.sep;
+    this.href = p;
+    this.path = split.pathname + split.search;
+    this.pathname = split.pathname;
+    this.root = parsed.root;
+    this.dir = parsed.dir;
+    this.base = parsed.base;
+    this.name = parsed.name;
+    this.ext = parsed.ext;
+    this.search = split.search;
+    this.query = split.query;
+    this.hash = split.hash;
   }
+};
 
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
+},{"./index":1,"./path":2,"./util":5,"path":2}],7:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
   }
-
-  return parts;
 }
 
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require('_process'))
-
-},{"_process":7}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1826,7 +1506,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.3.2 by @mathias */
 ;(function(root) {
@@ -2361,7 +2041,7 @@ process.umask = function() { return 0; };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2447,7 +2127,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2534,13 +2214,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":9,"./encode":10}],12:[function(require,module,exports){
+},{"./decode":10,"./encode":11}],13:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3249,6 +2929,604 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":8,"querystring":11}]},{},[1])(1)
+},{"punycode":9,"querystring":12}],14:[function(require,module,exports){
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+},{}],15:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  // Allow for deprecating things in the process of starting up.
+  if (isUndefined(global.process)) {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  if (process.noDeprecation === true) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = require('./support/isBuffer');
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = require('inherits');
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./support/isBuffer":14,"_process":8,"inherits":7}]},{},[1])(1)
 });
 //# sourceMappingURL=omnipath.js.map

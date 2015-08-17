@@ -39,6 +39,9 @@
     "type": "git",
     "url": "https://github.com/bigstickcarpet/omnipath.git"
   },
+  "browser": {
+    "path": "./lib/path.js"
+  },
   "devDependencies": {
     "simplifyify": "^1.4.1",
     "bower": "^1.4.1",

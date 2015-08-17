@@ -5,6 +5,7 @@
    * Helper methods for use in tests
    */
   global.helper = {
+    invoke: invoke,
     equals: equals,
     equalsNative: equalsNative,
     server: server,
@@ -16,53 +17,65 @@
   };
 
   /**
-   * Asserts that an {@link OmniPath} object has the same properties and values as the expected object.
+   * Invokes the specified method with the given arguments
+   * on {@link OmniPath}, {@link PosixPath}, {@link WindowsPath}, and {@link UrlPath},
+   * and returns their results.
+   *
+   * @param   {string}  method  - The method to call
+   * @param   {...*}    args    - The arguments to pass to the method
+   * @result  {object}
+   */
+  function invoke(method, args) {
+    args = Array.prototype.slice.call(arguments, 1);
+    var omni = OmniPath[method].apply(OmniPath, args);
+    var posix = OmniPath.posix[method].apply(OmniPath, args);
+    var win32 = OmniPath.win32[method].apply(OmniPath, args);
+    var url = OmniPath.url[method].apply(OmniPath, args);
+
+    // Compare the OmniPath result to the platform-specific result
+    if (userAgent.isPosix) {
+      expect(omni).to.deep.equal(posix);
+    }
+    if (userAgent.isWindows) {
+      expect(omni).to.deep.equal(win32);
+    }
+    if (userAgent.isBrowser) {
+      expect(omni).to.deep.equal(url);
+    }
+
+    return {
+      omni: omni,
+      posix: posix,
+      win32: win32,
+      url: url
+    };
+  }
+
+  /**
+   * Asserts that an object has the same properties and values as the expected object.
    * Also verifies that the object serializes and deserializes properly.
    *
-   * @param {OmniPath} omniPath - The {@link OmniPath} object to check
+   * @param {object} actual   - The object to check
    * @param {object} expected - The expected properties & values
    */
-  function equals(omniPath, expected) {
-    // Use default values for anything that wasn't specified
-    var defaults = {
-      isUrl: false,
-      isFS: false,
-      isPosix: false,
-      isWindows: false,
-      isUnc: false,
-      isAbsolute: false,
-      sep: '',
-      href: '',
-      protocol: '',
-      slashes: false,
-      auth: '',
-      host: '',
-      hostname: '',
-      port: '',
-      path: '',
-      pathname: '',
-      root: '',
-      dir: '',
-      base: '',
-      name: '',
-      ext: '',
-      search: '',
-      query: {},
-      hash: ''
-    };
+  function equals(actual, expected) {
+    expected = defaults(expected);
 
-    // Check all property values
-    Object.keys(defaults).forEach(function(key) {
-      if (expected[key] === undefined) {
-        expected[key] = defaults[key];
-      }
-      var actualValue = omniPath[key];
-      var expectedValue = expected[key];
-      expect(actualValue).to.deep.equal(expectedValue, '"' + key + '" does not match');
+    ['posix', 'win32', 'url'].forEach(function(platform) {
+      var actualObj = actual[platform];
+      var expectedObj = expected[platform];
+
+      Object.keys(expectedObj).forEach(function(key) {
+        var actualValue = actualObj[key];
+        var expectedValue = expectedObj[key];
+        expect(actualValue).to.deep.equal(expectedValue,
+          platform + '.' + key + ' does not match');
+      });
     });
 
     // Test JSON serialization
-    var serialized = JSON.stringify(omniPath);
+    expected.omni = actual.omni.toJSON();
+    var serialized = JSON.stringify(actual);
     var deserialized = JSON.parse(serialized);
     expect(deserialized).to.deep.equal(expected);
   }
@@ -75,11 +88,6 @@
    * @param {object} expected - The expected properties & values
    */
   function equalsNative(omniPath, expected) {
-    if (userAgent.isBrowser && !expected) {
-      // We're running in a web browser, so we can't test Node's native behavior
-      return;
-    }
-
     Object.keys(expected).forEach(function(key) {
       var actualValue = omniPath[key];
       var expectedValue = expected[key];
@@ -148,6 +156,63 @@
   function ext() {
     var base = basename();
     return base.substr(base.lastIndexOf('.'));
+  }
+
+  /**
+   * Sets any undefined properties of the given object to their default values.
+   *
+   * @param   {object} obj - The object to be populated
+   * @returns {object}
+   */
+  function defaults(obj) {
+    if (obj.omni) {
+      obj.omni = defaults(obj.omni);
+    }
+    if (obj.posix) {
+      obj.posix = defaults(obj.posix);
+    }
+    if (obj.win32) {
+      obj.win32 = defaults(obj.win32);
+    }
+    if (obj.url) {
+      obj.url = defaults(obj.url);
+    }
+    if (!(obj.omni || obj.posix || obj.win32 || obj.url)) {
+      var values = {
+        isUrl: false,
+        isFS: false,
+        isPosix: false,
+        isWindows: false,
+        isUnc: false,
+        isAbsolute: false,
+        sep: '',
+        href: '',
+        protocol: '',
+        slashes: false,
+        auth: '',
+        host: '',
+        hostname: '',
+        port: '',
+        path: '',
+        pathname: '',
+        root: '',
+        dir: '',
+        base: '',
+        name: '',
+        ext: '',
+        search: '',
+        query: {},
+        hash: ''
+      };
+
+      Object.keys(values).forEach(function(key) {
+        if (obj[key] === undefined) {
+          obj[key] = values[key];
+        }
+      });
+    }
+
+    return obj;
   }
 
 })();
