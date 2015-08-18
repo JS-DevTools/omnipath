@@ -1,7 +1,7 @@
 {
   "excludeFiles": [
     "coverage/**",
-    "lib/path.js",
+    "lib/node/**",
     "tests/**",
     "dist/**",
     "www/**",
