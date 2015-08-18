@@ -23,6 +23,7 @@ matrix:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - npm update -g npm
 branches:
   only:
     - /^v\d\.\d\.\d/    # only build tagged versions (rather than EVERY push)
