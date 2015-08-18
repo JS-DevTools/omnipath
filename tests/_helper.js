@@ -18,7 +18,7 @@
 
   /**
    * Invokes the specified method with the given arguments
-   * on {@link OmniPath}, {@link PosixPath}, {@link WindowsPath}, and {@link UrlPath},
+   * on {@link OmniPath}, {@link OmniPosix}, {@link OmniWindows}, and {@link OmniUrl},
    * and returns their results.
    *
    * @param   {string}  method  - The method to call

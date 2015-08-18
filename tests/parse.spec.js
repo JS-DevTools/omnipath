@@ -2,7 +2,7 @@
 
 describe('OmniPath.parse', function() {
   describe('root paths', function() {
-    it.only('root (forward slash)', function() {
+    it('root (forward slash)', function() {
       var results = helper.invoke('parse', '/');
       helper.equals(results, {
         posix: {
@@ -72,19 +72,20 @@ describe('OmniPath.parse', function() {
         },
         url: {
           isUrl: true,
+          isAbsolute: true,
           sep: '/',
-          href: '%5C',
-          path: '%5C',
-          pathname: '%5C',
-          base: '%5C',
-          name: '%5C'
+          href: '/',
+          path: '/',
+          pathname: '/',
+          root: '/',
+          dir: '/'
         }
       });
 
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('\\'));
-        helper.equalsNative(results.omni, url.parse('C:\\', true));
+        helper.equalsNative(results.url, url.parse('\\', true));
       }
     });
 
@@ -92,17 +93,6 @@ describe('OmniPath.parse', function() {
       var results = helper.invoke('parse', 'C:\\');
       helper.equals(results, {
         posix: {
-          isFS: true,
-          isWindows: true,
-          isAbsolute: true,
-          sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
-          root: '\\',
-          dir: '\\'
-        },
-        win32: {
           isFS: true,
           isPosix: true,
           sep: '/',
@@ -112,22 +102,34 @@ describe('OmniPath.parse', function() {
           base: 'C:\\',
           name: 'C:\\'
         },
+        win32: {
+          isFS: true,
+          isWindows: true,
+          isAbsolute: true,
+          sep: '\\',
+          href: 'C:\\',
+          path: 'C:\\',
+          pathname: 'C:\\',
+          root: 'C:\\',
+          dir: 'C:\\'
+        },
         url: {
           isUrl: true,
           isAbsolute: true,
           sep: '/',
-          href: 'c:%5C',
-          path: '%5C',
-          pathname: '%5C',
-          base: '%5C',
-          name: '%5C'
+          href: 'c:/',
+          protocol: 'c:',
+          path: '/',
+          pathname: '/',
+          root: '/',
+          dir: '/'
         }
       });
 
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('C:\\'));
-        helper.equalsNative(results.omni, url.parse('C:\\', true));
+        helper.equalsNative(results.url, url.parse('C:\\', true));
       }
     });
 
@@ -152,11 +154,13 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
-          root: '\\',
-          dir: '\\'
+          href: '/somedir/',
+          path: '/somedir/',
+          pathname: '/somedir/',
+          root: '/',
+          dir: '/',
+          base: 'somedir',
+          name: 'somedir'
         },
         url: {
           isUrl: true,
@@ -197,27 +201,32 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
+          href: '\\somedir\\',
+          path: '\\somedir\\',
+          pathname: '\\somedir\\',
           root: '\\',
-          dir: '\\'
+          dir: '\\',
+          base: 'somedir',
+          name: 'somedir'
         },
         url: {
           isUrl: true,
+          isAbsolute: true,
           sep: '/',
-          href: '%5Csomedir%5C',
-          path: '%5Csomedir%5C',
-          pathname: '%5Csomedir%5C',
-          base: '%5Csomedir%5C',
-          name: '%5Csomedir%5C'
+          href: '/somedir/',
+          path: '/somedir/',
+          pathname: '/somedir/',
+          root: '/',
+          dir: '/',
+          base: 'somedir',
+          name: 'somedir'
         }
       });
 
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('\\somedir\\'));
-        helper.equalsNative(results.omni, url.parse('\\somedir\\', true));
+        helper.equalsNative(results.url, url.parse('\\somedir\\', true));
       }
     });
 
@@ -239,28 +248,33 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
-          root: '\\',
-          dir: '\\'
+          href: 'C:\\somedir\\',
+          path: 'C:\\somedir\\',
+          pathname: 'C:\\somedir\\',
+          root: 'C:\\',
+          dir: 'C:\\',
+          base: 'somedir',
+          name: 'somedir'
         },
         url: {
           isUrl: true,
           isAbsolute: true,
           sep: '/',
-          href: 'c:%5Csomedir%5C',
-          path: '%5Csomedir%5C',
-          pathname: '%5Csomedir%5C',
-          base: '%5Csomedir%5C',
-          name: '%5Csomedir%5C'
+          href: 'c:/somedir/',
+          protocol: 'c:',
+          path: '/somedir/',
+          pathname: '/somedir/',
+          root: '/',
+          dir: '/',
+          base: 'somedir',
+          name: 'somedir'
         }
       });
 
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('C:\\somedir\\'));
-        helper.equalsNative(results.omni, url.parse('C:\\somedir\\', true));
+        helper.equalsNative(results.url, url.parse('C:\\somedir\\', true));
       }
     });
 
@@ -286,11 +300,14 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
-          root: '\\',
-          dir: '\\'
+          href: '/somefile.txt',
+          path: '/somefile.txt',
+          pathname: '/somefile.txt',
+          root: '/',
+          dir: '/',
+          base: 'somefile.txt',
+          name: 'somefile',
+          ext: '.txt'
         },
         url: {
           isUrl: true,
@@ -333,20 +350,26 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
+          href: '\\somefile.html',
+          path: '\\somefile.html',
+          pathname: '\\somefile.html',
           root: '\\',
-          dir: '\\'
+          dir: '\\',
+          base: 'somefile.html',
+          name: 'somefile',
+          ext: '.html'
         },
         url: {
           isUrl: true,
+          isAbsolute: true,
           sep: '/',
-          href: '%5Csomefile.html',
-          path: '%5Csomefile.html',
-          pathname: '%5Csomefile.html',
-          base: '%5Csomefile.html',
-          name: '%5Csomefile',
+          href: '/somefile.html',
+          path: '/somefile.html',
+          pathname: '/somefile.html',
+          root: '/',
+          dir: '/',
+          base: 'somefile.html',
+          name: 'somefile',
           ext: '.html'
         }
       });
@@ -354,7 +377,7 @@ describe('OmniPath.parse', function() {
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('\\somefile.html'));
-        helper.equalsNative(results.omni, url.parse('\\somefile.txt', true));
+        helper.equalsNative(results.url, url.parse('\\somefile.html', true));
       }
     });
 
@@ -377,21 +400,27 @@ describe('OmniPath.parse', function() {
           isWindows: true,
           isAbsolute: true,
           sep: '\\',
-          href: '\\',
-          path: '\\',
-          pathname: '\\',
-          root: '\\',
-          dir: '\\'
+          href: 'C:\\somefile.md',
+          path: 'C:\\somefile.md',
+          pathname: 'C:\\somefile.md',
+          root: 'C:\\',
+          dir: 'C:\\',
+          base: 'somefile.md',
+          name: 'somefile',
+          ext: '.md'
         },
         url: {
           isUrl: true,
           isAbsolute: true,
           sep: '/',
-          href: 'c:%5Csomefile.md',
-          path: '%5Csomefile.md',
-          pathname: '%5Csomefile.md',
-          base: '%5Csomefile.md',
-          name: '%5Csomefile',
+          href: 'c:/somefile.md',
+          protocol: 'c:',
+          path: '/somefile.md',
+          pathname: '/somefile.md',
+          root: '/',
+          dir: '/',
+          base: 'somefile.md',
+          name: 'somefile',
           ext: '.md'
         }
       });
@@ -399,7 +428,7 @@ describe('OmniPath.parse', function() {
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         helper.equalsNative(results.omni, path.parse('C:\\somefile.md'));
-        helper.equalsNative(results.omni, url.parse('C:\\somefile.md', true));
+        helper.equalsNative(results.url, url.parse('C:\\somefile.md', true));
       }
     });
   });
