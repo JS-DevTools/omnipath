@@ -3,19 +3,29 @@
 
 sudo: false
 language: node_js
-node_js:
-  - 'iojs'
-  - '0.10'
-  - '0.11'
-  - '0.12'
+matrix:
+  include:
+    # IO.js
+    - node_js: iojs
+      env: KARMA=false
+
+    # Node
+    - node_js: 0.10
+      env: KARMA=false
+    - node_js: 0.11
+      env: KARMA=false
+    - node_js: 0.12
+      env: KARMA=false
+
+    # Browsers
+    - node_js: 0.12
+      env: KARMA=true
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 branches:
   only:
     - /^v\d\.\d\.\d/    # only build tagged versions (rather than EVERY push)
     - /^PR /            # also build pull requests
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - npm run build
 after_success:
-  - cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
-
+  - cat coverage/*/lcov.info | node_modules/coveralls/bin/coveralls.js

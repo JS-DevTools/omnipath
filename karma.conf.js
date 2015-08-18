@@ -1,29 +1,49 @@
-'use strict';
-
 // Karma config
 // https://karma-runner.github.io/0.12/config/configuration-file.html
+'use strict';
+
+var baseConfig = {
+  frameworks: ['mocha'],
+  reporters: ['mocha'],
+  files: [
+    // Third-Party Libraries
+    'www/bower_components/chai/chai.js',
+    'www/bower_components/sinon-js/sinon.js',
+
+    // OmniPath
+    'dist/omnipath.test.js',
+
+    // Unit Tests
+    'tests/**/_*.js',
+    'tests/**/*.spec.js'
+  ]
+};
+
 module.exports = function(config) {
-  var baseConfig = {
-    frameworks: ['mocha'],
-    reporters: ['mocha'],
-    files: [
-      // Third-Party Libraries
-      'www/bower_components/chai/chai.js',
-      'www/bower_components/sinon-js/sinon.js',
+  // Honor the KARMA environment variable, if it exists
+  if (process.env.KARMA && process.env.KARMA !== 'true') {
+    process.exit();
+    return;
+  }
 
-      // OmniPath
-      'dist/omnipath.min.js',
-
-      // Unit Tests
-      'tests/**/_*.js',
-      'tests/**/*.spec.js'
-    ]
-  };
-
+  configureCodeCoverage(baseConfig);
   configureBrowsers(baseConfig);
   configureSauceLabs(baseConfig);
   config.set(baseConfig);
 };
+
+/**
+ * Configures the code-coverage reporter
+ */
+function configureCodeCoverage(config) {
+  config.reporters.push('coverage');
+  config.coverageReporter = {
+    reporters: [
+      {type: 'text-summary'},
+      {type: 'lcov'}
+    ]
+  };
+}
 
 /**
  * Configures the browsers for the current platform
@@ -41,9 +61,8 @@ function configureBrowsers(config) {
   }
   else if (isWindows) {
     config.browsers = ['PhantomJS', 'Firefox', 'Chrome', 'Safari', 'IE9', 'IE10', 'IE'];
-
-    // NOTE: IE 6, 7, 8 are not supported by Chai
     config.customLaunchers = {
+      // NOTE: IE 6, 7, 8 are not supported by Chai
       IE9: {
         base: 'IE',
         'x-ua-compatible': 'IE=EmulateIE9'
@@ -63,11 +82,9 @@ function configureBrowsers(config) {
 function configureSauceLabs(config) {
   var username = process.env.SAUCE_USERNAME;
   var accessKey = process.env.SAUCE_ACCESS_KEY;
-  var jobNumber = getJobNumber(process.env.TRAVIS_JOB_NUMBER);
 
   // Only run Sauce Labs if we have the username & access key.
-  // And only run it for the first job in a build. No need to run it for every job.
-  if (username && accessKey && jobNumber <= 1) {
+  if (username && accessKey) {
     var project = require('./package.json');
     var testName = project.name + ' v' + project.version;
     var build = testName + ' Build #' + process.env.TRAVIS_JOB_NUMBER + ' @ ' + new Date();
@@ -146,7 +163,7 @@ function configureSauceLabs(config) {
     };
 
     config.reporters.push('saucelabs');
-    config.browsers = Object.keys(config.customLaunchers);
+    config.browsers = config.browsers.concat(Object.keys(config.customLaunchers));
 
     // Sauce Connect sometimes hangs (https://github.com/karma-runner/karma-sauce-launcher/issues/14)
     // So terminate the process after a few minutes
@@ -155,20 +172,4 @@ function configureSauceLabs(config) {
       process.exit();
     }, 1000 * 60 * 8); // 8 minutes
   }
-}
-
-/**
- * Returns the Travis CI job number, or 1 if there is no job number.
- *
- * Examples:
- *  - "4.1"   ->  1
- *  - "16.2"  ->  2
- *  - "16"    ->  1
- *  - ""      ->  1
- *  - null    ->  1
- */
-function getJobNumber(number) {
-  var match = /\.(\d+)/.exec(number);
-  var job = match ? match[1] || '1' : '1';
-  return parseInt(job);
 }

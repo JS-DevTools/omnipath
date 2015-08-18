@@ -26,11 +26,12 @@
   "scripts": {
     "lint": "jshint . --verbose && jscs . --verbose",
     "build": "npm run lint && npm run browserify",
-    "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
+    "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify --test",
     "watch": "npm run browserify -- --watch",
-    "test": "istanbul cover _mocha -- --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\" && npm run karma",
     "mocha": "mocha --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\"",
+    "istanbul": "istanbul cover _mocha --dir coverage/node -- --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\"",
     "karma": "karma start --single-run",
+    "test": "npm run istanbul && npm run karma",
     "upgrade": "ncu --upgradeAll && npm update && bower update",
     "bump": "bump --prerelease --grep lib/index.js dist/* --tag --push --all",
     "release": "npm run upgrade && npm run build && npm test && npm run bump && npm publish"
@@ -39,15 +40,13 @@
     "type": "git",
     "url": "https://github.com/bigstickcarpet/omnipath.git"
   },
-  "browser": {
-    "path": "./lib/path.js"
-  },
   "devDependencies": {
     "simplifyify": "^1.4.1",
     "bower": "^1.4.1",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
     "karma-cli": "0.1.0",
+    "karma-coverage": "^0.5.0",
     "karma-firefox-launcher": "^0.1.6",
     "karma-ie-launcher": "^0.2.0",
     "karma-mocha": "^0.2.0",
@@ -55,7 +54,7 @@
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-safari-launcher": "^0.1.1",
     "karma-sauce-launcher": "^0.2.14",
-    "istanbul": "^0.3.17",
+    "istanbul": "^0.3.18",
     "coveralls": "^2.11.4",
     "mocha": "^2.2.5",
     "chai": "^3.2.0",
@@ -65,5 +64,9 @@
     "npm-check-updates": "^2.2.0",
     "version-bump-prompt": "^1.5.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "browser": {
+    "path": "./lib/node/path.js",
+    "url": "./lib/node/url.js"
+  }
 }
