@@ -26,12 +26,12 @@
   "scripts": {
     "lint": "jshint . --verbose && jscs . --verbose",
     "build": "npm run lint && npm run browserify",
-    "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify --test",
+    "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
     "watch": "npm run browserify -- --watch",
     "mocha": "mocha --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\"",
     "istanbul": "istanbul cover _mocha --dir coverage/node -- --bail --recursive \"tests/**/_*\" \"tests/**/*.spec.js\"",
     "karma": "karma start --single-run",
-    "test": "npm run istanbul && npm run karma",
+    "test": "npm run browserify -- --test && npm run istanbul && npm run karma",
     "upgrade": "ncu --upgradeAll && npm update && bower update",
     "bump": "bump --prerelease --grep lib/index.js dist/* --tag --push --all",
     "release": "npm run upgrade && npm run build && npm test && npm run bump && npm publish"
