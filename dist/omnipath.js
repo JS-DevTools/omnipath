@@ -1916,7 +1916,7 @@ OmniPosix.prototype.basename = function(ext) {
  */
 OmniPosix.prototype.parse = function(p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (p) {
+  if (typeof(p) === 'string') {
     var split = util.splitFile(p, options);
     var parsed = posix.parse(split.pathname);
 
@@ -1978,15 +1978,17 @@ OmniUrl.prototype.clone = function(options) {
  */
 OmniUrl.prototype.parse = function(p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (p) {
+  if (typeof(p) === 'string') {
     var parsedUrl = url.parse(p, true);
-    var parsedPath = posix.parse(parsedUrl.pathname);
+    var parsedPath = posix.parse(parsedUrl.pathname || '');
 
     this.isUrl = true;
-    this.isAbsolute = !!parsedUrl.protocol || !!parsedUrl.host || posix.isAbsolute(parsedUrl.pathname);
+    this.isAbsolute = !!parsedUrl.protocol || !!parsedUrl.host || posix.isAbsolute(parsedUrl.pathname || '');
     this.sep = '/';
     this.href = parsedUrl.href || '';
     this.protocol = parsedUrl.protocol || '';
+    this.slashes = parsedUrl.slashes || false;
+    this.auth = parsedUrl.auth || '';
     this.host = parsedUrl.host || '';
     this.hostname = parsedUrl.hostname || '';
     this.port = parsedUrl.port || '';
@@ -2054,7 +2056,7 @@ OmniWindows.prototype.basename = function(ext) {
  */
 OmniWindows.prototype.parse = function(p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (p) {
+  if (typeof(p) === 'string') {
     var split = util.splitFile(p, options);
     var parsed = win32.parse(split.pathname);
 

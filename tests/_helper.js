@@ -33,13 +33,16 @@
     var url = OmniPath.url[method].apply(OmniPath, args);
 
     // Compare the OmniPath result to the platform-specific result
-    if (userAgent.isPosix) {
+    if (omni.isUrl) {
+      expect(omni).to.deep.equal(url);
+    }
+    else if (userAgent.isPosix) {
       expect(omni).to.deep.equal(posix);
     }
-    if (userAgent.isWindows) {
+    else if (userAgent.isWindows) {
       expect(omni).to.deep.equal(win32);
     }
-    if (userAgent.isBrowser) {
+    else if (userAgent.isBrowser) {
       expect(omni).to.deep.equal(url);
     }
 

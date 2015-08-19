@@ -192,7 +192,7 @@ OmniPath.normalize("C:\\dir\\.\\subdir\\..\\file.html");                       /
 
 
 ### `dirname(path, [options])`
-Returns the path's directory name. The result will never have a trailing slash.
+Returns the path's directory name.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed. See [`parse`](#parsepath-options) for details.
@@ -303,8 +303,8 @@ var path = new OmniPath("/dir/subdir/file.html#page1", {allowFileHash: true});
 |`path`            |string    |Concatenation of `pathname` and `search`.<br>Example: `/dir/subdir/file.html?query=string`
 |`pathname`        |string    |The path, which comes after the host and before the query, including a trailing slash if present.<br>Examples:<br>`/dir/subdir/`<br>`/dir/subdir/file.html`<br>`C:\dir\subdir\file.html`
 |`root`            |string    |The path's root. This will always be a single forward slash for URLs and POSIX paths.  For local Windows paths, it will include the drive letter.  For UNC paths, it will include the host and root.<br>Examples:<br>`/`<br>`C:\`<br>`\\host\\root\\`
-|`dir`             |string    |The path's parent directory. This will _never_ have a trailing slash.<br>Examples:<br>`/dir/subdir`<br>`C:\dir\subdir`
-|`base`            |string    |The last portion of a path, which may be a file name or a directory name. This will _never_ have a leading or trailing slash.<br>Examples:<br>`filename.html`<br>`somedir`<br>`.hiddendir`
+|`dir`             |string    |The path's parent directory.<br>Examples:<br>`/dir/subdir`<br>`C:\dir\subdir`
+|`base`            |string    |The last portion of a path, which may be a file name or a directory name.<br>Examples:<br>`filename.html`<br>`somedir`<br>`.hiddendir`
 |`name`            |string    |The path's base name, without an extension.<br>Examples:<br>`filename`<br>`somedir`<br>`.hiddendir`
 |`ext`             |string    |The path's extension. This will be empty if there is no extension.<br>Examples: `.html`, `.txt`
 |`search`          |string    |The query string, including the leading question mark.<br>Example: `?foo=bar&biz=baz`
