@@ -5,8 +5,9 @@
    * Helper methods for use in tests
    */
   global.helper = {
+    forEachTest: forEachTest,
     invoke: invoke,
-    equals: equals,
+    deepEqual: deepEqual,
     equalsNative: equalsNative,
     server: server,
     page: page,
@@ -17,23 +18,46 @@
   };
 
   /**
-   * Invokes the specified method with the given arguments
-   * on {@link OmniPath}, {@link OmniPosix}, {@link OmniWindows}, and {@link OmniUrl},
-   * and returns their results.
+   * Runs the given test function for each test object in {@link TestData}.
+   *
+   * @param {function} run - Receives the test object from {@link TestData}
+   */
+  function forEachTest(run) {
+    Object.keys(TestData).forEach(function(suite) {
+      describe(suite, function() {
+        Object.keys(TestData[suite]).forEach(function(test) {
+          it(test, function() {
+            run(TestData[suite][test]);
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * Invokes the specified method on {@link OmniPath}, {@link OmniPosix}, {@link OmniWindows},
+   * and {@link OmniUrl} using the given test data, and returns the results.
    *
    * @param   {string}  method  - The method to call
-   * @param   {...*}    args    - The arguments to pass to the method
-   * @result  {object}
+   * @param   {object}  test    - A test object from {@link TestData}
+   * @param   {...*}    [args]  - Arguments to pass to the invoked method (defaults to test.p and test.options)
+   * @returns {object}
    */
-  function invoke(method, args) {
-    args = Array.prototype.slice.call(arguments, 1);
-    var omni = OmniPath[method].apply(OmniPath, args);
-    var posix = OmniPath.posix[method].apply(OmniPath, args);
-    var win32 = OmniPath.win32[method].apply(OmniPath, args);
-    var url = OmniPath.url[method].apply(OmniPath, args);
+  function invoke(method, test, args) {
+    if (arguments.length === 2) {
+      args = [test.p, test.options];
+    }
+    else {
+      args = Array.prototype.slice.call(arguments, 2);
+    }
+
+    var omni = result(OmniPath, method, args);
+    var posix = result(OmniPath.posix, method, args);
+    var win32 = result(OmniPath.win32, method, args);
+    var url = result(OmniPath.url, method, args);
 
     // Compare the OmniPath result to the platform-specific result
-    if (omni.isUrl) {
+    if (test.isUrl) {
       expect(omni).to.deep.equal(url);
     }
     else if (userAgent.isPosix) {
@@ -61,23 +85,22 @@
    * @param {object} actual   - The object to check
    * @param {object} expected - The expected properties & values
    */
-  function equals(actual, expected) {
-    expected = defaults(expected);
+  function deepEqual(actual, expected) {
+    // Compare the keys
+    var actualKeys = Object.keys(actual).filter(function(key) {
+      return key[0] !== '_';
+    });
+    var expectedKeys = Object.keys(expected);
+    expect(actualKeys).to.have.same.members(expectedKeys);
 
-    ['posix', 'win32', 'url'].forEach(function(platform) {
-      var actualObj = actual[platform];
-      var expectedObj = expected[platform];
-
-      Object.keys(expectedObj).forEach(function(key) {
-        var actualValue = actualObj[key];
-        var expectedValue = expectedObj[key];
-        expect(actualValue).to.deep.equal(expectedValue,
-          platform + '.' + key + ' does not match');
-      });
+    // Compare each property value
+    expectedKeys.forEach(function(key) {
+      var actualValue = actual[key];
+      var expectedValue = expected[key];
+      expect(actualValue).to.deep.equal(expectedValue, key + ' does not match');
     });
 
     // Test JSON serialization
-    expected.omni = actual.omni.toJSON();
     var serialized = JSON.stringify(actual);
     var deserialized = JSON.parse(serialized);
     expect(deserialized).to.deep.equal(expected);
@@ -162,60 +185,20 @@
   }
 
   /**
-   * Sets any undefined properties of the given object to their default values.
+   * Returns the value of the given property, or its return value if it's a function.
    *
-   * @param   {object} obj - The object to be populated
-   * @returns {object}
+   * @param   {object}  obj   - The object whose property value is returned
+   * @param   {string}  prop  - The name of the property to return
+   * @param   {*[]}     args  - Arguments to pass if `prop` is a function
+   * @returns {*}
    */
-  function defaults(obj) {
-    if (obj.omni) {
-      obj.omni = defaults(obj.omni);
+  function result(obj, prop, args) {
+    if (typeof(obj[prop]) === 'function') {
+      return obj[prop].apply(obj, args);
     }
-    if (obj.posix) {
-      obj.posix = defaults(obj.posix);
+    else {
+      return obj[prop];
     }
-    if (obj.win32) {
-      obj.win32 = defaults(obj.win32);
-    }
-    if (obj.url) {
-      obj.url = defaults(obj.url);
-    }
-    if (!(obj.omni || obj.posix || obj.win32 || obj.url)) {
-      var values = {
-        isUrl: false,
-        isFS: false,
-        isPosix: false,
-        isWindows: false,
-        isUnc: false,
-        isAbsolute: false,
-        sep: '',
-        href: '',
-        protocol: '',
-        slashes: false,
-        auth: '',
-        host: '',
-        hostname: '',
-        port: '',
-        path: '',
-        pathname: '',
-        root: '',
-        dir: '',
-        base: '',
-        name: '',
-        ext: '',
-        search: '',
-        query: {},
-        hash: ''
-      };
-
-      Object.keys(values).forEach(function(key) {
-        if (obj[key] === undefined) {
-          obj[key] = values[key];
-        }
-      });
-    }
-
-    return obj;
   }
 
 })();
