@@ -29,4 +29,7 @@ branches:
     - /^v\d\.\d\.\d/    # only build tagged versions (rather than EVERY push)
     - /^PR /            # also build pull requests
 after_success:
-  - cat coverage/*/lcov.info | node_modules/coveralls/bin/coveralls.js
+  - cat coverage/*/lcov.info > coveralls.txt
+  - cat coveralls.txt
+  - ls -R1 coverage/*/lcov.info
+  - cat coveralls.txt | node_modules/coveralls/bin/coveralls.js
