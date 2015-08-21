@@ -1414,9 +1414,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
 (function (process){
 'use strict';
 
-var path            = require('./node/path'),
-    util            = require('./util'),
-    protocolPattern = /^[a-z0-9.+-]+:\/\//i;
+var path             = require('./node/path'),
+    url              = require('./node/url'),
+    util             = require('./util'),
+    protocolPattern  = /^[a-z0-9.+-]+:\/\//i,
+    splitUncPattern  = /^\/+([^\/]+)(.*)/,
+    backslashPattern = /\\/g;
 
 module.exports = OmniPath;
 
@@ -1717,66 +1720,94 @@ OmniPath.extname = OmniPath.ext;
 // * @type {Function}
 // */
 //OmniPath.prototype.valueOf = OmniPath.prototype.format;
-//
-///**
-// * Returns the given path or URL as a {@link Url} object. File paths will be returned as "file://" URLs.
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {Url}
-// */
-//OmniPath.toUrl = function(p, options) {
-//  return new OmniPath(p, options).toUrl();
-//};
-//
-///**
-// * Returns the path or URL as a {@link Url} object. If {@link OmniPath#isFS} is true,
-// * then the returned value will be a "file://" URL.
-// *
-// * @returns {Url}
-// */
-//OmniPath.prototype.toUrl = function() {
-//  return url.parse(this.toUrlString(), true);
-//};
-//
-///**
-// * Returns the given path or URL to a formatted URL string. File paths will be returned as "file://" URLs.
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.toUrlString = function(p, options) {
-//  return new OmniPath(p, options).toUrlString();
-//};
-//
-///**
-// * Returns a formatted URL string. If {@link OmniPath#isFS} is true, then the returned value
-// * will be a "file://" URL.
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.toUrlString = function() {
-//  if (this.isUrl) {
-//    return url.format(this);
-//  }
-//  else {
-//    var pathname = this.pathname;
-//
-//    // Normalize path separators (e.g. Windows backslashes)
-//    if (this.sep !== '/') {
-//      pathname = pathname.replace(new RegExp('\\' + this.sep, 'g'), '/');
-//    }
-//
-//    return url.format({
-//      protocol: 'file:',
-//      slashes: true,
-//      pathname: pathname,
-//      search: this.search,
-//      hash: this.hash
-//    });
-//  }
-//};
+
+/**
+ * Returns the given path or URL as a {@link Url} object. File paths will be returned as "file://" URLs.
+ *
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
+ * @param   {PathOptions}           [options] - Options that determine how paths are parsed
+ * @returns {Url}
+ */
+OmniPath.toUrl = function(p, options) {
+  var Class = this;
+  return new Class(p, options).toUrl();
+};
+
+/**
+ * Returns the path or URL as a {@link Url} object. If {@link OmniPath#isFS} is true,
+ * then the returned value will be a "file://" URL.
+ *
+ * @returns {Url}
+ */
+OmniPath.prototype.toUrl = function() {
+  return url.parse(this.toUrlString(), true);
+};
+
+/**
+ * Returns the given path or URL to a formatted URL string. File paths will be returned as "file://" URLs.
+ *
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
+ * @param   {PathOptions}           [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPath.toUrlString = function(p, options) {
+  var Class = this;
+  return new Class(p, options).toUrlString();
+};
+
+/**
+ * Returns a formatted URL string. If {@link OmniPath#isFS} is true, then the returned value
+ * will be a "file://" URL.
+ *
+ * @returns {string}
+ */
+OmniPath.prototype.toUrlString = function() {
+  if (this.isUrl) {
+    return url.format(this);
+  }
+  else {
+    var hostname = null;
+    var pathname = this.pathname;
+    var search = this.search;
+    var hash = this.hash;
+
+    if (this.isWindows) {
+      // Convert Windows path separators to forward slashes
+      pathname = pathname.replace(backslashPattern, '/');
+
+      if (this.isUnc) {
+        var split = splitUncPattern.exec(pathname);
+        if (split) {
+          hostname = split[1];
+          pathname = split[2] || '/';
+        }
+      }
+    }
+
+    // Encode backslash characters
+    pathname = pathname.replace(backslashPattern, '%5C');
+    search = search.replace(backslashPattern, '%5C');
+    hash = hash.replace(backslashPattern, '%5C');
+
+    // Format the file path as a URL
+    var formatted = url.format({
+      protocol: 'file:',
+      slashes: true,
+      hostname: hostname,
+      pathname: pathname,
+      search: search,
+      hash: hash
+    });
+
+    // Parse the formatted URL, to encode any special characters
+    var parsed = url.parse(formatted);
+
+    // Re-format the URL, this time with encoding
+    //noinspection UnnecessaryLocalVariableJS
+    var encoded = parsed.format();
+    return encoded;
+  }
+};
 
 /**
  * Returns the current working directory as a {@link OmniPath} object. If running in a web browser,
@@ -1887,7 +1918,7 @@ OmniPath.prototype.toJSON = function() {
 
 }).call(this,require('_process'))
 
-},{"./node/path":2,"./util":8,"_process":9}],5:[function(require,module,exports){
+},{"./node/path":2,"./node/url":3,"./util":8,"_process":9}],5:[function(require,module,exports){
 'use strict';
 
 var posix    = require('./node/path').posix,
