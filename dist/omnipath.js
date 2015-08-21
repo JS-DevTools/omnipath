@@ -1422,7 +1422,7 @@ module.exports = OmniPath;
 
 /**
  * A parsed URL or file path. This object has the same properties as a parsed URL (via {@link url.parse},
- * plus the properties of a parsed file path (via {@link posix.parse}.
+ * plus the properties of a parsed file path (via {@link path.parse}.
  *
  * Parsed URL:  {@link https://nodejs.org/api/url.html#url_url}
  * Parsed Path: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
@@ -1469,13 +1469,23 @@ util.props.forEach(function(prop) {
   }
 });
 
-// Create `dirname()` and `extname()` methods, for consistency with Node's "path" module.
-// These methods are just aliases for the `dir()` and `ext()` shortcut methods created above.
-OmniPath.dirname = OmniPath.dir;
-OmniPath.extname = OmniPath.ext;
+/**
+ * Returns the directory name of the given path or URL. Identical to Node's {@link path.dirname}.
+ *
+ * {@link https://nodejs.org/api/path.html#path_path_dirname_p}
+ *
+ * @param   {string|Url|OmniPath}  p          - The file path or URL to parse
+ * @param   {PathOptions}          [options]  - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPath.dirname = function(p, options) {
+  var Class = this;
+  var omniPath = new Class(p, options);
+  return omniPath.dirname();
+};
 
 /**
- * Returns the last portion of the given path or URL. Similar to Node's {@link posix.basename}.
+ * Returns the last portion of the given path or URL. Identical to Node's {@link path.basename}.
  *
  * {@link https://nodejs.org/api/path.html#path_path_basename_p_ext}
  *
@@ -1493,6 +1503,17 @@ OmniPath.basename = function(p, ext, options) {
   var omniPath = new Class(p, options);
   return omniPath.basename(ext);
 };
+
+/**
+ * Returns the extension of the given path or URL. Identical to Node's {@link path.extname}.
+ *
+ * {@link https://nodejs.org/api/path.html#path_path_extname_p}
+ *
+ * @param   {string|Url|OmniPath}  p          - The file path or URL to parse
+ * @param   {PathOptions}          [options]  - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPath.extname = OmniPath.ext;
 
 ///**
 // * Joins all arguments together, and normalizes the resulting path.
@@ -1540,7 +1561,7 @@ OmniPath.basename = function(p, ext, options) {
 //};
 //
 ///**
-// * Resolves `to` to an absolute path. Similar to Node's {@link path.resolve} or {@link url.resolve}.
+// * Resolves `to` to an absolute path. Identical to Node's {@link path.resolve} or {@link url.resolve}.
 // *
 // * path.resolve: {@link https://nodejs.org/api/path.html#path_path_resolve_from_to}
 // * url.resolve {@link https://nodejs.org/api/url.html#url_url_resolve_from_to}
@@ -1562,7 +1583,7 @@ OmniPath.basename = function(p, ext, options) {
 //};
 //
 ///**
-// * Resolves the given path or url, relative to this one. Similar to Node's {@link path.resolve}
+// * Resolves the given path or url, relative to this one. Identical to Node's {@link path.resolve}
 // * or {@link url.resolve}.
 // *
 // * path.resolve:  {@link https://nodejs.org/api/path.html#path_path_resolve_from_to}
@@ -1608,7 +1629,7 @@ OmniPath.basename = function(p, ext, options) {
 //};
 //
 ///**
-// * Returns the given path or URL as a formatted string. Similar to Node's {@link path.format} or {@link url.format}.
+// * Returns the given path or URL as a formatted string. Identical to Node's {@link path.format} or {@link url.format}.
 // *
 // * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
 // * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
@@ -1622,7 +1643,7 @@ OmniPath.basename = function(p, ext, options) {
 //};
 //
 ///**
-// * Returns the formatted path or URL string. Similar to Node's {@link path.format} or {@link url.format}.
+// * Returns the formatted path or URL string. Identical to Node's {@link path.format} or {@link url.format}.
 // *
 // * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
 // * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
@@ -1783,8 +1804,8 @@ OmniPath.cwd = function() {
 };
 
 /**
- * Parses the given path or URL, and returns a {@link OmniPath} object. Similar to Node's
- * {@link posix.parse} and {@link url.parse}.
+ * Parses the given path or URL, and returns a {@link OmniPath} object. Identical to Node's
+ * {@link path.parse} and {@link url.parse}.
  *
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
@@ -1800,7 +1821,7 @@ OmniPath.parse = function(p, options) {
 
 /**
  * Parses the given path or URL, and sets the corresponding properties of this {@link OmniPath} object.
- * Similar to Node's {@link posix.parse} and {@link url.parse}.
+ * Identical to Node's {@link path.parse} and {@link url.parse}.
  *
  * path.parse: {@link https://nodejs.org/api/path.html#path_path_parse_pathstring}
  * url.parse:  {@link https://nodejs.org/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost}
@@ -1899,7 +1920,16 @@ OmniPosix.prototype.clone = function(options) {
 };
 
 /**
- * Returns the last portion of the path or URL
+ * Returns the directory name of the path.
+ *
+ * @returns {string}
+ */
+OmniPosix.prototype.dirname = function() {
+  return posix.dirname(this.pathname);
+};
+
+/**
+ * Returns the last portion of the path.
  *
  * @param   {string} [ext] - The portion of the file extension to leave off
  * @returns {string}
@@ -1971,6 +2001,25 @@ OmniUrl.prototype.clone = function(options) {
 };
 
 /**
+ * Returns the directory name of the path.
+ *
+ * @returns {string}
+ */
+OmniUrl.prototype.dirname = function() {
+  return posix.dirname(this.pathname);
+};
+
+/**
+ * Returns the last portion of the path.
+ *
+ * @param   {string} [ext] - The portion of the file extension to leave off
+ * @returns {string}
+ */
+OmniUrl.prototype.basename = function(ext) {
+  return posix.basename(this.base, ext);
+};
+
+/**
  * Parses the given path as a URL, and sets the corresponding properties of this {@link OmniUrl} object.
  *
  * @param   {string|Url|OmniUrl}  p         - The file path or URL to parse
@@ -2039,7 +2088,16 @@ OmniWindows.prototype.clone = function(options) {
 };
 
 /**
- * Returns the last portion of the path or URL
+ * Returns the directory name of the path.
+ *
+ * @returns {string}
+ */
+OmniWindows.prototype.dirname = function() {
+  return win32.dirname(this.pathname);
+};
+
+/**
+ * Returns the last portion of the path.
  *
  * @param   {string} [ext] - The portion of the file extension to leave off
  * @returns {string}
