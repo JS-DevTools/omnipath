@@ -26,7 +26,7 @@ before_script:
   - npm update -g npm
 branches:
   only:
-    - /^v\d\.\d\.\d/    # only build tagged versions (rather than EVERY push)
+    - master            # only run CI on the master branch
     - /^PR /            # also build pull requests
 after_success:
   - cat coverage/*/lcov.info > coveralls.txt
