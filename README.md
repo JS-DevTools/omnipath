@@ -39,7 +39,7 @@ OmniPath.dirname(somePath);
 // Works just like path.basename(), even for URLs
 OmniPath.basename(somePath, ".html");
 
-// OmniPath instances have all the same methods as the OmniPath class
+// Alternate Syntax: Create an OmniPath instance, then call its methods
 var path = new OmniPath(somePath);
 path.resolve(someOtherPath);
 path.join(someOtherPath);
@@ -97,7 +97,6 @@ define(["omnipath"], function(OmniPath) { /* your module's code */ })
 API
 --------------------------
 ### `parse(path, [options])`
-Parses a path or URL string and returns an object with all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring).
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed.  This parameter will usually be a string, but can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost)) or an existing `OmniPath` object.
@@ -107,6 +106,10 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** [`OmniPath`](#omnipath-object) object
 
+Parses a path or URL string and returns an object with all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring).
+
+If the path includes a protocol (e.g. "http://..., "file://...", etc.), then it will be parsed as a URL; otherwise, it will be parsed according to the runtime environment. That is, it will be parsed using [`path.win32`](https://nodejs.org/api/path.html#path_path_win32) on Windows, it will be parsed using [`path.posix`](https://nodejs.org/api/path.html#path_path_posix) on Mac, Linux, SunOS, etc., and it will be parsed using [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) when running in web browsers.  If you want to use a _particular_ parser regardless of the runtime environment, then call `OmniPath.win32.parse()`, `OmniPath.posix.parse()`, or `OmniPath.url.parse()` instead.
+
 ```javascript
 OmniPath.parse("http://server.com/dir/subdir/file.html");
 OmniPath.parse("C:\\dir\\subdir\\file.html");
@@ -115,7 +118,6 @@ OmniPath.parse("/dir/subdir/file.html#page1", {allowFileHash: true});
 
 
 ### `format(path, [options])`
-The opposite of [`parse`](#parsepath-options). Returns a formatted string from a parsed object. Similar to [`url.format`](https://nodejs.org/docs/latest/api/url.html#url_url_format_urlobj).
 
 - **path** (_required_) - `Url` or `OmniPath`<br>
 A parsed `OmniPath` object.  Can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost))
@@ -124,6 +126,8 @@ A parsed `OmniPath` object.  Can also be a `Url` object (from [`url.parse`](http
 Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
+
+The opposite of [`parse`](#parsepath-options). Returns a formatted string from a parsed object. Similar to [`url.format`](https://nodejs.org/docs/latest/api/url.html#url_url_format_urlobj).
 
 ```javascript
 var p = OmniPath.parse("C:\\dir\\subdir\\file.html");
@@ -135,7 +139,6 @@ OmniPath.format(u);        // => "http://server.com/dir/subdir/file.html"
 
 
 ### `join(path1, path2, ..., [options])`
-Joins multiple path segments together and normalizes the result.
 
 - **path1, path2, ...** (_optional_) - `string` or `Url` or `OmniPath`<br>
 The path parts to join. See [`parse`](#parsepath-options) for details.
@@ -145,6 +148,8 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
+Joins multiple path segments together and normalizes the result. Just like [`path.join`](https://nodejs.org/api/path.html#path_path_join_path1_path2)
+
 ```javascript
 OmniPath.join("http://server.com/dir", "..", "otherdir/file.html");  // => "http://server.com/otherdir/file.html"
 OmniPath.join("C:\\", "dir/subdir", "\\file.html");                  // => "C:\\dir\\subdir\\file.html"
@@ -153,9 +158,6 @@ OmniPath.join("../dir", "./subdir", "..", "/file.html");             // => "../d
 
 
 ### `resolve(from..., to, [options])`
-Resolves `to` to an absolute path.
-
-If `to` isn't already absolute, `from` arguments are prepended in right to left order, until an absolute path is found. If after using all from paths still no absolute path is found, [`OmniPath.cwd`](#cwd) is used as well
 
 - **from...** (_optional_) - `string` or `Url` or `OmniPath`<br>
 The paths used to resolve `to`. See [`parse`](#parsepath-options) for details.
@@ -168,6 +170,10 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
+Resolves `to` to an absolute path. Just like [`path.resolve`](https://nodejs.org/api/path.html#path_path_resolve_from_to)
+
+If `to` isn't already absolute, `from` arguments are prepended in right to left order, until an absolute path is found. If after using all from paths still no absolute path is found, [`OmniPath.cwd`](#cwd) is used as well
+
 ```javascript
 OmniPath.resolve("http://server.com/dir", "otherdir/file.html");  // => "http://server.com/otherdir/file.html"
 OmniPath.resolve("C:\\", "dir\\subdir", "\\file.html");           // => "C:\\file.html"
@@ -175,7 +181,6 @@ OmniPath.resolve("C:\\", "dir\\subdir", "\\file.html");           // => "C:\\fil
 
 
 ### `normalize(path, [options])`
-Normalizes a path, taking care of `..` and `.`, and removing duplicate path separators.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be normalized. See [`parse`](#parsepath-options) for details.
@@ -185,6 +190,8 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
+Normalizes a path, taking care of `..` and `.`, and removing duplicate path separators. Just like [`path.normalize`](https://nodejs.org/api/path.html#path_path_normalize_p)
+
 ```javascript
 OmniPath.normalize("http://server.com//dir/./subdir/..//otherdir/file.html");  // => "http://server.com/dir/otherdir/file.html"
 OmniPath.normalize("C:\\dir\\.\\subdir\\..\\file.html");                       // => "C:\\dir\\file.html"
@@ -192,7 +199,6 @@ OmniPath.normalize("C:\\dir\\.\\subdir\\..\\file.html");                       /
 
 
 ### `dirname(path, [options])`
-Returns the path's directory name.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed. See [`parse`](#parsepath-options) for details.
@@ -202,6 +208,8 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
+Returns the path's directory name.  Just like [`path.dirname`](https://nodejs.org/api/path.html#path_path_dirname_p)
+
 ```javascript
 OmniPath.dirname("http://server.com/dir/subdir/file.html");  // => "/dir/subdir"
 OmniPath.dirname("C:\\dir\\subdir\\file.html");              // => "C:\\dir\\subdir"
@@ -210,7 +218,6 @@ OmniPath.dirname("/dir/subdir/");                            // => "/dir"
 
 
 ### `basename(path, [ext], [options])`
-Returns the last portion of a path, optionally without the extension.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed. See [`parse`](#parsepath-options) for details.
@@ -223,6 +230,8 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
+Returns the last portion of a path, optionally without the extension.  Just like [`path.basename`](https://nodejs.org/api/path.html#path_path_basename_p_ext)
+
 ```javascript
 OmniPath.basename("http://server.com/dir/subdir/file.html");  // => "file.html"
 OmniPath.basename("C:\\dir\\subdir\\file.html", ".html");     // => "file"
@@ -231,7 +240,6 @@ OmniPath.basename("/dir/subdir/file.html", ".txt");           // => "file.html"
 
 
 ### `extname(path, [options])`
-Returns the path's extension, if any.  If the path's basename begins with a period, then an empty string is returned.
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
 The path to be parsed. See [`parse`](#parsepath-options) for details.
@@ -240,6 +248,10 @@ The path to be parsed. See [`parse`](#parsepath-options) for details.
 Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
+
+Returns the path's extension, if any.  Just like [`path.extname`](https://nodejs.org/api/path.html#path_path_extname_p)
+
+If the path's basename begins with a period, then an empty string is returned.
 
 ```javascript
 OmniPath.extname("http://server.com/dir/subdir/file.html");  // => ".html"
@@ -251,9 +263,10 @@ OmniPath.extname("/dir/subdir/.hiddendir");                  // => ""
 
 
 ### `cwd()`
-Returns the current working directory as a [`OmniPath`](#omnipath-object) object.  In Node, the current working directory is [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd).  In web browsers, it is the directory of the current page.
 
 - **Return Value:** [`OmniPath`](#omnipath-object)
+
+Returns the current working directory as a [`OmniPath`](#omnipath-object) object.  In Node, the current working directory is [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd).  In web browsers, it is the directory of the current page.
 
 ```javascript
 var cwd = OmniPath.cwd();
@@ -261,6 +274,188 @@ cwd.href;       // e.g. "http://localhost:8080/dir/subdir/"
 cwd.pathname;   // e.g. "/dir/subdir/"
 cwd.dir;        // e.g. "/dir"
 cwd.base;       // e.g. "subdir"
+```
+
+
+### `isAbsolute(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is absolute. Just like [`path.isAbsolute`](https://nodejs.org/api/path.html#path_path_isabsolute_path)
+
+```javascript
+OmniPath.isAbsolute("https://localhost:8080/dir/subdir/"); // => true
+OmniPath.isAbsolute("file:///Users/johndoe/documents/");   // => true
+OmniPath.isAbsolute("/dir/subdir");                        // => true
+OmniPath.isAbsolute("C:\dir\subdir\file.txt");             // => true on Windows
+OmniPath.isAbsolute("\\server\\dir\\subdir\\");            // => true on Windows and browsers
+```
+
+
+### `isUrl(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is a URL (as opposed to a filesystem path). See [`parse`](#parsepath-options) for details about how this is determined.
+
+```javascript
+OmniPath.isUrl("https://localhost:8080/dir/subdir/"); // => true
+OmniPath.isUrl("file:///Users/johndoe/documents/");   // => true
+OmniPath.isUrl("/dir/subdir");                        // => false in Node, true in browsers
+OmniPath.isUrl("C:\dir\subdir\file.txt");             // => false in Node, true in browsers
+OmniPath.isUrl("\\server\\dir\\subdir\\");            // => false in Node, true in browsers
+```
+
+
+### `isFS(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is a filesystem path (as opposed to a URL). See [`parse`](#parsepath-options) for details about how this is determined.
+
+```javascript
+OmniPath.isFS("https://localhost:8080/dir/subdir/"); // => false
+OmniPath.isFS("file:///Users/johndoe/documents/");   // => false
+OmniPath.isFS("/dir/subdir");                        // => true in Node, false in browsers
+OmniPath.isFS("C:\dir\subdir\file.txt");             // => true in Node, false in browsers
+OmniPath.isFS("\\server\\dir\\subdir\\");            // => true in Node, false in browsers
+```
+
+
+### `isPosix(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is a POSIX filesystem path. See [`parse`](#parsepath-options) for details about how this is determined.
+
+If this is `true`, then [`isFS`](#isfspath-options) will also be `true`.
+
+```javascript
+OmniPath.isPosix("https://localhost:8080/dir/subdir/"); // => false
+OmniPath.isPosix("file:///Users/johndoe/documents/");   // => false
+OmniPath.isPosix("/dir/subdir");                        // => true in Node, false in browsers
+OmniPath.isPosix("C:\dir\subdir\file.txt");             // => true in Node, false in browsers
+OmniPath.isPosix("\\server\\dir\\subdir\\");            // => true in Node, false in browsers
+```
+
+
+### `isWindows(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is a Windows filesystem path. See [`parse`](#parsepath-options) for details about how this is determined.
+
+If this is `true`, then [`isFS`](#isfspath-options) will also be `true`.
+
+```javascript
+OmniPath.isWindows("https://localhost:8080/dir/subdir/"); // => false
+OmniPath.isWindows("file:///Users/johndoe/documents/");   // => false
+OmniPath.isWindows("/dir/subdir");                        // => true in Node, false in browsers
+OmniPath.isWindows("C:\dir\subdir\file.txt");             // => true in Node, false in browsers
+OmniPath.isWindows("\\server\\dir\\subdir\\");            // => true in Node, false in browsers
+```
+
+
+### `isUnc(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Determines whether the path is a Windows UNC path. See [`parse`](#parsepath-options) for details about how this is determined.
+
+If this is `true`, then [`isFS`](#isfspath-options) and [`isWindows`](#iswindowspath-options) will also be `true`.
+
+```javascript
+OmniPath.isUnc("https://localhost:8080/dir/subdir/"); // => false
+OmniPath.isUnc("file:///Users/johndoe/documents/");   // => false
+OmniPath.isUnc("/dir/subdir");                        // => false
+OmniPath.isUnc("C:\dir\subdir\file.txt");             // => false
+OmniPath.isUnc("\\server\\dir\\subdir\\");            // => true on Windows
+```
+
+
+### `sep(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Returns the path separator. Just like [`path.sep`](https://nodejs.org/api/path.html#path_path_sep)
+
+This method returns the proper path separator for the path, which is not necessarily the one that's actually used in the path. For example, on Windows, the path "C:/dir/subdir/file.txt" is valid, but the path separator is still a backslash ("\").
+
+If you just want to get the path separator for a given environment, then you can use `OmniPath.win32.sep`, `OmniPath.posix.sep`, or `OmniPath.url.sep` instead.
+
+```javascript
+OmniPath.sep("https://localhost:8080/dir/subdir/"); // => "/"
+OmniPath.sep("file:///Users/johndoe/documents/");   // => "/"
+OmniPath.sep("/dir/subdir");                        // => "/" on POSIX and browsers, "\" on Windows
+OmniPath.sep("C:\dir\subdir\file.txt");             // => "\" on Windows, "/" elsewhere
+OmniPath.sep("\\server\\dir\\subdir\\");            // => "\" on Windows, "/" elsewhere
+```
+
+
+### `delimiter(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Returns the path separator. Just like [`path.delimiter`](https://nodejs.org/api/path.html#path_path_delimiter)
+
+If you just want to get the path delimiter for a given environment, then you can use `OmniPath.win32.sep` or `OmniPath.posix.sep` instead.
+
+URLs do not have a path delimiter, so an empty string is returned.
+
+```javascript
+OmniPath.delimiter("https://localhost:8080/dir/subdir/"); // => ""
+OmniPath.delimiter("file:///Users/johndoe/documents/");   // => ""
+OmniPath.delimiter("/dir/subdir");                        // => ":" on POSIX, ";" on Windows
+OmniPath.delimiter("C:\dir\subdir\file.txt");             // => ":" on POSIX, ";" on Windows
+OmniPath.delimiter("\\server\\dir\\subdir\\");            // => ":" on POSIX, ";" on Windows
 ```
 
 
@@ -284,31 +479,28 @@ var path = new OmniPath("/dir/subdir/file.html#page1", {allowFileHash: true});
 
 
 ### `OmniPath` object
-`OmniPath` objects have instances methods corresponding to each of the static methods listed above, such as [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.  When calling these instance methods, you don't need to specify the `path` or `options` parameters, since you already passed those to the [constructor](#omnipathpath-options).
+All of the methods listed above instantiate `OmniPath` objects internally, and then call their methods or return their property values.  You can create `OmniPath` objects yourself by calling `new OmniPath(somePath)`, and then use the properties and methods directly. The behavior is the same either way. It's just a matter of which syntax you prefer.
 
-`OmniPath` objects also have all the properties of [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost) AND [`path.parse`](https://nodejs.org/api/path.html#path_path_parse_pathstring), plus a few extra helper properties:
+`OmniPath` objects have all the same members listed above, but may be easier to use &mdash; especially when performing multiple operations on the same path &mdash; since you don't need to specify the `path` and `options` parameters over and over again. Also, many members are simple properties instead of methods, which can result in cleaner syntax.
 
-|property          |type      |description
-|:-----------------|:---------|:------------
-|`isUrl`           |boolean   |Indicates whether the path is a URL (as opposed to a filesystem path).  This will always be true when running in a web browser.
-|`isFile`          |boolean   |Indicates whether the path is a filesystem path (as opposed to a URL).
-|`sep`             |string    |The path separator character. This will be a forward slash (`/`) for URLs.  For file paths, it will be a forward slash (`/`) on POSIX systems, and a backslash (`\`) on Windows systems.
-|`href`            |string    |The full path, including all parts.<br>Examples:<br>`http://server:8080/dir/subdir?query=string#hash`<br>`/some/posix/path.ext`<br>`C:\some\windows\path.ext`
-|`protocol`        |string    |The protocol, lowercased. Will always be empty for file paths.<br>Examples: `http:`, `https:`, `ftp:`, `file:`
-|`slashes`         |boolean   |Indicates whether the protocol requires slashes after the colon. Will always be false for file paths.
-|`auth`            |string    |The authentication portion of a URL.. Will always be empty for file paths.<br>Example: `user:pass`
-|`host`            |string    |The hostname and port, lowercased. Will always be empty for file paths.<br>Examples: `localhost`, `host.com`, `host.com:8080`
-|`hostname`        |string    |The hostname (without port), lowercased. Will always be empty for file paths.<br>Examples: `localhost`, `host.com`
-|`port`            |string    |The port number. Will always be empty for file paths.<br>Example: `8080`
-|`path`            |string    |Concatenation of `pathname` and `search`.<br>Example: `/dir/subdir/file.html?query=string`
-|`pathname`        |string    |The path, which comes after the host and before the query, including a trailing slash if present.<br>Examples:<br>`/dir/subdir/`<br>`/dir/subdir/file.html`<br>`C:\dir\subdir\file.html`
-|`root`            |string    |The path's root. This will always be a single forward slash for URLs and POSIX paths.  For local Windows paths, it will include the drive letter.  For UNC paths, it will include the host and root.<br>Examples:<br>`/`<br>`C:\`<br>`\\host\\root\\`
-|`dir`             |string    |The path's parent directory.<br>Examples:<br>`/dir/subdir`<br>`C:\dir\subdir`
-|`base`            |string    |The last portion of a path, which may be a file name or a directory name.<br>Examples:<br>`filename.html`<br>`somedir`<br>`.hiddendir`
-|`name`            |string    |The path's base name, without an extension.<br>Examples:<br>`filename`<br>`somedir`<br>`.hiddendir`
-|`ext`             |string    |The path's extension. This will be empty if there is no extension.<br>Examples: `.html`, `.txt`
-|`search`          |string    |The query string, including the leading question mark.<br>Example: `?foo=bar&biz=baz`
-|`query`           |object    |The parsed query string.<br>Example: `{foo: "bar", biz: "baz"}`
+```javascript
+var path = new OmniPath("http://server.com/dir/subdir/file.html?foo=bar");
+
+// Methods
+path.dirname();                         // => "/dir/subdir"
+path.basename(".html");                 // => "file"
+path.resolve("../anotherFile.html");    // => "http://server.com/dir/anotherFile.html"
+
+// Properties
+path.isUrl;                             // => true
+path.isAbsolute;                        // => true
+path.sep;                               // => "/"
+path.pathname;                          // => "/dir/subdir/file.html"
+path.base;                              // => "file.html"
+path.name;                              // => "file"
+path.query;                             // => {foo: "bar"}
+```
+
 
 
 Contributing
