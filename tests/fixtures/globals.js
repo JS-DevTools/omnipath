@@ -11,27 +11,9 @@
   'use strict';
 
   if (typeof(window) === 'object') {
-    // Configure Mocha
-    mocha.setup('bdd');
-    mocha.fullTrace();
-    mocha.checkLeaks();
-    mocha.globals([]);
-
     // Expose Browser globals
     window.global = window;
     window.expect = chai.expect;
-    window.path = window.url = {
-      normalize: function() {},
-      join: function() {},
-      resolve: function() {},
-      isAbsolute: function() {},
-      relative: function() {},
-      dirname: function() {},
-      basename: function() {},
-      extname: function() {},
-      parse: function() {},
-      format: function() {}
-    };
     window.userAgent = {
       isNode: false,
       isWindows: false,
@@ -41,11 +23,11 @@
   }
   else {
     // Expose Node globals
-    global.OmniPath = require('../');
+    global.OmniPath = require('../../');
     global.expect = require('chai').expect;
     global.sinon = require('sinon');
-    global.path = require('../lib/node/path');
-    global.url = require('../lib/node/url');
+    global.path = require('../../lib/node/path');
+    global.url = require('../../lib/node/url');
 
     global.userAgent = {
       isNode: true,
@@ -54,11 +36,5 @@
       isBrowser: false
     }
   }
-
-  // Set global settings for all tests
-  beforeEach(function() {
-    this.currentTest.timeout(2000);
-    this.currentTest.slow(100);
-  });
 
 })();

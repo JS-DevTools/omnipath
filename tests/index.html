@@ -7,30 +7,33 @@
 
     <title>OmniPath Tests</title>
 
-    <link rel="stylesheet" href="../www/bower_components/mocha/mocha.css"/>
+    <link rel="stylesheet" href="bower_components/mocha/mocha.css"/>
   </head>
   <body>
     <div id="mocha"></div>
 
     <!-- Third-Party Libraries -->
-    <script src="../www/bower_components/mocha/mocha.js"></script>
-    <script src="../www/bower_components/chai/chai.js"></script>
-    <script src="../www/bower_components/sinon-js/sinon.js"></script>
+    <script src="bower_components/mocha/mocha.js"></script>
+    <script src="bower_components/chai/chai.js"></script>
+    <script src="bower_components/sinon-js/sinon.js"></script>
 
     <!-- OmniPath -->
     <script src="../dist/omnipath.js"></script>
 
-    <!-- Unit Tests -->
-    <script src="_config.js"></script>
-    <script src="_helper.js"></script>
-    <script src="_test-data.js"></script>
-    <script src="basename.spec.js"></script>
-    <script src="dirname.spec.js"></script>
-    <script src="extname.spec.js"></script>
-    <script src="parse.spec.js"></script>
-    <script src="shortcut-methods.spec.js"></script>
-    <script src="to-url.spec.js"></script>
-    <script src="to-url-string.spec.js"></script>
+    <!-- Test Fixtures -->
+    <script src="fixtures/config.js"></script>
+    <script src="fixtures/globals.js"></script>
+    <script src="fixtures/test-data.js"></script>
+    <script src="fixtures/test-helper.js"></script>
+
+    <!-- Tests -->
+    <script src="specs/basename.spec.js"></script>
+    <script src="specs/dirname.spec.js"></script>
+    <script src="specs/extname.spec.js"></script>
+    <script src="specs/parse.spec.js"></script>
+    <script src="specs/shortcut-methods.spec.js"></script>
+    <script src="specs/to-url.spec.js"></script>
+    <script src="specs/to-url-string.spec.js"></script>
 
     <script>
       mocha.run();
