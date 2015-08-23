@@ -17,6 +17,8 @@ OmniPath
 
 OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, UNC paths, and URLs.
 
+You can use `OmniPath.win32`, `OmniPath.posix`, or `OmniPath.url` to treat paths a particular way, or you can just use `OmniPath` to automatically adjust based on the runtime environment.
+
 [Tested](http://bigstickcarpet.github.io/omnipath/tests/index.html) in Node, IO.js, and all modern web browsers on Mac, Windows, Linux, iOS, and Android.
 
 
