@@ -7,28 +7,45 @@ var baseConfig = {
   reporters: ['mocha'],
   files: [
     // Third-Party Libraries
-    'www/bower_components/chai/chai.js',
-    'www/bower_components/sinon-js/sinon.js',
+    'tests/bower_components/chai/chai.js',
+    'tests/bower_components/sinon-js/sinon.js',
 
     // OmniPath
-    'dist/omnipath.test.js',
+    'dist/omnipath.min.js',
 
-    // Unit Tests
-    'tests/**/_*.js',
-    'tests/**/*.spec.js'
+    // Test Fixtures
+    'tests/fixtures/**/*.js',
+
+    // Tests
+    'tests/specs/**/*.spec.js'
   ]
 };
 
 module.exports = function(config) {
-  // Honor the KARMA environment variable, if it exists
-  if (process.env.KARMA && process.env.KARMA !== 'true') {
+  var karma = process.env.KARMA ? process.env.KARMA === 'true' : true;
+  var coverage = process.env.KARMA_COVERAGE ? process.env.KARMA_COVERAGE === 'true' : true;
+  var sauce = process.env.KARMA_SAUCE ? process.env.KARMA_SAUCE === 'true' : true;
+  var sauceUsername = process.env.SAUCE_USERNAME;
+  var sauceAccessKey = process.env.SAUCE_ACCESS_KEY;
+
+  if (!karma) {
+    // Karma is disabled, so abort immediately
     process.exit();
     return;
   }
 
-  configureCodeCoverage(baseConfig);
-  configureBrowsers(baseConfig);
-  configureSauceLabs(baseConfig);
+  if (coverage) {
+    configureCodeCoverage(baseConfig);
+  }
+
+  if (sauce && sauceUsername && sauceAccessKey) {
+    configureSauceLabs(baseConfig);
+  }
+  else {
+    configureLocalBrowsers(baseConfig);
+  }
+
+  console.log('Karma Config:\n', JSON.stringify(baseConfig, null, 2));
   config.set(baseConfig);
 };
 
@@ -37,6 +54,7 @@ module.exports = function(config) {
  */
 function configureCodeCoverage(config) {
   config.reporters.push('coverage');
+  config.files.splice(config.files.indexOf('dist/omnipath.min.js'), 1, 'dist/omnipath.test.js');
   config.coverageReporter = {
     reporters: [
       {type: 'text-summary'},
@@ -48,7 +66,7 @@ function configureCodeCoverage(config) {
 /**
  * Configures the browsers for the current platform
  */
-function configureBrowsers(config) {
+function configureLocalBrowsers(config) {
   var isMac     = /^darwin/.test(process.platform),
       isWindows = /^win/.test(process.platform),
       isLinux   = !(isMac || isWindows);
@@ -80,96 +98,83 @@ function configureBrowsers(config) {
  * https://github.com/karma-runner/karma-sauce-launcher
  */
 function configureSauceLabs(config) {
-  var username = process.env.SAUCE_USERNAME;
-  var accessKey = process.env.SAUCE_ACCESS_KEY;
+  var project = require('./package.json');
+  var testName = project.name + ' v' + project.version;
+  var build = testName + ' Build #' + process.env.TRAVIS_JOB_NUMBER + ' @ ' + new Date();
 
-  // Only run Sauce Labs if we have the username & access key.
-  if (username && accessKey) {
-    var project = require('./package.json');
-    var testName = project.name + ' v' + project.version;
-    var build = testName + ' Build #' + process.env.TRAVIS_JOB_NUMBER + ' @ ' + new Date();
+  config.sauceLabs = {
+    build: build,
+    testName: testName,
+    tags: [project.name],
+    recordVideo: true,
+    recordScreenshots: true
+  };
 
-    config.sauceLabs = {
-      build: build,
-      testName: testName,
-      tags: [project.name],
-      recordVideo: true,
-      recordScreenshots: true
-    };
+  config.customLaunchers = {
+    'IE-9': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'internet explorer',
+      version: '9'
+    },
+    'IE-10': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'internet explorer',
+      version: '10'
+    },
+    'IE-11': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'internet explorer',
+      version: '11'
+    },
+    'Chrome-Latest': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'chrome'
+    },
+    'Firefox-Latest': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'firefox'
+    },
+    'Opera-Latest': {
+      base: 'SauceLabs',
+      platform: 'Windows 7',
+      browserName: 'opera'
+    },
+    'Safari-Latest': {
+      base: 'SauceLabs',
+      platform: 'OS X 10.10',
+      browserName: 'safari'
+    },
+    'iOS-6': {
+      base: 'SauceLabs',
+      platform: 'OS X 10.10',
+      browserName: 'iphone',
+      version: '6'
+    },
+    'iOS-8': {
+      base: 'SauceLabs',
+      platform: 'OS X 10.10',
+      browserName: 'iphone',
+      version: '8'
+    },
+    'Android-4-4': {
+      base: 'SauceLabs',
+      platform: 'Linux',
+      browserName: 'android',
+      version: '4.4'
+    },
+    'Android-5': {
+      base: 'SauceLabs',
+      platform: 'Linux',
+      browserName: 'android',
+      version: '5'
+    }
+  };
 
-    config.customLaunchers = {
-      'IE-9': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'internet explorer',
-        version: '9'
-      },
-      'IE-10': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'internet explorer',
-        version: '10'
-      },
-      'IE-11': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'internet explorer',
-        version: '11'
-      },
-      'Chrome-Latest': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'chrome'
-      },
-      'Firefox-Latest': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'firefox'
-      },
-      'Opera-Latest': {
-        base: 'SauceLabs',
-        platform: 'Windows 7',
-        browserName: 'opera'
-      },
-      'Safari-Latest': {
-        base: 'SauceLabs',
-        platform: 'OS X 10.10',
-        browserName: 'safari'
-      },
-      'iOS-6': {
-        base: 'SauceLabs',
-        platform: 'OS X 10.10',
-        browserName: 'iphone',
-        version: '6'
-      },
-      'iOS-8': {
-        base: 'SauceLabs',
-        platform: 'OS X 10.10',
-        browserName: 'iphone',
-        version: '8'
-      },
-      'Android-4-4': {
-        base: 'SauceLabs',
-        platform: 'Linux',
-        browserName: 'android',
-        version: '4.4'
-      },
-      'Android-5': {
-        base: 'SauceLabs',
-        platform: 'Linux',
-        browserName: 'android',
-        version: '5'
-      }
-    };
-
-    config.reporters.push('saucelabs');
-    config.browsers = config.browsers.concat(Object.keys(config.customLaunchers));
-
-    //// Sauce Connect sometimes hangs (https://github.com/karma-runner/karma-sauce-launcher/issues/14)
-    //// So terminate the process after a few minutes
-    //setTimeout(function() {
-    //  console.warn('\nWARNING: Sauce Connect appears to have hung. Forcefully terminating.\n');
-    //  process.exit();
-    //}, 1000 * 60 * 8); // 8 minutes
-  }
+  config.reporters.push('saucelabs');
+  config.browsers = Object.keys(config.customLaunchers);
 }
