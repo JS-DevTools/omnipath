@@ -8,7 +8,7 @@ matrix:
     # IO.js
     - node_js: iojs
       env: KARMA=false
-    
+
     # Node
     - node_js: 0.10
       env: KARMA=false
@@ -19,16 +19,16 @@ matrix:
 
     # Local Browsers
     - node_js: 0.12
-      env: KARMA=true KARMA_COVERAGE=true KARMA_SAUCE=false
+      env: KARMA_COVERAGE=true KARMA_SAUCE=false
 
     # Sauce Labs
     - node_js: 0.12
-      env: KARMA=true KARMA_COVERAGE=false KARMA_SAUCE=true
+      env: KARMA_SAUCE=true KARMA_COVERAGE=false
 
   fast_finish: true
   allow_failures:
     - node_js: 0.12
-      env: KARMA=true KARMA_COVERAGE=false KARMA_SAUCE=true
+      env: KARMA_SAUCE=true KARMA_COVERAGE=false
 
 before_script:
   - export DISPLAY=:99.0
