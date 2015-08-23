@@ -277,6 +277,29 @@ cwd.base;       // e.g. "subdir"
 ```
 
 
+### `toUrl(path, [options])`
+
+- **path** (_required_) - `string` or `Url` or `OmniPath`<br>
+The path to be parsed. See [`parse`](#parsepath-options) for details.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `boolean`
+
+Converts the given path to a [`Url`](https://nodejs.org/docs/latest/api/url.html#url_url) object. If the path is already a URL, then it remain unchanged.  If it is a filesystem path, then it is converted to a `file://` URL.
+
+You can also call `OmniPath.toUrlString()`, which does the same thing, but returns the result as a string instead of a `Url` object.
+
+```javascript
+OmniPath.toUrlString("https://localhost:8080/dir/subdir/"); // => (same string)
+OmniPath.toUrlString("file:///Users/johndoe/documents/");   // => (same string)
+OmniPath.toUrlString("/dir/subdir");                        // => "file:///dir/subdir"
+OmniPath.toUrlString("C:\dir\subdir\file.txt");             // => "file:///C:/dir/subdir/file.txt"
+OmniPath.toUrlString("\\server\\dir\\subdir\\");            // => "file://server/dir/subdir/"
+```
+
+
 ### `isAbsolute(path, [options])`
 
 - **path** (_required_) - `string` or `Url` or `OmniPath`<br>
