@@ -8,7 +8,7 @@ matrix:
     # IO.js
     - node_js: iojs
       env: KARMA=false
-
+    
     # Node
     - node_js: 0.10
       env: KARMA=false
@@ -29,6 +29,7 @@ matrix:
   allow_failures:
     - node_js: 0.12
       env: KARMA=true KARMA_COVERAGE=false KARMA_SAUCE=true
+
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
@@ -38,7 +39,7 @@ branches:
     - master            # only run CI on the master branch
     - /^PR /            # also build pull requests
 after_success:
-  - cat coverage/*/lcov.info > coveralls.txt
-  - cat coveralls.txt
-  - ls -R1 coverage/*/lcov.info
-  - cat coveralls.txt | node_modules/coveralls/bin/coveralls.js
+  - cat coverage/*/lcov.info > coveralls.txt                    # concatenate all code-coverage data into a single file
+  - cat coveralls.txt                                           # output the file contents (for debugging)
+  - ls -R1 coverage/*/lcov.info                                 # list the files (for debugging)
+  - cat coveralls.txt | node_modules/coveralls/bin/coveralls.js # send code-coverage data to Coveralls

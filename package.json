@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "simplifyify": "^1.4.1",
-    "bower": "^1.4.1",
+    "bower": "^1.5.1",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
     "karma-cli": "0.1.0",
