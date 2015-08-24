@@ -129,7 +129,9 @@ Options that determine how the path is parsed. See [options](#options) below.
 
 - **Return Value:** `string`
 
-The opposite of [`parse`](#parsepath-options). Returns a formatted string from a parsed object. Similar to [`url.format`](https://nodejs.org/docs/latest/api/url.html#url_url_format_urlobj).
+The opposite of [`parse`](#parsepath-options). Returns a formatted string from a parsed object. Just like [`path.format`](https://nodejs.org/api/path.html#path_path_format_pathobject) or [`url.format`](https://nodejs.org/docs/latest/api/url.html#url_url_format_urlobj).
+
+Just like Node's `path.format` and `url.format` methods, `OmniPath.format` does _not_ normalize the path, so it is possible to get results with redundant/mixed slashes, as well as "." and ".." sequences. You should call [`normalize`](#normalizepath-options) on the result to ensure it is well-formatted.
 
 ```javascript
 var p = OmniPath.parse("C:\\dir\\subdir\\file.html");

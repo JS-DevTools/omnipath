@@ -38,9 +38,9 @@ methods.forEach(function(method) {
       expect(results.url).to.be.a(method.returns);
 
       // Validate the return value
-      expect(results.posix).to.deep.equal(test.parsed.posix[method.name]);
-      expect(results.win32).to.deep.equal(test.parsed.win32[method.name]);
-      expect(results.url).to.deep.equal(test.parsed.url[method.name]);
+      expect(results.posix).to.deep.equal(test.parse.posix[method.name]);
+      expect(results.win32).to.deep.equal(test.parse.win32[method.name]);
+      expect(results.url).to.deep.equal(test.parse.url[method.name]);
     });
   });
 });

@@ -11,12 +11,12 @@ describe('OmniPath.toUrl', function() {
     expect(urlString.url).to.be.an('object').and.not.empty;
 
     // Validate the return value
-    expect(urlString.posix.href).to.equal(test.urlString.posix);
-    expect(urlString.posix.format()).to.equal(test.urlString.posix);
-    expect(urlString.win32.href).to.equal(test.urlString.win32);
-    expect(urlString.win32.format()).to.equal(test.urlString.win32);
-    expect(urlString.url.href).to.equal(test.urlString.url);
-    expect(urlString.url.format()).to.equal(test.urlString.url);
+    expect(urlString.posix.href).to.equal(test.toUrlString.posix);
+    expect(urlString.posix.format()).to.equal(test.toUrlString.posix);
+    expect(urlString.win32.href).to.equal(test.toUrlString.win32);
+    expect(urlString.win32.format()).to.equal(test.toUrlString.win32);
+    expect(urlString.url.href).to.equal(test.toUrlString.url);
+    expect(urlString.url.format()).to.equal(test.toUrlString.url);
 
     if (userAgent.isNode) {
       // Validate the object type

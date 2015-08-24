@@ -3,9 +3,9 @@
 describe('OmniPath.parse', function() {
   helper.forEachTest(function(test) {
     var parsed = helper.invoke('parse', test);
-    helper.deepEqual(parsed.posix, test.parsed.posix);
-    helper.deepEqual(parsed.win32, test.parsed.win32);
-    helper.deepEqual(parsed.url, test.parsed.url);
+    helper.deepEqual(parsed.posix, test.parse.posix);
+    helper.deepEqual(parsed.win32, test.parse.win32);
+    helper.deepEqual(parsed.url, test.parse.url);
 
     // Compare to Node's native behavior
     if (userAgent.isNode) {
@@ -16,9 +16,13 @@ describe('OmniPath.parse', function() {
       }
       else if (parsed.omni.search || parsed.omni.hash) {
         helper.equalsNative(parsed.omni, path.parse(parsed.omni.pathname));
+        helper.equalsNative(parsed.posix, path.posix.parse(parsed.omni.pathname));
+        helper.equalsNative(parsed.win32, path.win32.parse(parsed.omni.pathname));
       }
       else {
         helper.equalsNative(parsed.omni, path.parse(test.p));
+        helper.equalsNative(parsed.posix, path.posix.parse(test.p));
+        helper.equalsNative(parsed.win32, path.win32.parse(test.p));
       }
     }
   });

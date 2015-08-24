@@ -1417,8 +1417,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
 var path             = require('./node/path'),
     url              = require('./node/url'),
     util             = require('./util'),
+    querystring      = require('querystring'),
     protocolPattern  = /^[a-z0-9.+-]+:\/\//i,
-    splitUncPattern  = /^\/+([^\/]+)(.*)/,
     backslashPattern = /\\/g;
 
 module.exports = OmniPath;
@@ -1582,7 +1582,8 @@ OmniPath.extname = OmniPath.ext;
 // * @returns {string}
 // */
 //OmniPath.resolve = function(from, to, options) {
-//  return new OmniPath(from, options).resolve(to, options);
+//  var Class = this;
+//  return new Class(from, options).resolve(to, options);
 //};
 //
 ///**
@@ -1630,96 +1631,87 @@ OmniPath.extname = OmniPath.ext;
 //
 //  return resolved;
 //};
-//
-///**
-// * Returns the given path or URL as a formatted string. Identical to Node's {@link path.format} or {@link url.format}.
-// *
-// * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
-// * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
-// *
-// * @param   {string|Url|OmniPath}   p         - The file path or URL to format
-// * @param   {PathOptions}           [options] - Options that determine how paths are parsed
-// * @returns {string}
-// */
-//OmniPath.format = function(p, options) {
-//  return new OmniPath(p, options).format();
-//};
-//
-///**
-// * Returns the formatted path or URL string. Identical to Node's {@link path.format} or {@link url.format}.
-// *
-// * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
-// * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
-// *
-// * @returns {string}
-// */
-//OmniPath.prototype.format = function() {
-//  var clone = copy(this, {});
-//
-//  // Build the `pathname` property
-//  if (clone.dir || clone.base || clone.name || clone.ext) {
-//    clone.base = clone.base || (clone.name + clone.ext) || '';
-//    if (startsWithSeparator(clone.base)) {
-//      clone.base = clone.base.substr(1);
-//    }
-//    clone.dir = clone.dir || '';
-//    var trailingSlash = endsWithSeparator(clone.pathname);
-//    if (endsWithSeparator(clone.dir)) {
-//      clone.pathname = clone.dir + clone.base;
-//    }
-//    else {
-//      clone.pathname = clone.dir + clone.sep + clone.base;
-//    }
-//    if (trailingSlash && !endsWithSeparator(clone.pathname)) {
-//      clone.pathname += clone.sep;
-//    }
-//  }
-//
-//  if (clone.isUrl) {
-//    // Format as a URL
-//    return url.format(clone);
-//  }
-//
-//  if (clone.search) {
-//    if (clone.search[0] !== '?') {
-//      clone.search = '?' + clone.search;
-//    }
-//  }
-//  else if (clone.query) {
-//    // Build the `search` property from the `query` property
-//    clone.search = '?' + querystring.stringify(clone.query);
-//  }
-//
-//  // If the file has a hash, then format the `hash` property
-//  if (clone.hash && clone.hash[0] !== '#') {
-//    clone.hash = '#' + clone.hash;
-//  }
-//
-//  // Format as a file path
-//  return path.normalize(clone.pathname) + clone.search + clone.hash;
-//};
-//
-//OmniPath.normalize = function(p, options) {
-//
-//};
-//
-//OmniPath.prototype.normalize = function() {
-//
-//};
-//
-///**
-// * Returns the formatted path or URL string, by calling {@link OmniPath#format}.
-// *
-// * @type {Function}
-// */
-//OmniPath.prototype.toString = OmniPath.prototype.format;
-//
-///**
-// * Returns the primitive string value, by calling {@link OmniPath#format}.
-// *
-// * @type {Function}
-// */
-//OmniPath.prototype.valueOf = OmniPath.prototype.format;
+
+/**
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ */
+OmniPath.normalize = function(p, options) {
+
+};
+
+/**
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ */
+OmniPath.prototype.normalize = function() {
+
+};
+
+/**
+ * Returns the given path or URL as a formatted string. Identical to Node's {@link path.format} or {@link url.format}.
+ *
+ * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
+ * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
+ *
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
+ * @param   {PathOptions}           [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPath.format = function(p, options) {
+  var Class = this;
+  return new Class(p, options).format();
+};
+
+/**
+ * Returns the formatted path or URL string. Identical to Node's {@link path.format} or {@link url.format}.
+ *
+ * path.format: {@link https://nodejs.org/api/path.html#path_path_format_pathobject}
+ * url.format:  {@link https://nodejs.org/api/url.html#url_url_format_urlobj}
+ *
+ * @returns {string}
+ */
+OmniPath.prototype.format = function() {
+  var pathname = this._path.format(this);
+  var search = this.search || '';
+  var hash = this.hash || '';
+
+  if (search && search[0] !== '?') {
+    search = '?' + search;
+  }
+  else if (this.query) {
+    // Build the `search` property from the `query` property
+    var query = querystring.stringify(this.query);
+    if (query) {
+      search = '?' + query;
+    }
+  }
+
+  // If the file has a hash, then format the `hash` property
+  if (hash && hash[0] !== '#') {
+    hash = '#' + hash;
+  }
+
+  return pathname + search + hash;
+};
+
+/**
+ * Returns the formatted path or URL string, by calling {@link OmniPath#format}.
+ *
+ * @type {Function}
+ */
+OmniPath.prototype.toString = OmniPath.prototype.format;
+
+/**
+ * Returns the primitive string value, by calling {@link OmniPath#format}.
+ *
+ * @type {Function}
+ */
+OmniPath.prototype.valueOf = OmniPath.prototype.format;
 
 /**
  * Returns the given path or URL as a {@link Url} object. File paths will be returned as "file://" URLs.
@@ -1762,51 +1754,33 @@ OmniPath.toUrlString = function(p, options) {
  * @returns {string}
  */
 OmniPath.prototype.toUrlString = function() {
-  if (this.isUrl) {
-    return url.format(this);
-  }
-  else {
-    var hostname = null;
-    var pathname = this.pathname;
-    var search = this.search;
-    var hash = this.hash;
+  var hostname = this.hostname;
+  var pathname = this.pathname;
+  var search = this.search;
+  var hash = this.hash;
 
-    if (this.isWindows) {
-      // Convert Windows path separators to forward slashes
-      pathname = pathname.replace(backslashPattern, '/');
+  // Encode backslash characters
+  pathname = pathname.replace(backslashPattern, '%5C');
+  search = search.replace(backslashPattern, '%5C');
+  hash = hash.replace(backslashPattern, '%5C');
 
-      if (this.isUnc) {
-        var split = splitUncPattern.exec(pathname);
-        if (split) {
-          hostname = split[1];
-          pathname = split[2] || '/';
-        }
-      }
-    }
+  // Format the file path as a URL
+  var formatted = url.format({
+    protocol: 'file:',
+    slashes: true,
+    hostname: hostname,
+    pathname: pathname,
+    search: search,
+    hash: hash
+  });
 
-    // Encode backslash characters
-    pathname = pathname.replace(backslashPattern, '%5C');
-    search = search.replace(backslashPattern, '%5C');
-    hash = hash.replace(backslashPattern, '%5C');
+  // Parse the formatted URL, to encode any special characters
+  var parsed = url.parse(formatted);
 
-    // Format the file path as a URL
-    var formatted = url.format({
-      protocol: 'file:',
-      slashes: true,
-      hostname: hostname,
-      pathname: pathname,
-      search: search,
-      hash: hash
-    });
-
-    // Parse the formatted URL, to encode any special characters
-    var parsed = url.parse(formatted);
-
-    // Re-format the URL, this time with encoding
-    //noinspection UnnecessaryLocalVariableJS
-    var encoded = parsed.format();
-    return encoded;
-  }
+  // Re-format the URL, this time with encoding
+  //noinspection UnnecessaryLocalVariableJS
+  var encoded = parsed.format();
+  return encoded;
 };
 
 /**
@@ -1864,8 +1838,11 @@ OmniPath.parse = function(p, options) {
 OmniPath.prototype.parse = function(p, options) {
   // If the path is already parsed, then just copy it
   if (p instanceof this.constructor) {
-    p.options = options || p._options || this._options;
-    util.copy(p, this);
+    for (var i = 0; i < util.props.length; i++) {
+      var prop = util.props[i];
+      this[prop] = p[prop];
+    }
+    this.options = options || p._options || this._options;
     return;
   }
 
@@ -1877,6 +1854,7 @@ OmniPath.prototype.parse = function(p, options) {
   this.isUnc = false;
   this.isAbsolute = false;
   this.sep = '';
+  this.delimiter = '';
   this.href = '';
   this.protocol = '';
   this.slashes = false;
@@ -1916,9 +1894,31 @@ OmniPath.prototype.toJSON = function() {
   return json;
 };
 
+/**
+ * Determines whether the given path (or path part) begins with a separator character.
+ *
+ * @param {string} p - A path, or path part
+ * @returns {boolean}
+ * @protected
+ */
+OmniPath.prototype._startsWithSeparator = function(p) {
+  return p[0] === this.sep;
+};
+
+/**
+ * Determines whether the given path (or path part) ends with a separator character.
+ *
+ * @param {string} p - A path, or path part
+ * @returns {boolean}
+ * @protected
+ */
+OmniPath.prototype._endsWithSeparator = function(p) {
+  return p.substr(-1) === this.sep;
+};
+
 }).call(this,require('_process'))
 
-},{"./node/path":2,"./node/url":3,"./util":8,"_process":9}],5:[function(require,module,exports){
+},{"./node/path":2,"./node/url":3,"./util":8,"_process":9,"querystring":13}],5:[function(require,module,exports){
 'use strict';
 
 var posix    = require('./node/path').posix,
@@ -1933,12 +1933,44 @@ module.exports = OmniPosix;
  * @constructor
  */
 function OmniPosix(p, options) {
+  this._path = posix;
   this.parse(p, options);
 }
 
 util.inherits(OmniPosix, OmniPath);
 OmniPosix.sep = posix.sep;
 OmniPosix.delimiter = posix.delimiter;
+
+/**
+ * Parses the given path as a POSIX path, and sets the corresponding properties of this {@link OmniPosix} object.
+ *
+ * @param   {string|Url|OmniPosix}  p         - The file path or URL to parse
+ * @param   {PathOptions}           [options] - Options that determine how paths are parsed
+ */
+OmniPosix.prototype.parse = function(p, options) {
+  p = OmniPath.prototype.parse.apply(this, arguments);
+  if (typeof(p) === 'string') {
+    var split = util.splitFile(p, options);
+    var parsed = posix.parse(split.pathname);
+
+    this.isFS = true;
+    this.isPosix = true;
+    this.isAbsolute = posix.isAbsolute(split.pathname);
+    this.sep = posix.sep;
+    this.delimiter = posix.delimiter;
+    this.href = p;
+    this.path = split.pathname + split.search;
+    this.pathname = split.pathname;
+    this.root = parsed.root;
+    this.dir = parsed.dir;
+    this.base = parsed.base;
+    this.name = parsed.name;
+    this.ext = parsed.ext;
+    this.search = split.search;
+    this.query = split.query;
+    this.hash = split.hash;
+  }
+};
 
 /**
  * Creates a clone of this {@link OmniPosix} object.
@@ -1969,43 +2001,14 @@ OmniPosix.prototype.basename = function(ext) {
   return posix.basename(this.base, ext);
 };
 
-/**
- * Parses the given path as a POSIX path, and sets the corresponding properties of this {@link OmniPosix} object.
- *
- * @param   {string|Url|OmniPosix}  p         - The file path or URL to parse
- * @param   {PathOptions}           [options] - Options that determine how paths are parsed
- */
-OmniPosix.prototype.parse = function(p, options) {
-  p = OmniPath.prototype.parse.apply(this, arguments);
-  if (typeof(p) === 'string') {
-    var split = util.splitFile(p, options);
-    var parsed = posix.parse(split.pathname);
-
-    this.isFS = true;
-    this.isPosix = true;
-    this.isAbsolute = posix.isAbsolute(split.pathname);
-    this.sep = posix.sep;
-    this.href = p;
-    this.path = split.pathname + split.search;
-    this.pathname = split.pathname;
-    this.root = parsed.root;
-    this.dir = parsed.dir;
-    this.base = parsed.base;
-    this.name = parsed.name;
-    this.ext = parsed.ext;
-    this.search = split.search;
-    this.query = split.query;
-    this.hash = split.hash;
-  }
-};
-
 },{"./index":1,"./node/path":2,"./util":8}],6:[function(require,module,exports){
 'use strict';
 
-var posix    = require('./node/path').posix,
-    url      = require('./node/url'),
-    OmniPath = require('./omni-path'),
-    util     = require('./util');
+var posix          = require('./node/path').posix,
+    url            = require('./node/url'),
+    OmniPath       = require('./omni-path'),
+    util           = require('./util'),
+    slashesPattern = /^\/*/;
 
 module.exports = OmniUrl;
 
@@ -2015,40 +2018,12 @@ module.exports = OmniUrl;
  * @constructor
  */
 function OmniUrl(p, options) {
+  this._path = posix;
   this.parse(p, options);
 }
 
 util.inherits(OmniUrl, OmniPath);
 OmniUrl.sep = '/';
-
-/**
- * Creates a clone of this {@link OmniUrl} object.
- *
- * @param {PathOptions} [options] - Options that determine how paths are parsed
- * @returns {OmniUrl}
- */
-OmniUrl.prototype.clone = function(options) {
-  return new OmniUrl(this, options);
-};
-
-/**
- * Returns the directory name of the path.
- *
- * @returns {string}
- */
-OmniUrl.prototype.dirname = function() {
-  return posix.dirname(this.pathname);
-};
-
-/**
- * Returns the last portion of the path.
- *
- * @param   {string} [ext] - The portion of the file extension to leave off
- * @returns {string}
- */
-OmniUrl.prototype.basename = function(ext) {
-  return posix.basename(this.base, ext);
-};
 
 /**
  * Parses the given path as a URL, and sets the corresponding properties of this {@link OmniUrl} object.
@@ -2085,13 +2060,83 @@ OmniUrl.prototype.parse = function(p, options) {
   }
 };
 
+/**
+ * Creates a clone of this {@link OmniUrl} object.
+ *
+ * @param {PathOptions} [options] - Options that determine how paths are parsed
+ * @returns {OmniUrl}
+ */
+OmniUrl.prototype.clone = function(options) {
+  return new OmniUrl(this, options);
+};
+
+/**
+ * Returns the directory name of the path.
+ *
+ * @returns {string}
+ */
+OmniUrl.prototype.dirname = function() {
+  return posix.dirname(this.pathname);
+};
+
+/**
+ * Returns the last portion of the path.
+ *
+ * @param   {string} [ext] - The portion of the file extension to leave off
+ * @returns {string}
+ */
+OmniUrl.prototype.basename = function(ext) {
+  return posix.basename(this.base, ext);
+};
+
+/**
+ * Returns the formatted path or URL string.
+ *
+ * @returns {string}
+ */
+OmniUrl.prototype.format = function() {
+  var clone = this;
+
+  if (this.dir || this.base) {
+    // Build the "pathname" from the "dir" and "base",
+    // for consistency with OmniPath.Windows and OmniPath.Posix.
+    clone = this.clone();
+    if (clone.dir === clone.sep) {
+      // Special case for root paths, to match `url.format()` behavior
+      var slashes = slashesPattern.exec(clone.pathname) || [''];
+      clone.pathname = slashes[0] + clone.base;
+    }
+    else {
+      clone.pathname = posix.format(clone);
+    }
+
+    // Maintain any trailing slash on the pathname, for consistency with Node's "url" module
+    if (this._endsWithSeparator(this.pathname) && !clone._endsWithSeparator(clone.pathname)) {
+      clone.pathname += posix.sep;
+    }
+  }
+
+  return url.format(clone);
+};
+
+/**
+ * Returns a formatted URL string.
+ *
+ * @returns {string}
+ */
+OmniUrl.prototype.toUrlString = function() {
+  return url.format(this);
+};
+
 },{"./node/path":2,"./node/url":3,"./omni-path":4,"./util":8}],7:[function(require,module,exports){
 'use strict';
 
-var win32      = require('./node/path').win32,
-    OmniPath   = require('./index'),
-    util       = require('./util'),
-    uncPattern = /^[\\\/]{2}[^\\\/]+([\\\/]+[^\\\/]+)?/;
+var win32            = require('./node/path').win32,
+    OmniPath         = require('./index'),
+    util             = require('./util'),
+    uncPattern       = /^[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+/, // This matches Node 0.12.7
+    splitUncPattern  = /^\/+([^\/]+)(.*)/,
+    backslashPattern = /\\/g;
 
 module.exports = OmniWindows;
 
@@ -2101,12 +2146,45 @@ module.exports = OmniWindows;
  * @constructor
  */
 function OmniWindows(p, options) {
+  this._path = win32;
   this.parse(p, options);
 }
 
 util.inherits(OmniWindows, OmniPath);
 OmniWindows.sep = win32.sep;
 OmniWindows.delimiter = win32.delimiter;
+
+/**
+ * Parses the given path as a WINDOWS path, and sets the corresponding properties of this {@link OmniWindows} object.
+ *
+ * @param   {string|Url|OmniWindows}  p         - The file path or URL to parse
+ * @param   {PathOptions}             [options] - Options that determine how paths are parsed
+ */
+OmniWindows.prototype.parse = function(p, options) {
+  p = OmniPath.prototype.parse.apply(this, arguments);
+  if (typeof(p) === 'string') {
+    var split = util.splitFile(p, options);
+    var parsed = win32.parse(split.pathname);
+
+    this.isFS = true;
+    this.isWindows = true;
+    this.isAbsolute = win32.isAbsolute(split.pathname);
+    this.isUnc = uncPattern.test(split.pathname);
+    this.sep = win32.sep;
+    this.delimiter = win32.delimiter;
+    this.href = p;
+    this.path = split.pathname + split.search;
+    this.pathname = split.pathname;
+    this.root = parsed.root;
+    this.dir = parsed.dir;
+    this.base = parsed.base;
+    this.name = parsed.name;
+    this.ext = parsed.ext;
+    this.search = split.search;
+    this.query = split.query;
+    this.hash = split.hash;
+  }
+};
 
 /**
  * Creates a clone of this {@link OmniWindows} object.
@@ -2138,34 +2216,49 @@ OmniWindows.prototype.basename = function(ext) {
 };
 
 /**
- * Parses the given path as a WINDOWS path, and sets the corresponding properties of this {@link OmniWindows} object.
+ * Returns a formatted URL string.
  *
- * @param   {string|Url|OmniWindows}  p         - The file path or URL to parse
- * @param   {PathOptions}             [options] - Options that determine how paths are parsed
+ * @returns {string}
  */
-OmniWindows.prototype.parse = function(p, options) {
-  p = OmniPath.prototype.parse.apply(this, arguments);
-  if (typeof(p) === 'string') {
-    var split = util.splitFile(p, options);
-    var parsed = win32.parse(split.pathname);
+OmniWindows.prototype.toUrlString = function() {
+  var clone = this.clone();
 
-    this.isFS = true;
-    this.isWindows = true;
-    this.isAbsolute = win32.isAbsolute(split.pathname);
-    this.isUnc = uncPattern.test(split.pathname);
-    this.sep = win32.sep;
-    this.href = p;
-    this.path = split.pathname + split.search;
-    this.pathname = split.pathname;
-    this.root = parsed.root;
-    this.dir = parsed.dir;
-    this.base = parsed.base;
-    this.name = parsed.name;
-    this.ext = parsed.ext;
-    this.search = split.search;
-    this.query = split.query;
-    this.hash = split.hash;
+  // Convert Windows path separators to forward slashes
+  clone.pathname = clone.pathname.replace(backslashPattern, '/');
+
+  if (this.isUnc) {
+    var split = splitUncPattern.exec(clone.pathname);
+    if (split) {
+      clone.hostname = split[1];
+      clone.pathname = split[2] || '/';
+    }
   }
+
+  return OmniPath.prototype.toUrlString.apply(clone, arguments);
+};
+
+/**
+ * Determines whether the given path (or path part) begins with a separator character.
+ *
+ * @param {string} p - A path, or path part
+ * @returns {boolean}
+ * @protected
+ */
+OmniWindows.prototype._startsWithSeparator = function(p) {
+  var firstChar = p[0];
+  return firstChar === this.sep || firstChar === '/';
+};
+
+/**
+ * Determines whether the given path (or path part) ends with a separator character.
+ *
+ * @param {string} p - A path, or path part
+ * @returns {boolean}
+ * @protected
+ */
+OmniWindows.prototype._endsWithSeparator = function(p) {
+  var lastChar = p.substr(-1);
+  return lastChar === this.sep || lastChar === '/';
 };
 
 },{"./index":1,"./node/path":2,"./util":8}],8:[function(require,module,exports){
@@ -2174,7 +2267,7 @@ OmniWindows.prototype.parse = function(p, options) {
 var querystring = require('querystring');
 
 var props = [
-  'isUrl', 'isFS', 'isPosix', 'isWindows', 'isUnc', 'isAbsolute', 'sep',
+  'isUrl', 'isFS', 'isPosix', 'isWindows', 'isUnc', 'isAbsolute', 'sep', 'delimiter',
   'href', 'protocol', 'slashes', 'auth', 'host', 'hostname', 'port', 'path', 'pathname',
   'root', 'dir', 'base', 'name', 'ext', 'search', 'query', 'hash'
 ];
@@ -2187,7 +2280,6 @@ module.exports = {
   isNullOrUndefined: isNullOrUndefined,
   toString: toString,
   inherits: inherits,
-  copy: copy,
   splitFile: splitFile
 };
 
@@ -2270,26 +2362,6 @@ function inherits(Child, Super) {
       Child[staticMember] = Super[staticMember];
     }
   });
-}
-
-/**
- * Copies the properties of one {@link OmniPath} object to another.
- *
- * @param   {OmniPath} src   - The source object, whose properties will be copied
- * @param   {OmniPath} dest  - The destination object, whose properties will be set
- * @returns {OmniPath}
- */
-function copy(src, dest) {
-  // Copy all public properties
-  for (var i = 0; i < props.length; i++) {
-    var prop = props[i];
-    dest[prop] = src[prop];
-  }
-
-  // Copy private properties
-  dest._options = src._options;
-
-  return dest;
 }
 
 /**

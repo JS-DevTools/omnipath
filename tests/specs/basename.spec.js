@@ -23,7 +23,7 @@ describe('OmniPath.basename', function() {
 
       ['posix', 'win32', 'url'].forEach(function(platform) {
         // Validate the return value
-        var base = test.parsed[platform].base;
+        var base = test.parse[platform].base;
         if (result.ext) {
           if (base.substr(-result.ext.length) === result.ext) {
             base = base.substr(0, base.length - result.ext.length);
@@ -35,12 +35,14 @@ describe('OmniPath.basename', function() {
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         if (test.isUrl) {
-          var nodeBase = path.basename(test.parsed.url.pathname, result.ext);
+          var nodeBase = path.basename(test.parse.url.pathname, result.ext);
           expect(result.basename.omni).to.equal(nodeBase);
           expect(result.basename.url).to.equal(nodeBase);
         }
-        else if (!test.parsed.posix.search && !test.parsed.posix.hash) {
+        else if (!test.parse.posix.search && !test.parse.posix.hash) {
           expect(result.basename.omni).to.equal(path.basename(test.p, result.ext));
+          expect(result.basename.posix).to.equal(path.posix.basename(test.p, result.ext));
+          expect(result.basename.win32).to.equal(path.win32.basename(test.p, result.ext));
         }
       }
     });
