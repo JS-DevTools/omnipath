@@ -10,12 +10,15 @@ describe('OmniPath.parse', function() {
     // Compare to Node's native behavior
     if (userAgent.isNode) {
       if (test.isUrl) {
-        var nodeUrl = url.parse(test.p, true);
+        var u = typeof(test.p) === 'string' ? test.p : test.p.format();
+        var nodeUrl = url.parse(u, true);
         helper.equalsNative(parsed.omni, nodeUrl);
         helper.equalsNative(parsed.url, nodeUrl);
       }
       else if (parsed.omni.search || parsed.omni.hash) {
-        helper.equalsNative(parsed.omni, path.parse(parsed.omni.pathname));
+        if (typeof(test.p) === 'string') {
+          helper.equalsNative(parsed.omni, path.parse(parsed.omni.pathname));
+        }
         helper.equalsNative(parsed.posix, path.posix.parse(parsed.omni.pathname));
         helper.equalsNative(parsed.win32, path.win32.parse(parsed.omni.pathname));
       }

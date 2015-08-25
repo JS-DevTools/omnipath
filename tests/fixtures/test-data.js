@@ -3399,94 +3399,6 @@
           "win32": "c:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
           "url": "c://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
         }
-      },
-      "URL object": {
-        "p": (function() {
-          var u = "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1";
-          return userAgent.isNode ? url.parse(u, true) : u;
-        })(),
-        "options": {
-          "allowFileQuery": true,
-          "allowFileHash": true
-        },
-        "isUrl": true,
-        "parse": {
-          "posix": {
-            "isFS": true,
-            "isPosix": true,
-            "sep": "/",
-            "delimiter": ":",
-            "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-            "path": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz",
-            "pathname": "https://user:pass@www.server.com:80/p/a/t/h",
-            "dir": "https://user:pass@www.server.com:80/p/a/t",
-            "base": "h",
-            "name": "h",
-            "search": "?foo=bar&biz=baz",
-            "query": {
-              "foo": "bar",
-              "biz": "baz"
-            },
-            "hash": "#page1"
-          },
-          "win32": {
-            "isFS": true,
-            "isWindows": true,
-            "sep": "\\",
-            "delimiter": ";",
-            "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-            "path": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz",
-            "pathname": "https://user:pass@www.server.com:80/p/a/t/h",
-            "dir": "https://user:pass@www.server.com:80/p/a/t",
-            "base": "h",
-            "name": "h",
-            "search": "?foo=bar&biz=baz",
-            "query": {
-              "foo": "bar",
-              "biz": "baz"
-            },
-            "hash": "#page1"
-          },
-          "url": {
-            "isUrl": true,
-            "isAbsolute": true,
-            "sep": "/",
-            "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-            "protocol": "https:",
-            "slashes": true,
-            "auth": "user:pass",
-            "host": "www.server.com:80",
-            "hostname": "www.server.com",
-            "port": "80",
-            "path": "/p/a/t/h?foo=bar&biz=baz",
-            "pathname": "/p/a/t/h",
-            "root": "/",
-            "dir": "/p/a/t",
-            "base": "h",
-            "name": "h",
-            "search": "?foo=bar&biz=baz",
-            "query": {
-              "foo": "bar",
-              "biz": "baz"
-            },
-            "hash": "#page1"
-          }
-        },
-        "toUrlString": {
-          "posix": "file:///https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-          "win32": "file:///https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-          "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        },
-        "format": {
-          "posix": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-          "win32": "https://user:pass@www.server.com:80/p/a/t\\h?foo=bar&biz=baz#page1",
-          "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        },
-        "normalize": {
-          "posix": "https:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
-          "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
-          "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        }
       }
     },
     "extensions": {
@@ -4448,6 +4360,325 @@
           "win32": "\\_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__\\__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__",
           "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__"
         }
+      }
+    }
+  };
+
+  //global.TestData = {};
+  global.TestData.objects = {
+    "OmniPath.Posix": {
+      "p": new OmniPath.Posix('dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true}),
+      "isUrl": false,
+      "parse": {
+        "posix": {
+          "isFS": true,
+          "isPosix": true,
+          "sep": "/",
+          "delimiter": ":",
+          "href": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=\\bar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1\\?not=a/&query"
+        },
+        "win32": {
+          "isFS": true,
+          "isWindows": true,
+          "sep": "\\",
+          "delimiter": ";",
+          "href": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=\\bar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1\\?not=a/&query"
+        },
+        "url": {
+          "isUrl": true,
+          "sep": "/",
+          "href": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=%5Cbar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1%5C?not=a/&query"
+        }
+      },
+      "toUrlString": {
+        "posix": "file:///dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "win32": "file:///dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "format": {
+        "posix": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "win32": "dir/.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "normalize": {
+        "posix": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "win32": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      }
+    },
+    "OmniPath.Windows": {
+      "p": new OmniPath.Windows('dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true}),
+      "isUrl": false,
+      "parse": {
+        "posix": {
+          "isFS": true,
+          "isPosix": true,
+          "sep": "/",
+          "delimiter": ":",
+          "href": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+          "path": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz",
+          "pathname": "dir\\.subdir\\file.min.js",
+          "base": "dir\\.subdir\\file.min.js",
+          "name": "dir\\.subdir\\file.min",
+          "ext": ".js",
+          "search": "?foo=\\bar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1\\?not=a/&query"
+        },
+        "win32": {
+          "isFS": true,
+          "isWindows": true,
+          "sep": "\\",
+          "delimiter": ";",
+          "href": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+          "path": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz",
+          "pathname": "dir\\.subdir\\file.min.js",
+          "dir": "dir\\.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=\\bar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1\\?not=a/&query"
+        },
+        "url": {
+          "isUrl": true,
+          "sep": "/",
+          "href": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=%5Cbar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1%5C?not=a/&query"
+        }
+      },
+      "toUrlString": {
+        "posix": "file:///dir%5C.subdir%5Cfile.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "win32": "file:///dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "format": {
+        "posix": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "win32": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "normalize": {
+        "posix": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "win32": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      }
+    },
+    "OmniPath.Url": {
+      "p": new OmniPath.Url('dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true}),
+      "isUrl": true,
+      "parse": {
+        "posix": {
+          "isFS": true,
+          "isPosix": true,
+          "sep": "/",
+          "delimiter": ":",
+          "href": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=%5Cbar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1%5C?not=a/&query"
+        },
+        "win32": {
+          "isFS": true,
+          "isWindows": true,
+          "sep": "\\",
+          "delimiter": ";",
+          "href": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=%5Cbar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1%5C?not=a/&query"
+        },
+        "url": {
+          "isUrl": true,
+          "sep": "/",
+          "href": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+          "path": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz",
+          "pathname": "dir/.subdir/file.min.js",
+          "dir": "dir/.subdir",
+          "base": "file.min.js",
+          "name": "file.min",
+          "ext": ".js",
+          "search": "?foo=%5Cbar&biz=/baz",
+          "query": {
+            "foo": "\\bar",
+            "biz": "/baz"
+          },
+          "hash": "#page1%5C?not=a/&query"
+        }
+      },
+      "toUrlString": {
+        "posix": "file:///dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "win32": "file:///dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "format": {
+        "posix": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "win32": "dir/.subdir\\file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      },
+      "normalize": {
+        "posix": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "win32": "dir\\.subdir\\file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
+        "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
+      }
+    },
+    "URL object": {
+      "p": (function() {
+        var u = "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1";
+        return userAgent.isNode ? url.parse(u, true) : u;
+      })(),
+      "options": {
+        "allowFileQuery": true,
+        "allowFileHash": true
+      },
+      "isUrl": true,
+      "parse": {
+        "posix": {
+          "isFS": true,
+          "isPosix": true,
+          "sep": "/",
+          "delimiter": ":",
+          "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+          "path": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz",
+          "pathname": "https://user:pass@www.server.com:80/p/a/t/h",
+          "dir": "https://user:pass@www.server.com:80/p/a/t",
+          "base": "h",
+          "name": "h",
+          "search": "?foo=bar&biz=baz",
+          "query": {
+            "foo": "bar",
+            "biz": "baz"
+          },
+          "hash": "#page1"
+        },
+        "win32": {
+          "isFS": true,
+          "isWindows": true,
+          "sep": "\\",
+          "delimiter": ";",
+          "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+          "path": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz",
+          "pathname": "https://user:pass@www.server.com:80/p/a/t/h",
+          "dir": "https://user:pass@www.server.com:80/p/a/t",
+          "base": "h",
+          "name": "h",
+          "search": "?foo=bar&biz=baz",
+          "query": {
+            "foo": "bar",
+            "biz": "baz"
+          },
+          "hash": "#page1"
+        },
+        "url": {
+          "isUrl": true,
+          "isAbsolute": true,
+          "sep": "/",
+          "href": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+          "protocol": "https:",
+          "slashes": true,
+          "auth": "user:pass",
+          "host": "www.server.com:80",
+          "hostname": "www.server.com",
+          "port": "80",
+          "path": "/p/a/t/h?foo=bar&biz=baz",
+          "pathname": "/p/a/t/h",
+          "root": "/",
+          "dir": "/p/a/t",
+          "base": "h",
+          "name": "h",
+          "search": "?foo=bar&biz=baz",
+          "query": {
+            "foo": "bar",
+            "biz": "baz"
+          },
+          "hash": "#page1"
+        }
+      },
+      "toUrlString": {
+        "posix": "file:///https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+        "win32": "file:///https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+        "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
+      },
+      "format": {
+        "posix": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+        "win32": "https://user:pass@www.server.com:80/p/a/t\\h?foo=bar&biz=baz#page1",
+        "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
+      },
+      "normalize": {
+        "posix": "https:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
+        "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
+        "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
       }
     }
   };

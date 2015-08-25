@@ -67,6 +67,12 @@
     if (test.isUrl) {
       expect(omni).to.deep.equal(url);
     }
+    else if (test.p.isPosix) {
+      expect(omni).to.deep.equal(posix);
+    }
+    else if (test.p.isWindows) {
+      expect(omni).to.deep.equal(win32);
+    }
     else if (userAgent.isPosix) {
       expect(omni).to.deep.equal(posix);
     }
