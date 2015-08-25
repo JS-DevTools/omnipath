@@ -23,12 +23,19 @@
    * @param {function} run - Receives the test object from {@link TestData}
    */
   function forEachTest(run) {
+    // Prettify the `fn.toString()` output in Mocha
+    var toString = function() {
+      return run.toString();
+    };
+
     Object.keys(TestData).forEach(function(suite) {
       describe(suite, function() {
         Object.keys(TestData[suite]).forEach(function(test) {
-          it(test, function() {
+          function runTest() {
             run(TestData[suite][test]);
-          });
+          }
+          runTest.toString = toString;
+          it(test, runTest);
         });
       });
     });

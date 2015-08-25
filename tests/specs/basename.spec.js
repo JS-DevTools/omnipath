@@ -29,20 +29,20 @@ describe('OmniPath.basename', function() {
             base = base.substr(0, base.length - result.ext.length);
           }
         }
-        expect(result.basename[platform]).to.equal(base);
+        expect(result.basename[platform]).to.equal(base, platform);
       });
 
       // Compare to Node's native behavior
       if (userAgent.isNode) {
         if (test.isUrl) {
           var nodeBase = path.basename(test.parse.url.pathname, result.ext);
-          expect(result.basename.omni).to.equal(nodeBase);
-          expect(result.basename.url).to.equal(nodeBase);
+          expect(result.basename.omni).to.equal(nodeBase, 'native omni');
+          expect(result.basename.url).to.equal(nodeBase, 'native url');
         }
         else if (!test.parse.posix.search && !test.parse.posix.hash) {
-          expect(result.basename.omni).to.equal(path.basename(test.p, result.ext));
-          expect(result.basename.posix).to.equal(path.posix.basename(test.p, result.ext));
-          expect(result.basename.win32).to.equal(path.win32.basename(test.p, result.ext));
+          expect(result.basename.omni).to.equal(path.basename(test.p, result.ext), 'native');
+          expect(result.basename.posix).to.equal(path.posix.basename(test.p, result.ext), 'native posix');
+          expect(result.basename.win32).to.equal(path.win32.basename(test.p, result.ext), 'native win32');
         }
       }
     });

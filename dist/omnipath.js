@@ -1633,23 +1633,33 @@ OmniPath.extname = OmniPath.ext;
 //};
 
 /**
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * Normalizes a path, resolving any "." and ".." segments, eliminating redundant slashes,
+ * and standardizing slashes. Identical to Node's {@link path.normalize}.
+ *
+ * {@link https://nodejs.org/api/path.html#path_path_normalize_p}
+ *
+ * @param   {string|Url|OmniPath}   p         - The file path or URL to format
+ * @param   {PathOptions}           [options] - Options that determine how paths are parsed
+ * @returns {string}
  */
 OmniPath.normalize = function(p, options) {
-
+  var Class = this;
+  return new Class(p, options).normalize();
 };
 
 /**
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
- * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+ * Normalizes the path, resolving any "." and ".." segments, eliminating redundant slashes,
+ * and standardizing slashes. Identical to Node's {@link path.normalize}.
+ *
+ * {@link https://nodejs.org/api/path.html#path_path_normalize_p}
+ *
+ * @returns {string}
  */
 OmniPath.prototype.normalize = function() {
-
+  var formatted = this._path.format(this);
+  var normalized = this._path.normalize(formatted);
+  var searchAndHash = this._getFormattedSearchAndHash();
+  return normalized + searchAndHash;
 };
 
 /**
@@ -1677,26 +1687,8 @@ OmniPath.format = function(p, options) {
  */
 OmniPath.prototype.format = function() {
   var pathname = this._path.format(this);
-  var search = this.search || '';
-  var hash = this.hash || '';
-
-  if (search && search[0] !== '?') {
-    search = '?' + search;
-  }
-  else if (this.query) {
-    // Build the `search` property from the `query` property
-    var query = querystring.stringify(this.query);
-    if (query) {
-      search = '?' + query;
-    }
-  }
-
-  // If the file has a hash, then format the `hash` property
-  if (hash && hash[0] !== '#') {
-    hash = '#' + hash;
-  }
-
-  return pathname + search + hash;
+  var searchAndHash = this._getFormattedSearchAndHash();
+  return pathname + searchAndHash;
 };
 
 /**
@@ -1895,6 +1887,38 @@ OmniPath.prototype.toJSON = function() {
 };
 
 /**
+ * Returns the formatted {@link OmniPath#search} and {@link OmniPath#hash}.
+ * If {@link OmniPath#search} is empty, then {@link OmniPath#query} is used instead.
+ *
+ * @returns {string}
+ * @private
+ */
+OmniPath.prototype._getFormattedSearchAndHash = function() {
+  var search = this.search || '';
+  var hash = this.hash || '';
+
+  if (search) {
+    if (search[0] !== '?') {
+      search = '?' + search;
+    }
+  }
+  else if (this.query) {
+    // Build the `search` property from the `query` property
+    var query = querystring.stringify(this.query);
+    if (query) {
+      search = '?' + query;
+    }
+  }
+
+  // If the file has a hash, then format the `hash` property
+  if (hash && hash[0] !== '#') {
+    hash = '#' + hash;
+  }
+
+  return search + hash;
+};
+
+/**
  * Determines whether the given path (or path part) begins with a separator character.
  *
  * @param {string} p - A path, or path part
@@ -2090,32 +2114,43 @@ OmniUrl.prototype.basename = function(ext) {
 };
 
 /**
+ * Normalizes the URL, resolving any "." and ".." segments, eliminating redundant slashes,
+ * and standardizing slashes.
+ *
+ * @returns {string}
+ */
+OmniUrl.prototype.normalize = function() {
+  var formatted = this._getFormattedPathname();
+  var normalized = posix.normalize(formatted);
+
+  var pathnameIsBlank = false;
+  if (normalized === '.') {
+    // Special case for URLs without a pathname
+    normalized = '/';
+    pathnameIsBlank = true;
+  }
+
+  var clone = this.clone();
+  clone.pathname = normalized;
+  formatted = url.format(clone);
+
+  if (formatted === '/' && pathnameIsBlank) {
+    // Special case for URLs that resolve to cwd ("", ".", "././.", etc.)
+    return '.';
+  }
+  else {
+    return formatted;
+  }
+};
+
+/**
  * Returns the formatted path or URL string.
  *
  * @returns {string}
  */
 OmniUrl.prototype.format = function() {
-  var clone = this;
-
-  if (this.dir || this.base) {
-    // Build the "pathname" from the "dir" and "base",
-    // for consistency with OmniPath.Windows and OmniPath.Posix.
-    clone = this.clone();
-    if (clone.dir === clone.sep) {
-      // Special case for root paths, to match `url.format()` behavior
-      var slashes = slashesPattern.exec(clone.pathname) || [''];
-      clone.pathname = slashes[0] + clone.base;
-    }
-    else {
-      clone.pathname = posix.format(clone);
-    }
-
-    // Maintain any trailing slash on the pathname, for consistency with Node's "url" module
-    if (this._endsWithSeparator(this.pathname) && !clone._endsWithSeparator(clone.pathname)) {
-      clone.pathname += posix.sep;
-    }
-  }
-
+  var clone = this.clone();
+  clone.pathname = this._getFormattedPathname();
   return url.format(clone);
 };
 
@@ -2126,6 +2161,36 @@ OmniUrl.prototype.format = function() {
  */
 OmniUrl.prototype.toUrlString = function() {
   return url.format(this);
+};
+
+/**
+ * Returns the formatted pathname by combining {@link OmniUrl#dir} and {@link OmniUrl#base}.
+ *
+ * @returns {string}
+ * @private
+ */
+OmniUrl.prototype._getFormattedPathname = function() {
+  var pathname = this.pathname;
+
+  if (this.dir || this.base) {
+    var oldPathname = pathname;
+
+    if (this.dir === this.sep) {
+      // Special case for root paths, to match `url.format()` behavior
+      var slashes = slashesPattern.exec(this.pathname) || [''];
+      pathname = slashes[0] + this.base;
+    }
+    else {
+      pathname = posix.format(this);
+    }
+
+    // Maintain any trailing slash on the pathname, for consistency with Node's "url" module
+    if (this._endsWithSeparator(oldPathname) && !this._endsWithSeparator(pathname)) {
+      pathname += posix.sep;
+    }
+  }
+
+  return pathname;
 };
 
 },{"./node/path":2,"./node/url":3,"./omni-path":4,"./util":8}],7:[function(require,module,exports){
