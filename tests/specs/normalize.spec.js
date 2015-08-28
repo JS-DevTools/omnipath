@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.normalize', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var normalized = helper.invoke('normalize', test);
 
     // Validate the return type
@@ -17,9 +17,12 @@ describe('OmniPath.normalize', function() {
 
     // Compare to Node's native behavior
     if (userAgent.isNode) {
-      if (!test.isUrl && !test.parse.url.query && !test.parse.url.hash) {
-        expect(normalized.posix).to.equal(path.posix.normalize(test.parse.posix), 'native posix');
-        expect(normalized.win32).to.equal(path.win32.normalize(test.parse.win32), 'native win32');
+      if (test.isUrl) {
+        expect(normalized.url).to.contain(path.posix.normalize(test.parse.url.pathname), 'native url');
+      }
+      else if (!test.parse.url.hash && Object.keys(test.parse.url.query).length === 0) {
+        expect(normalized.posix).to.equal(path.posix.normalize(test.p), 'native posix');
+        expect(normalized.win32).to.equal(path.win32.normalize(test.p), 'native win32');
       }
     }
   });

@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.dirname', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var dirname = helper.invoke('dirname', test);
 
     // Validate the return type

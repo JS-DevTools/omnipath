@@ -18,21 +18,22 @@
   };
 
   /**
-   * Runs the given test function for each test object in {@link TestData}.
+   * Runs the given test function for each test object in {@link TestPaths} or {@link TestPairs}.
    *
-   * @param {function} run - Receives the test object from {@link TestData}
+   * @param {TestPaths|TestPairs} testData - Either {@link TestPaths} or {@link TestPairs}
+   * @param {function}            run      - The function to run for each test object in `testData`
    */
-  function forEachTest(run) {
+  function forEachTest(testData, run) {
     // Prettify the `fn.toString()` output in Mocha
     var toString = function() {
       return run.toString();
     };
 
-    Object.keys(TestData).forEach(function(suite) {
+    Object.keys(testData).forEach(function(suite) {
       describe(suite, function() {
-        Object.keys(TestData[suite]).forEach(function(test) {
+        Object.keys(testData[suite]).forEach(function(test) {
           function runTest() {
-            run(TestData[suite][test]);
+            run(testData[suite][test]);
           }
           runTest.toString = toString;
           it(test, runTest);
@@ -46,13 +47,18 @@
    * and {@link OmniUrl} using the given test data, and returns the results.
    *
    * @param   {string}  method  - The method to call
-   * @param   {object}  test    - A test object from {@link TestData}
+   * @param   {object}  test    - A test object from {@link TestPaths} or {@link TestPairs}
    * @param   {...*}    [args]  - Arguments to pass to the invoked method (defaults to test.p and test.options)
    * @returns {object}
    */
   function invoke(method, test, args) {
     if (arguments.length === 2) {
-      args = [test.p, test.options];
+      if (Array.isArray(test.p)) {
+        args = test.p.concat(test.options);
+      }
+      else {
+        args = [test.p, test.options];
+      }
     }
     else {
       args = Array.prototype.slice.call(arguments, 2);

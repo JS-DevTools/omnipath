@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.toUrlString', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var urlString = helper.invoke('toUrlString', test);
 
     // Validate the return type

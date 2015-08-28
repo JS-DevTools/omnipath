@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.basename', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var results = [
       {basename: helper.invoke('basename', test, test.p, test.options)},
       {ext: '.html', basename: helper.invoke('basename', test, test.p, '.html', test.options)},

@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.format', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var formatted = helper.invoke('format', test);
 
     // Validate the return type
@@ -22,7 +22,7 @@ describe('OmniPath.format', function() {
         expect(formatted.omni).to.equal(nodeFormat, 'native omni');
         expect(formatted.url).to.equal(nodeFormat, 'native url');
       }
-      else if (!test.parse.url.query && !test.parse.url.hash) {
+      else if (!test.parse.url.hash && Object.keys(test.parse.url.query).length === 0) {
         expect(formatted.posix).to.equal(path.posix.format(test.parse.posix), 'native posix');
         expect(formatted.win32).to.equal(path.win32.format(test.parse.win32), 'native win32');
       }

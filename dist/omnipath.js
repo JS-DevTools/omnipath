@@ -1416,11 +1416,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
 module.exports = OmniPath;
 
-var path             = require('./node/path'),
-    url              = require('./node/url'),
-    util             = require('./util'),
-    querystring      = require('querystring'),
-    backslashPattern = /\\/g;
+var path        = require('./node/path'),
+    url         = require('./node/url'),
+    util        = require('./util'),
+    querystring = require('querystring');
 
 /**
  * A parsed URL or file path. This object has the same properties as a parsed URL (via {@link url.parse},
@@ -1529,14 +1528,26 @@ OmniPath.extname = OmniPath.ext;
  * @param   {...string|...Url|...OmniPath}  p         - The paths (or segments) to join
  * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
  * @returns {string}
+ * @abstract
  */
 OmniPath.join = function(p, options) {
-  var args = util.getArgs(arguments);
-  p = args.paths[0] || '';
+  if (p instanceof OmniPath) {
+    return p.constructor.join.apply(p.constructor, arguments);
+  }
 
-  var Class = this;
-  var omniPath = new Class(p, args.options);
-  return omniPath.join.apply(omniPath, args.paths.slice(1));
+  p = util.toString(p);
+  var args = [p].concat(Array.prototype.slice.call(arguments, 1));
+
+  var type = util.getType(p);
+  if (type.isUrl) {
+    return OmniPath.Url.join.apply(OmniPath.Url, args);
+  }
+  else if (type.isWindows) {
+    return OmniPath.Windows.join.apply(OmniPath.Windows, args);
+  }
+  else {
+    return OmniPath.Posix.join.apply(OmniPath.Posix, args);
+  }
 };
 
 /**
@@ -1548,19 +1559,8 @@ OmniPath.join = function(p, options) {
  * @returns {string}
  */
 OmniPath.prototype.join = function(p) {
-  // Parse each path
-  var pathnames = [this._path.format(this)];
-  for (var i = 0; i < arguments.length; i++) {
-    pathnames[i] = this.constructor.pathname(arguments[i], this._options);
-  }
-
-  // Join the pathnames
-  var joined = this._path.join.apply(this._path, pathnames);
-
-  // Normalize the result
-  var clone = this.clone();
-  clone.pathname = joined;
-  return clone.normalize();
+  var Class = this;
+  return Class.join([this].concat(arguments));
 };
 
 ///**
@@ -1656,7 +1656,7 @@ OmniPath.normalize = function(p, options) {
  * @returns {string}
  */
 OmniPath.prototype.normalize = function() {
-  var formatted = this._path.format(this);
+  var formatted = this.pathname || this._path.format(this);
   var normalized = this._path.normalize(formatted);
   var searchAndHash = this._getFormattedSearchAndHash();
   return normalized + searchAndHash;
@@ -1752,9 +1752,9 @@ OmniPath.prototype.toUrlString = function() {
   var hash = this.hash;
 
   // Encode backslash characters
-  pathname = pathname.replace(backslashPattern, '%5C');
-  search = search.replace(backslashPattern, '%5C');
-  hash = hash.replace(backslashPattern, '%5C');
+  pathname = pathname.replace(util.backslashPattern, '%5C');
+  search = search.replace(util.backslashPattern, '%5C');
+  hash = hash.replace(util.backslashPattern, '%5C');
 
   // Format the file path as a URL
   var formatted = url.format({
@@ -2031,16 +2031,29 @@ OmniPosix.prototype.basename = function(ext) {
   return posix.basename(this.base, ext);
 };
 
+/**
+ * Joins all arguments together, and normalizes the resulting path.
+ *
+ * @param   {...string|...Url|...OmniPath}  p         - The paths (or segments) to join
+ * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniPosix.join = function(p, options) {
+  var parsed = util.fastParse(arguments, true, false, true);
+  return posix.join.apply(posix, parsed.pathnames);
+};
+
 },{"./index":1,"./node/path":2,"./util":8}],6:[function(require,module,exports){
 'use strict';
 
 module.exports = OmniUrl;
 
-var posix          = require('./node/path').posix,
-    url            = require('./node/url'),
-    OmniPath       = require('./omni-path'),
-    util           = require('./util'),
-    slashesPattern = /^\/*/;
+var posix                = require('./node/path').posix,
+    url                  = require('./node/url'),
+    OmniPath             = require('./omni-path'),
+    util                 = require('./util'),
+    slashesPattern       = /^\/*/,
+    looseProtocolPattern = /^[^:]+:\/?\/?/;
 
 /**
  * An {@link OmniPath} subclass that always treats paths as URLs.
@@ -2057,7 +2070,7 @@ function OmniUrl(p, options) {
 }
 
 util.inherits(OmniUrl, OmniPath);
-OmniUrl.sep = '/';
+OmniUrl.sep = posix.sep;
 
 // Override the basic type checks
 OmniUrl.isUrl = function() {return true;};
@@ -2078,7 +2091,7 @@ OmniUrl.prototype.parse = function(p, options) {
 
     this.isUrl = true;
     this.isAbsolute = !!parsedUrl.protocol || !!parsedUrl.host || posix.isAbsolute(parsedUrl.pathname || '');
-    this.sep = '/';
+    this.sep = posix.sep;
     this.href = parsedUrl.href || '';
     this.protocol = parsedUrl.protocol || '';
     this.slashes = parsedUrl.slashes || false;
@@ -2135,13 +2148,13 @@ OmniUrl.prototype.basename = function(ext) {
  * @returns {string}
  */
 OmniUrl.prototype.normalize = function() {
-  var formatted = this._getFormattedPathname();
+  var formatted = this.pathname || this._getFormattedPathname();
   var normalized = posix.normalize(formatted);
 
   var pathnameIsBlank = false;
   if (normalized === '.') {
     // Special case for URLs without a pathname
-    normalized = '/';
+    normalized = posix.sep;
     pathnameIsBlank = true;
   }
 
@@ -2149,7 +2162,7 @@ OmniUrl.prototype.normalize = function() {
   clone.pathname = normalized;
   formatted = url.format(clone);
 
-  if (formatted === '/' && pathnameIsBlank) {
+  if (formatted === posix.sep && pathnameIsBlank) {
     // Special case for URLs that resolve to cwd ("", ".", "././.", etc.)
     return '.';
   }
@@ -2176,6 +2189,46 @@ OmniUrl.prototype.format = function() {
  */
 OmniUrl.prototype.toUrlString = function() {
   return url.format(this);
+};
+
+/**
+ * Joins all arguments together, and normalizes the resulting path.
+ *
+ * @param   {...string|...Url|...OmniPath}  p         - The paths (or segments) to join
+ * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniUrl.join = function(p, options) {
+  var parsed = util.fastParse(arguments, true, true);
+  var pathnames = parsed.pathnames;
+
+  // Replace backslashes with forward slashes (normalization)
+  for (var i = 0; i < pathnames.length; i++) {
+    pathnames[i] = pathnames[i].replace(util.backslashPattern, posix.sep);
+  }
+
+  // Extract and lowercase the protocol (normalization)
+  var protocol = looseProtocolPattern.exec(pathnames[0]) || '';
+  if (protocol) {
+    protocol = protocol[0].toLowerCase();
+    pathnames[0] = pathnames[0].substr(protocol.length);
+    if (protocol.indexOf(posix.sep) === -1) {
+      protocol += posix.sep;
+    }
+  }
+
+  var joined = posix.join.apply(posix, parsed.pathnames);
+  if (joined === '.' && protocol) {
+    // Special case for URLs with only a protocol
+    return protocol;
+  }
+  else if (joined.indexOf(posix.sep) === -1 && protocol.indexOf('//') !== -1) {
+    // Special case for URLs with only a host
+    return protocol + joined + posix.sep;
+  }
+  else {
+    return protocol + joined;
+  }
 };
 
 /**
@@ -2217,8 +2270,7 @@ var win32            = require('./node/path').win32,
     OmniPath         = require('./index'),
     util             = require('./util'),
     uncPattern       = /^[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+/, // This matches Node 0.12.7
-    splitUncPattern  = /^\/+([^\/]+)(.*)/,
-    backslashPattern = /\\/g;
+    splitUncPattern  = /^\/+([^\/]+)(.*)/;
 
 /**
  * An {@link OmniPath} subclass that always treats paths as Windows paths.
@@ -2313,7 +2365,7 @@ OmniWindows.prototype.toUrlString = function() {
   var clone = this.clone();
 
   // Convert Windows path separators to forward slashes
-  clone.pathname = clone.pathname.replace(backslashPattern, '/');
+  clone.pathname = clone.pathname.replace(util.backslashPattern, '/');
 
   if (this.isUnc) {
     var split = splitUncPattern.exec(clone.pathname);
@@ -2324,6 +2376,18 @@ OmniWindows.prototype.toUrlString = function() {
   }
 
   return OmniPath.prototype.toUrlString.apply(clone, arguments);
+};
+
+/**
+ * Joins all arguments together, and normalizes the resulting path.
+ *
+ * @param   {...string|...Url|...OmniPath}  p         - The paths (or segments) to join
+ * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
+ * @returns {string}
+ */
+OmniWindows.join = function(p, options) {
+  var parsed = util.fastParse(arguments, true, false, true);
+  return win32.join.apply(win32, parsed.pathnames);
 };
 
 /**
@@ -2354,14 +2418,13 @@ OmniWindows.prototype._endsWithSeparator = function(p) {
 (function (process){
 'use strict';
 
-var props = [
-  'isUrl', 'isFS', 'isPosix', 'isWindows', 'isUnc', 'isAbsolute', 'sep', 'delimiter',
-  'href', 'protocol', 'slashes', 'auth', 'host', 'hostname', 'port', 'path', 'pathname',
-  'root', 'dir', 'base', 'name', 'ext', 'search', 'query', 'hash'
-];
-
-module.exports = {
-  props: props,
+var util = module.exports = {
+  props: [
+    'isUrl', 'isFS', 'isPosix', 'isWindows', 'isUnc', 'isAbsolute', 'sep', 'delimiter',
+    'href', 'protocol', 'slashes', 'auth', 'host', 'hostname', 'port', 'path', 'pathname',
+    'root', 'dir', 'base', 'name', 'ext', 'search', 'query', 'hash'
+  ],
+  backslashPattern: /\\/g,
   isString: isString,
   isObject: isObject,
   isNull: isNull,
@@ -2472,8 +2535,8 @@ function inherits(Child, Super) {
  */
 function copy(src, dest) {
   // Copy all public properties
-  for (var i = 0; i < props.length; i++) {
-    var prop = props[i];
+  for (var i = 0; i < util.props.length; i++) {
+    var prop = util.props[i];
     dest[prop] = src[prop];
   }
 
@@ -2483,45 +2546,59 @@ function copy(src, dest) {
 /**
  * Performs a fast, minimal parsing of the given path(s).
  *
- * @param   {...string|...Url|...OmniPath} p - The results to parse
- * @returns {{isUrl: boolean, isWindows: boolean, isPosix: boolean, href: string}[]}
+ * @param   {*[]}     args        - The paths to parse, and possibly a {@link PathOptions} argument
+ * @param   {boolean} [pathnames] - Whether to parse pathnames
+ * @param   {boolean} [isUrl]     - Whether to treat all paths as URLs
+ * @param   {boolean} [isFS]      - Whether to treat all paths as filesystem paths
+ * @returns {{hrefs: string[], pathnames: string[], hasUrls: boolean}}
  */
-function fastParse(p) {
-  var first = null;
-  var results = [];
-  results.hasUrls = false;
+function fastParse(args, pathnames, isUrl, isFS) {
+  args = getArgs(args);
+  var paths = args.paths;
+  var options = args.options;
+  var result = {
+    hasUrls: false,
+    hrefs: [],
+    pathnames: []
+  };
 
-  for (var i = 0; i < arguments.length; i++) {
-    var path = arguments[i];
-    var parsed = {href: toString(path)};
+  // Parse each path
+  for (var i = 0; i < paths.length; i++) {
+    var path = paths[i];
+    var href = toString(path);
+    var pathname;
+
     if (path instanceof OmniPath) {
-      parsed.isUrl = path.isUrl;
-      parsed.isPosix = path.isPosix;
-      parsed.isWindows = path.isWindows;
+      // Yay! It's already parsed
+      result.hasUrls = isUrl || result.hasUrls || path.isUrl;
+      pathname = path.pathname;
     }
-    else if (protocolPattern.test(parsed.href)) {
-      parsed.isUrl = true;
+    else if (isUrl || (!isFS && protocolPattern.test(href))) {
+      // It's a URL
+      result.hasUrls = true;
+
+      if (pathnames) {
+        // Strip-off the query and hash
+        pathname = splitFile(href, {allowFileQuery: true, allowFileHash: true}).pathname;
+      }
     }
-    else if (first) {
-      parsed.isUrl = first.isUrl;
-      parsed.isPosix = first.isPosix;
-      parsed.isWindows = first.isWindows;
-    }
-    else {
-      var type = getType(path.href);
-      parsed.isUrl = type.isUrl;
-      parsed.isPosix = type.isPosix;
-      parsed.isWindows = type.isWindows;
+    else if (pathnames) {
+      // It's a file path
+      if (options) {
+        // Strip-off the query and hash
+        pathname = splitFile(href, options).pathname;
+      }
+      else {
+        // File paths can't have a query or hash, so the pathname is the href
+        pathname = href;
+      }
     }
 
-    results.push(parsed);
-    results.hasUrls = results.hasUrls || parsed.isUrl;
-    if (!first) {
-      first = parsed;
-    }
+    result.hrefs.push(href);
+    result.pathnames.push(pathname);
   }
 
-  return results;
+  return result;
 }
 
 /**
@@ -2608,8 +2685,8 @@ function getArgs(args) {
     }
     else {
       // The last argument is the "options" argument.  All others are paths.
-      result.options = args[0];
-      result.paths = Array.prototype.slice.call(args, 1);
+      result.options = lastArg;
+      result.paths = Array.prototype.slice.call(args, 0, args.length - 1);
     }
   }
 

@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.parse', function() {
-  helper.forEachTest(function(test) {
+  helper.forEachTest(TestPaths, function(test) {
     var parsed = helper.invoke('parse', test);
     helper.deepEqual(parsed.posix, test.parse.posix);
     helper.deepEqual(parsed.win32, test.parse.win32);
