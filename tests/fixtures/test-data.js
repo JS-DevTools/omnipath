@@ -2,7 +2,7 @@
   // jscs:disable
   'use strict';
 
-  global.TestPaths = {
+  global.TestData = {
     "root paths": {
       "root (forward slash)": {
         "p": "/",
@@ -230,12 +230,12 @@
         "normalize": {
           "posix": "C:",
           "win32": "C:.",
-          "url": "c:/"
+          "url": "c:"
         },
         "join": {
           "posix": "C:",
           "win32": "C:.",
-          "url": "c:/"
+          "url": "c:"
         }
       },
       "root (UNC)": {
@@ -3245,12 +3245,12 @@
         "normalize": {
           "posix": "smb:/192.168.1.256",
           "win32": "smb:\\192.168.1.256",
-          "url": "smb://192.168.1.256/"
+          "url": "smb://192.168.1.256"
         },
         "join": {
           "posix": "smb:/192.168.1.256",
           "win32": "smb:\\192.168.1.256",
-          "url": "smb://192.168.1.256/"
+          "url": "smb://192.168.1.256"
         }
       },
       "URL with only a host and query": {
@@ -3395,12 +3395,12 @@
         "normalize": {
           "posix": "apple-maps:/host.name#not?a=query",
           "win32": "apple-maps:\\host.name#not?a=query",
-          "url": "apple-maps://host.name/#not?a=query"
+          "url": "apple-maps://host.name#not?a=query"
         },
         "join": {
           "posix": "apple-maps:/host.name",
           "win32": "apple-maps:\\host.name",
-          "url": "apple-maps://host.name/"
+          "url": "apple-maps://host.name"
         }
       },
       "URL with all parts": {
@@ -4633,7 +4633,7 @@
         "join": {
           "posix": "/_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
           "win32": "\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
-          "url": "/_-9a.t+8r_({[ ! % , . > < "
+          "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C"
         }
       },
       "path with encoded special characters": {
@@ -4714,8 +4714,8 @@
     }
   };
 
-  //global.TestPaths = {};
-  global.TestPaths.objects = {
+  //global.TestData = {};
+  global.TestData.objects = {
     "OmniPath.Posix": {
       "p": new OmniPath.Posix('dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query', {allowFileQuery: true, allowFileHash: true}),
       "isUrl": false,
@@ -5082,9 +5082,9 @@
   };
 
   // Populate any missing properties of parsed objects with their default values
-  Object.keys(TestPaths).forEach(function(suite) {
-    Object.keys(TestPaths[suite]).forEach(function(test) {
-      var testObj = TestPaths[suite][test];
+  Object.keys(TestData).forEach(function(suite) {
+    Object.keys(TestData[suite]).forEach(function(test) {
+      var testObj = TestData[suite][test];
       Object.keys(testObj.parse).forEach(function(parsed) {
         var obj = testObj.parse[parsed];
         Object.keys(defaults).forEach(function(key) {
@@ -5096,7 +5096,7 @@
     });
   });
 
-  //var x = JSON.stringify(TestPaths, null, 2);
+  //var x = JSON.stringify(TestData, null, 2);
   //console.log(x);
   //process.exit();
 

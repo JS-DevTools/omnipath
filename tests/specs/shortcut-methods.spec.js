@@ -28,7 +28,7 @@ var methods = [
 
 methods.forEach(function(method) {
   describe('OmniPath.' + method.name, function() {
-    helper.forEachTest(TestPaths, function(test) {
+    helper.forEachTest(TestData, function(test) {
       var results = helper.invoke(method.name, test);
 
       // Validate the return type

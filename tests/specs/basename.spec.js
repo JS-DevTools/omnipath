@@ -1,17 +1,17 @@
 'use strict';
 
 describe('OmniPath.basename', function() {
-  helper.forEachTest(TestPaths, function(test) {
+  helper.forEachTest(TestData, function(test) {
     var results = [
-      {basename: helper.invoke('basename', test, test.p, test.options)},
-      {ext: '.html', basename: helper.invoke('basename', test, test.p, '.html', test.options)},
-      {ext: '.txt', basename: helper.invoke('basename', test, test.p, '.txt', test.options)},
-      {ext: 'txt', basename: helper.invoke('basename', test, test.p, 'txt', test.options)},
-      {ext: '.hidden', basename: helper.invoke('basename', test, test.p, '.hidden', test.options)},
-      {ext: '.tory', basename: helper.invoke('basename', test, test.p, '.tory', test.options)},
-      {ext: '.min.js', basename: helper.invoke('basename', test, test.p, '.min.js', test.options)},
-      {ext: '', basename: helper.invoke('basename', test, test.p, '', test.options)},
-      {ext: undefined, basename: helper.invoke('basename', test, test.p, undefined, test.options)}
+      {basename: helper.invoke('basename', test, [test.p, test.options])},
+      {ext: '.html', basename: helper.invoke('basename', test, [test.p, '.html', test.options])},
+      {ext: '.txt', basename: helper.invoke('basename', test, [test.p, '.txt', test.options])},
+      {ext: 'txt', basename: helper.invoke('basename', test, [test.p, 'txt', test.options])},
+      {ext: '.hidden', basename: helper.invoke('basename', test, [test.p, '.hidden', test.options])},
+      {ext: '.tory', basename: helper.invoke('basename', test, [test.p, '.tory', test.options])},
+      {ext: '.min.js', basename: helper.invoke('basename', test, [test.p, '.min.js', test.options])},
+      {ext: '', basename: helper.invoke('basename', test, [test.p, '', test.options])},
+      {ext: undefined, basename: helper.invoke('basename', test, [test.p, undefined, test.options])}
     ];
 
     results.forEach(function(result) {

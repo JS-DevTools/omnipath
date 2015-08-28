@@ -18,9 +18,9 @@
   };
 
   /**
-   * Runs the given test function for each test object in {@link TestPaths} or {@link TestPairs}.
+   * Runs the given test function for each test object in {@link TestData} or {@link TestData2}.
    *
-   * @param {TestPaths|TestPairs} testData - Either {@link TestPaths} or {@link TestPairs}
+   * @param {TestData|TestData2} testData - Either {@link TestData} or {@link TestData2}
    * @param {function}            run      - The function to run for each test object in `testData`
    */
   function forEachTest(testData, run) {
@@ -47,8 +47,8 @@
    * and {@link OmniUrl} using the given test data, and returns the results.
    *
    * @param   {string}  method  - The method to call
-   * @param   {object}  test    - A test object from {@link TestPaths} or {@link TestPairs}
-   * @param   {...*}    [args]  - Arguments to pass to the invoked method (defaults to test.p and test.options)
+   * @param   {object}  test    - A test object from {@link TestData} or {@link TestData2}
+   * @param   {*[]}     [args]  - Arguments to pass to the invoked method (defaults to test.p and test.options)
    * @returns {object}
    */
   function invoke(method, test, args) {
@@ -59,9 +59,6 @@
       else {
         args = [test.p, test.options];
       }
-    }
-    else {
-      args = Array.prototype.slice.call(arguments, 2);
     }
 
     var omni = result(OmniPath, method, args);
