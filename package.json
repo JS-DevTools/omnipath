@@ -1,6 +1,6 @@
 {
   "name": "omnipath",
-  "version": "1.0.0-beta.15",
+  "version": "1.0.0-beta.16",
   "description": "A consolidated API for file paths and URLs",
   "keywords": [
     "file",
@@ -46,7 +46,7 @@
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
     "karma-cli": "0.1.0",
-    "karma-coverage": "^0.5.0",
+    "karma-coverage": "^0.5.1",
     "karma-firefox-launcher": "^0.1.6",
     "karma-ie-launcher": "^0.2.0",
     "karma-mocha": "^0.2.0",
