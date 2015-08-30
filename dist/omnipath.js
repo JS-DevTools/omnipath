@@ -12,6 +12,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
 },{"./omni-path":4,"./omni-posix":5,"./omni-url":6,"./omni-windows":7}],2:[function(require,module,exports){
 (function (process){
+/* istanbul ignore next - Don't include native NodeJS code in code-coverage */
 (function() {
   'use strict';
 
@@ -661,6 +662,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
 },{"../util":8,"_process":9,"path":2}],3:[function(require,module,exports){
 (function (process){
+/* istanbul ignore next - Don't include native NodeJS code in code-coverage */
 (function() {
   'use strict';
 
