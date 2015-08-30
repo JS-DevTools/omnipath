@@ -62,7 +62,7 @@ describe('OmniPath.parse', function() {
     it('object', function() {
       function notGonnaWork(obj) {
         expect(function() {
-          obj.parse({href: 'foobar'});
+          obj.parse({foo: 'bar'});
         })
           .to.throw(Error, 'Expected a file path or URL, but got object [object Object]');
       }

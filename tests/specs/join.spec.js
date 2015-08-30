@@ -1,6 +1,6 @@
 'use strict';
 
-describe.only('OmniPath.join', function() {
+describe('OmniPath.join', function() {
   helper.forEachTest(TestData2, function(test) {
     var joined = helper.invoke('join', test);
 
@@ -16,7 +16,7 @@ describe.only('OmniPath.join', function() {
     expect(joined.url).to.equal(test.join.url, 'url');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (userAgent.isNode && test.matchesNative !== false) {
       expect(joined.posix).to.equal(path.posix.join.apply(null, test.p), 'native posix');
       expect(joined.win32).to.equal(path.win32.join.apply(null, test.p), 'native win32');
     }
@@ -26,24 +26,26 @@ describe.only('OmniPath.join', function() {
     // Test a single-parameter join, which is basically the same as normalize
     var singleJoin = helper.invoke('join', test);
 
-    // Test a multi-parameter join that resolves to the original path
-    var multiJoinArgs = [test.p, '', '/', './', '.', '///', '/./'];
-    var multiJoin = helper.invoke('join', test, multiJoinArgs.concat(test.options));
-
     // Validate the return type
     expect(singleJoin.omni).to.be.a('string');
     expect(singleJoin.posix).to.be.a('string');
     expect(singleJoin.win32).to.be.a('string');
     expect(singleJoin.url).to.be.a('string');
+
+    // Validate the return value
+    expect(singleJoin.posix).to.equal(test.normalize.posix, 'posix');
+    expect(singleJoin.win32).to.equal(test.normalize.win32, 'win32');
+    expect(singleJoin.url).to.equal(test.normalize.url, 'url');
+
+    // Test a multi-parameter join that resolves to the original path
+    var multiJoinArgs = [test.p, '', '/', './', '.', '///', '/./'];
+    var multiJoin = helper.invoke('join', test, multiJoinArgs.concat(test.options));
+
+    // Validate the return type
     expect(multiJoin.omni).to.be.a('string');
     expect(multiJoin.posix).to.be.a('string');
     expect(multiJoin.win32).to.be.a('string');
     expect(multiJoin.url).to.be.a('string');
-
-    // Validate the return value
-    expect(singleJoin.posix).to.equal(test.join.posix, 'posix');
-    expect(singleJoin.win32).to.equal(test.join.win32, 'win32');
-    expect(singleJoin.url).to.equal(test.join.url, 'url');
 
     // Compare to Node's native behavior
     if (userAgent.isNode) {
@@ -63,3 +65,4 @@ describe.only('OmniPath.join', function() {
     }
   });
 });
+

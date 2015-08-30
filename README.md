@@ -142,6 +142,27 @@ OmniPath.format(u);        // => "http://server.com/dir/subdir/file.html"
 ```
 
 
+### `formatPart(path, part, [options])`
+
+- **path** (_required_) - `Url` or `OmniPath`<br>
+A parsed `OmniPath` object.  Can also be a `Url` object (from [`url.parse`](https://nodejs.org/docs/latest/api/url.html#url_url_parse_urlstr_parsequerystring_slashesdenotehost))
+
+- **part** (_required_) - `string`<br>
+The name of the rightmost part to include in the returned string. For example, "protocol" will only return the protocol part, whereas "port" will return the protocol, slashes, auth, hostname, and port.
+
+- **options** (_optional_) - `object`<br>
+Options that determine how the path is parsed. See [options](#options) below.
+
+- **Return Value:** `string`
+
+```javascript
+OmniPath.formatPart("http://server.com:8080/dir/file.html", "hostname");  // => "http://server.com"
+OmniPath.formatPart("http://server.com:8080/dir/file.html", "host");      // => "http://server.com:8080"
+OmniPath.formatPart("http://server.com:8080/dir/file.html", "dir");       // => "http://server.com:8080/dir"
+OmniPath.formatPart("C:\\dir\\subdir\\file.html", "pathname");            // => "C:\\dir\\subdir\\file.html"
+```
+
+
 ### `join(path1, path2, ..., [options])`
 
 - **path1, path2, ...** (_optional_) - `string` or `Url` or `OmniPath`<br>
@@ -268,12 +289,12 @@ OmniPath.extname("/dir/subdir/.hiddendir");                  // => ""
 
 ### `cwd()`
 
-- **Return Value:** [`OmniPath`](#omnipath-object)
+- **Return Value:** `string`
 
-Returns the current working directory as a [`OmniPath`](#omnipath-object) object.  In Node, the current working directory is [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd).  In web browsers, it is the directory of the current page.
+Returns the current working directory path.  In Node, the current working directory is [`process.cwd`](https://nodejs.org/api/process.html#process_process_cwd).  In web browsers, it is the directory of the current page.
 
 ```javascript
-var cwd = OmniPath.cwd();
+var cwd = OmniPath.parse(OmniPath.cwd());
 cwd.href;       // e.g. "http://localhost:8080/dir/subdir/"
 cwd.pathname;   // e.g. "/dir/subdir/"
 cwd.dir;        // e.g. "/dir"
@@ -289,7 +310,7 @@ The path to be parsed. See [`parse`](#parsepath-options) for details.
 - **options** (_optional_) - `object`<br>
 Options that determine how the path is parsed. See [options](#options) below.
 
-- **Return Value:** `boolean`
+- **Return Value:** [`Url` object](https://nodejs.org/docs/latest/api/url.html#url_url)
 
 Converts the given path to a [`Url`](https://nodejs.org/docs/latest/api/url.html#url_url) object. If the path is already a URL, then it remain unchanged.  If it is a filesystem path, then it is converted to a `file://` URL.
 

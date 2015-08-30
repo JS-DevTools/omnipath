@@ -35,12 +35,26 @@
           function runTest() {
             run(testData[suite][test]);
           }
+
           runTest.toString = toString;
-          it(test, runTest);
+
+          if (test === forEachTest._only) {
+            it.only(test, runTest);
+          }
+          else {
+            it(test, runTest);
+          }
         });
       });
     });
+
+    forEachTest._only = undefined;
   }
+
+  forEachTest.only = function(testName) {
+    forEachTest._only = testName;
+    return forEachTest;
+  };
 
   /**
    * Invokes the specified method on {@link OmniPath}, {@link OmniPosix}, {@link OmniWindows},
@@ -61,36 +75,65 @@
       }
     }
 
-    var omni = result(OmniPath, method, args);
-    var posix = result(OmniPath.posix, method, args);
-    var win32 = result(OmniPath.win32, method, args);
-    var url = result(OmniPath.url, method, args);
+    // Invoke the static methods
+    var s = {
+      omni: result(OmniPath, method, args),
+      posix: result(OmniPath.posix, method, args),
+      win32: result(OmniPath.win32, method, args),
+      url: result(OmniPath.url, method, args)
+    };
+
+    // Invoke the instance methods (unless we already have an instance)
+    if (!(args[0] instanceof OmniPath)) {
+      var first = args[0];
+      var last = args[args.length - 1];
+      var rest = method === 'parse' ? args : args.slice(1, args.length - 1);
+      var i = {
+        omni: result(new OmniPath(first, last), method, rest),
+        posix: result(new OmniPath.Posix(first, last), method, rest),
+        win32: result(new OmniPath.Windows(first, last), method, rest),
+        url: result(new OmniPath.Url(first, last), method, rest)
+      };
+
+      // Compare static results to instance results
+      expect(s.omni).to.deep.equal(i.omni, 'static omni !== instance omni');
+      expect(s.url).to.deep.equal(i.url, 'static url !== instance url');
+
+      if (method === 'resolve' && test.isUrl) {
+        // `resolve` produces different results when a URL string (e.g. "http://server.com)
+        // is explicitly parsed as a POSIX/Windows path, versus auto-detecting
+      }
+      else {
+        expect(s.posix).to.deep.equal(i.posix, 'static posix !== instance posix');
+        expect(s.win32).to.deep.equal(i.win32, 'static win32 !== instance win32');
+      }
+    }
 
     // Compare the OmniPath result to the platform-specific result
     if (test.isUrl) {
-      expect(omni).to.deep.equal(url);
+      expect(s.omni).to.deep.equal(s.url, 'omni !== url');
     }
-    else if (test.p.isPosix) {
-      expect(omni).to.deep.equal(posix);
+    else if (test.p.isPosix || (test.p[0] && test.p[0].isPosix)) {
+      expect(s.omni).to.deep.equal(s.posix, 'omni !== posix');
     }
-    else if (test.p.isWindows) {
-      expect(omni).to.deep.equal(win32);
+    else if (test.p.isWindows || (test.p[0] && test.p[0].isWindows)) {
+      expect(s.omni).to.deep.equal(s.win32, 'omni !== win32');
     }
     else if (userAgent.isPosix) {
-      expect(omni).to.deep.equal(posix);
+      expect(s.omni).to.deep.equal(s.posix, 'omni !== posix');
     }
     else if (userAgent.isWindows) {
-      expect(omni).to.deep.equal(win32);
+      expect(s.omni).to.deep.equal(s.win32, 'omni !== win32');
     }
     else if (userAgent.isBrowser) {
-      expect(omni).to.deep.equal(url);
+      expect(s.omni).to.deep.equal(s.url, 'omni !== url');
     }
 
     return {
-      omni: omni,
-      posix: posix,
-      win32: win32,
-      url: url
+      omni: s.omni,
+      posix: s.posix,
+      win32: s.win32,
+      url: s.url
     };
   }
 

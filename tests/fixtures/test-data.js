@@ -48,19 +48,14 @@
           "win32": "file:///",
           "url": "/"
         },
-        "format": {
-          "posix": "//",
-          "win32": "/\\",
-          "url": "/"
-        },
         "normalize": {
           "posix": "/",
           "win32": "\\",
           "url": "/"
         },
-        "join": {
-          "posix": "/",
-          "win32": "\\",
+        "format": {
+          "posix": "//",
+          "win32": "/\\",
           "url": "/"
         }
       },
@@ -113,11 +108,6 @@
           "url": "/"
         },
         "normalize": {
-          "posix": "\\",
-          "win32": "\\",
-          "url": "/"
-        },
-        "join": {
           "posix": "\\",
           "win32": "\\",
           "url": "/"
@@ -176,66 +166,6 @@
           "posix": "C:\\",
           "win32": "C:\\",
           "url": "c:/"
-        },
-        "join": {
-          "posix": "C:\\",
-          "win32": "C:\\",
-          "url": "c:/"
-        }
-      },
-      "root (Windows) (without a slash)": {
-        "p": "C:",
-        "isUrl": false,
-        "parse": {
-          "posix": {
-            "isFS": true,
-            "isPosix": true,
-            "sep": "/",
-            "delimiter": ":",
-            "href": "C:",
-            "path": "C:",
-            "pathname": "C:",
-            "base": "C:",
-            "name": "C:"
-          },
-          "win32": {
-            "isFS": true,
-            "isWindows": true,
-            "sep": "\\",
-            "delimiter": ";",
-            "href": "C:",
-            "path": "C:",
-            "pathname": "C:",
-            "root": "C:",
-            "dir": "C:"
-          },
-          "url": {
-            "isUrl": true,
-            "isAbsolute": true,
-            "sep": "/",
-            "href": "c:",
-            "protocol": "c:"
-          }
-        },
-        "toUrlString": {
-          "posix": "file:///C:",
-          "win32": "file:///C:",
-          "url": "c:"
-        },
-        "format": {
-          "posix": "C:",
-          "win32": "C:\\",
-          "url": "c:"
-        },
-        "normalize": {
-          "posix": "C:",
-          "win32": "C:.",
-          "url": "c:"
-        },
-        "join": {
-          "posix": "C:",
-          "win32": "C:.",
-          "url": "c:"
         }
       },
       "root (UNC)": {
@@ -295,11 +225,6 @@
           "posix": "\\\\server\\",
           "win32": "\\server\\",
           "url": "/server/"
-        },
-        "join": {
-          "posix": "\\\\server\\",
-          "win32": "\\server\\",
-          "url": "/server/"
         }
       },
       "root (UNC) (without slash)": {
@@ -356,11 +281,6 @@
           "url": "//server"
         },
         "normalize": {
-          "posix": "\\\\server",
-          "win32": "\\server",
-          "url": "/server"
-        },
-        "join": {
           "posix": "\\\\server",
           "win32": "\\server",
           "url": "/server"
@@ -425,11 +345,6 @@
           "posix": "http:/host.name",
           "win32": "http:\\host.name",
           "url": "http://host.name/"
-        },
-        "join": {
-          "posix": "http:/host.name",
-          "win32": "http:\\host.name",
-          "url": "http://host.name/"
         }
       },
       "root (with . and .. segments)": {
@@ -488,11 +403,6 @@
           "url": "/./.././"
         },
         "normalize": {
-          "posix": "/",
-          "win32": "\\",
-          "url": "/"
-        },
-        "join": {
           "posix": "/",
           "win32": "\\",
           "url": "/"
@@ -557,11 +467,6 @@
           "posix": "/somedir/",
           "win32": "\\somedir\\",
           "url": "/somedir/"
-        },
-        "join": {
-          "posix": "/somedir/",
-          "win32": "\\somedir\\",
-          "url": "/somedir/"
         }
       },
       "root directory (backslash)": {
@@ -617,11 +522,6 @@
           "url": "/somedir/"
         },
         "normalize": {
-          "posix": "\\somedir\\",
-          "win32": "\\somedir\\",
-          "url": "/somedir/"
-        },
-        "join": {
           "posix": "\\somedir\\",
           "win32": "\\somedir\\",
           "url": "/somedir/"
@@ -684,11 +584,6 @@
           "posix": "C:\\somedir\\",
           "win32": "C:\\somedir\\",
           "url": "c:/somedir/"
-        },
-        "join": {
-          "posix": "C:\\somedir\\",
-          "win32": "C:\\somedir\\",
-          "url": "c:/somedir/"
         }
       },
       "root directory (UNC)": {
@@ -714,6 +609,8 @@
             "sep": "\\",
             "delimiter": ";",
             "href": "\\\\server\\dir\\",
+            "hostname": "server",
+            "host": "server",
             "path": "\\\\server\\dir\\",
             "pathname": "\\\\server\\dir\\",
             "root": "\\\\server\\dir\\",
@@ -743,11 +640,6 @@
           "url": "//server/dir/"
         },
         "normalize": {
-          "posix": "\\\\server\\dir\\",
-          "win32": "\\\\server\\dir\\",
-          "url": "/server/dir/"
-        },
-        "join": {
           "posix": "\\\\server\\dir\\",
           "win32": "\\\\server\\dir\\",
           "url": "/server/dir/"
@@ -812,11 +704,6 @@
           "posix": "http:/host.name/somedir/",
           "win32": "http:\\host.name\\somedir\\",
           "url": "http://host.name/somedir/"
-        },
-        "join": {
-          "posix": "http:/host.name/somedir/",
-          "win32": "http:\\host.name\\somedir\\",
-          "url": "http://host.name/somedir/"
         }
       },
       "root directory (with . and .. segments)": {
@@ -875,11 +762,6 @@
           "url": "/./.././somedir/./"
         },
         "normalize": {
-          "posix": "/somedir/",
-          "win32": "\\somedir\\",
-          "url": "/somedir/"
-        },
-        "join": {
           "posix": "/somedir/",
           "win32": "\\somedir\\",
           "url": "/somedir/"
@@ -947,11 +829,6 @@
           "posix": "/somefile.txt",
           "win32": "\\\somefile.txt",
           "url": "/somefile.txt"
-        },
-        "join": {
-          "posix": "/somefile.txt",
-          "win32": "\\\somefile.txt",
-          "url": "/somefile.txt"
         }
       },
       "root file (backslash)": {
@@ -1010,11 +887,6 @@
           "url": "/somefile.html"
         },
         "normalize": {
-          "posix": "\\somefile.html",
-          "win32": "\\somefile.html",
-          "url": "/somefile.html"
-        },
-        "join": {
           "posix": "\\somefile.html",
           "win32": "\\somefile.html",
           "url": "/somefile.html"
@@ -1080,11 +952,6 @@
           "posix": "C:\\somefile.md",
           "win32": "C:\\somefile.md",
           "url": "c:/somefile.md"
-        },
-        "join": {
-          "posix": "C:\\somefile.md",
-          "win32": "C:\\somefile.md",
-          "url": "c:/somefile.md"
         }
       },
       "root file (UNC)": {
@@ -1111,6 +978,8 @@
             "sep": "\\",
             "delimiter": ";",
             "href": "\\\\server\\somefile.doc",
+            "hostname": "server",
+            "host": "server",
             "path": "\\\\server\\somefile.doc",
             "pathname": "\\\\server\\somefile.doc",
             "root": "\\\\server\\somefile.doc",
@@ -1141,11 +1010,6 @@
           "url": "//server/somefile.doc"
         },
         "normalize": {
-          "posix": "\\\\server\\somefile.doc",
-          "win32": "\\\\server\\somefile.doc\\",
-          "url": "/server/somefile.doc"
-        },
-        "join": {
           "posix": "\\\\server\\somefile.doc",
           "win32": "\\\\server\\somefile.doc\\",
           "url": "/server/somefile.doc"
@@ -1213,11 +1077,6 @@
           "posix": "http:/host.name/somefile.html",
           "win32": "http:\\host.name\\somefile.html",
           "url": "http://host.name/somefile.html"
-        },
-        "join": {
-          "posix": "http:/host.name/somefile.html",
-          "win32": "http:\\host.name\\somefile.html",
-          "url": "http://host.name/somefile.html"
         }
       },
       "root file (with . and .. segments)": {
@@ -1279,11 +1138,6 @@
           "url": "/.././../somefile.txt"
         },
         "normalize": {
-          "posix": "/somefile.txt",
-          "win32": "\\somefile.txt",
-          "url": "/somefile.txt"
-        },
-        "join": {
           "posix": "/somefile.txt",
           "win32": "\\somefile.txt",
           "url": "/somefile.txt"
@@ -1350,11 +1204,6 @@
           "posix": "/dir/subdir/somedir/",
           "win32": "\\dir\\subdir\\somedir\\",
           "url": "/dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "/dir/subdir/somedir/",
-          "win32": "\\dir\\subdir\\somedir\\",
-          "url": "/dir/subdir/somedir/"
         }
       },
       "absolute directory (backslashes)": {
@@ -1410,11 +1259,6 @@
           "url": "/dir/subdir/somedir/"
         },
         "normalize": {
-          "posix": "\\dir\\subdir\\somedir\\",
-          "win32": "\\dir\\subdir\\somedir\\",
-          "url": "/dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "\\dir\\subdir\\somedir\\",
           "win32": "\\dir\\subdir\\somedir\\",
           "url": "/dir/subdir/somedir/"
@@ -1477,11 +1321,6 @@
           "posix": "C:\\dir\\subdir\\somedir\\",
           "win32": "C:\\dir\\subdir\\somedir\\",
           "url": "c:/dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "C:\\dir\\subdir\\somedir\\",
-          "win32": "C:\\dir\\subdir\\somedir\\",
-          "url": "c:/dir/subdir/somedir/"
         }
       },
       "absolute directory (UNC)": {
@@ -1507,6 +1346,8 @@
             "sep": "\\",
             "delimiter": ";",
             "href": "\\\\server\\dir\\subdir\\somedir\\",
+            "hostname": "server",
+            "host": "server",
             "path": "\\\\server\\dir\\subdir\\somedir\\",
             "pathname": "\\\\server\\dir\\subdir\\somedir\\",
             "root": "\\\\server\\dir\\",
@@ -1538,11 +1379,6 @@
           "url": "//server/dir/subdir/somedir/"
         },
         "normalize": {
-          "posix": "\\\\server\\dir\\subdir\\somedir\\",
-          "win32": "\\\\server\\dir\\subdir\\somedir\\",
-          "url": "/server/dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "\\\\server\\dir\\subdir\\somedir\\",
           "win32": "\\\\server\\dir\\subdir\\somedir\\",
           "url": "/server/dir/subdir/somedir/"
@@ -1607,11 +1443,6 @@
           "posix": "http:/host.name/dir/subdir/somedir/",
           "win32": "http:\\host.name\\dir\\subdir\\somedir\\",
           "url": "http://host.name/dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "http:/host.name/dir/subdir/somedir/",
-          "win32": "http:\\host.name\\dir\\subdir\\somedir\\",
-          "url": "http://host.name/dir/subdir/somedir/"
         }
       },
       "absolute directory (forward slashes + backslashes)": {
@@ -1673,11 +1504,6 @@
           "posix": "/dir\\subdir/somedir\\",
           "win32": "\\dir\\subdir\\somedir\\",
           "url": "/dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "/dir\\subdir/somedir\\",
-          "win32": "\\dir\\subdir\\somedir\\",
-          "url": "/dir/subdir/somedir/"
         }
       },
       "absolute directory (backslashes + forward slashes)": {
@@ -1734,11 +1560,6 @@
           "url": "/dir/subdir/somedir/"
         },
         "normalize": {
-          "posix": "\\dir/subdir\\somedir/",
-          "win32": "\\dir\\subdir\\somedir\\",
-          "url": "/dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "\\dir/subdir\\somedir/",
           "win32": "\\dir\\subdir\\somedir\\",
           "url": "/dir/subdir/somedir/"
@@ -1802,11 +1623,6 @@
           "posix": "C:/dir/subdir\\somedir/",
           "win32": "C:\\dir\\subdir\\somedir\\",
           "url": "c:/dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "C:/dir/subdir\\somedir/",
-          "win32": "C:\\dir\\subdir\\somedir\\",
-          "url": "c:/dir/subdir/somedir/"
         }
       },
       "absolute directory (with . and .. segments)": {
@@ -1865,11 +1681,6 @@
           "url": "/dir/./subdir/././somedir/../somedir/./"
         },
         "normalize": {
-          "posix": "/dir/subdir/somedir/",
-          "win32": "\\dir\\subdir\\somedir\\",
-          "url": "/dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "/dir/subdir/somedir/",
           "win32": "\\dir\\subdir\\somedir\\",
           "url": "/dir/subdir/somedir/"
@@ -1937,11 +1748,6 @@
           "posix": "/dir/subdir/somefile.txt",
           "win32": "\\dir\\subdir\\somefile.txt",
           "url": "/dir/subdir/somefile.txt"
-        },
-        "join": {
-          "posix": "/dir/subdir/somefile.txt",
-          "win32": "\\dir\\subdir\\somefile.txt",
-          "url": "/dir/subdir/somefile.txt"
         }
       },
       "absolute file (backslashes)": {
@@ -2000,11 +1806,6 @@
           "url": "/dir/subdir/somefile.html"
         },
         "normalize": {
-          "posix": "\\dir\\subdir\\somefile.html",
-          "win32": "\\dir\\subdir\\somefile.html",
-          "url": "/dir/subdir/somefile.html"
-        },
-        "join": {
           "posix": "\\dir\\subdir\\somefile.html",
           "win32": "\\dir\\subdir\\somefile.html",
           "url": "/dir/subdir/somefile.html"
@@ -2070,11 +1871,6 @@
           "posix": "C:\\dir\\subdir\\somefile.md",
           "win32": "C:\\dir\\subdir\\somefile.md",
           "url": "c:/dir/subdir/somefile.md"
-        },
-        "join": {
-          "posix": "C:\\dir\\subdir\\somefile.md",
-          "win32": "C:\\dir\\subdir\\somefile.md",
-          "url": "c:/dir/subdir/somefile.md"
         }
       },
       "absolute file (UNC)": {
@@ -2101,6 +1897,8 @@
             "sep": "\\",
             "delimiter": ";",
             "href": "\\\\server\\dir\\subdir\\somefile.doc",
+            "hostname": "server",
+            "host": "server",
             "path": "\\\\server\\dir\\subdir\\somefile.doc",
             "pathname": "\\\\server\\dir\\subdir\\somefile.doc",
             "root": "\\\\server\\dir\\",
@@ -2134,11 +1932,6 @@
           "url": "//server/dir/subdir/somefile.doc"
         },
         "normalize": {
-          "posix": "\\\\server\\dir\\subdir\\somefile.doc",
-          "win32": "\\\\server\\dir\\subdir\\somefile.doc",
-          "url": "/server/dir/subdir/somefile.doc"
-        },
-        "join": {
           "posix": "\\\\server\\dir\\subdir\\somefile.doc",
           "win32": "\\\\server\\dir\\subdir\\somefile.doc",
           "url": "/server/dir/subdir/somefile.doc"
@@ -2206,11 +1999,6 @@
           "posix": "http:/host.name/dir/subdir/somefile.html",
           "win32": "http:\\host.name\\dir\\subdir\\somefile.html",
           "url": "http://host.name/dir/subdir/somefile.html"
-        },
-        "join": {
-          "posix": "http:/host.name/dir/subdir/somefile.html",
-          "win32": "http:\\host.name\\dir\\subdir\\somefile.html",
-          "url": "http://host.name/dir/subdir/somefile.html"
         }
       },
       "absolute file (forward slashes + backslashes)": {
@@ -2272,11 +2060,6 @@
           "url": "/dir/subdir/somedir/somefile.txt"
         },
         "normalize": {
-          "posix": "/dir\\subdir/somedir\\somefile.txt",
-          "win32": "\\dir\\subdir\\somedir\\somefile.txt",
-          "url": "/dir/subdir/somedir/somefile.txt"
-        },
-        "join": {
           "posix": "/dir\\subdir/somedir\\somefile.txt",
           "win32": "\\dir\\subdir\\somedir\\somefile.txt",
           "url": "/dir/subdir/somedir/somefile.txt"
@@ -2342,11 +2125,6 @@
           "posix": "\\dir/subdir\\somedir/somefile.html",
           "win32": "\\dir\\subdir\\somedir\\somefile.html",
           "url": "/dir/subdir/somedir/somefile.html"
-        },
-        "join": {
-          "posix": "\\dir/subdir\\somedir/somefile.html",
-          "win32": "\\dir\\subdir\\somedir\\somefile.html",
-          "url": "/dir/subdir/somedir/somefile.html"
         }
       },
       "absolute file (Windows + forward slashes)": {
@@ -2407,11 +2185,6 @@
           "url": "c:/dir/subdir/somedir/somefile.md"
         },
         "normalize": {
-          "posix": "C:\\dir/subdir\\somedir/somefile.md",
-          "win32": "C:\\dir\\subdir\\somedir\\somefile.md",
-          "url": "c:/dir/subdir/somedir/somefile.md"
-        },
-        "join": {
           "posix": "C:\\dir/subdir\\somedir/somefile.md",
           "win32": "C:\\dir\\subdir\\somedir\\somefile.md",
           "url": "c:/dir/subdir/somedir/somefile.md"
@@ -2479,11 +2252,6 @@
           "posix": "/dir/subdir/somefile.txt",
           "win32": "\\dir\\subdir\\somefile.txt",
           "url": "/dir/subdir/somefile.txt"
-        },
-        "join": {
-          "posix": "/dir/subdir/somefile.txt",
-          "win32": "\\dir\\subdir\\somefile.txt",
-          "url": "/dir/subdir/somefile.txt"
         }
       }
     },
@@ -2544,11 +2312,6 @@
           "posix": "dir/subdir/somedir/",
           "win32": "dir\\subdir\\somedir\\",
           "url": "dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "dir/subdir/somedir/",
-          "win32": "dir\\subdir\\somedir\\",
-          "url": "dir/subdir/somedir/"
         }
       },
       "relative directory (backslashes)": {
@@ -2602,11 +2365,6 @@
           "url": "dir/subdir/somedir/"
         },
         "normalize": {
-          "posix": "dir\\subdir\\somedir\\",
-          "win32": "dir\\subdir\\somedir\\",
-          "url": "dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "dir\\subdir\\somedir\\",
           "win32": "dir\\subdir\\somedir\\",
           "url": "dir/subdir/somedir/"
@@ -2668,11 +2426,6 @@
           "posix": "dir\\subdir/somedir\\",
           "win32": "dir\\subdir\\somedir\\",
           "url": "dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "dir\\subdir/somedir\\",
-          "win32": "dir\\subdir\\somedir\\",
-          "url": "dir/subdir/somedir/"
         }
       },
       "relative directory (backslashes + forward slashes)": {
@@ -2730,11 +2483,6 @@
           "posix": "dir/subdir\\somedir/",
           "win32": "dir\\subdir\\somedir\\",
           "url": "dir/subdir/somedir/"
-        },
-        "join": {
-          "posix": "dir/subdir\\somedir/",
-          "win32": "dir\\subdir\\somedir\\",
-          "url": "dir/subdir/somedir/"
         }
       },
       "relative directory (with . and .. segments)": {
@@ -2789,11 +2537,6 @@
           "url": ".././dir/././subdir/../subdir/somedir/./"
         },
         "normalize": {
-          "posix": "../dir/subdir/somedir/",
-          "win32": "..\\dir\\subdir\\somedir\\",
-          "url": "../dir/subdir/somedir/"
-        },
-        "join": {
           "posix": "../dir/subdir/somedir/",
           "win32": "..\\dir\\subdir\\somedir\\",
           "url": "../dir/subdir/somedir/"
@@ -2858,11 +2601,6 @@
           "posix": "dir/subdir/somefile.txt",
           "win32": "dir\\subdir\\somefile.txt",
           "url": "dir/subdir/somefile.txt"
-        },
-        "join": {
-          "posix": "dir/subdir/somefile.txt",
-          "win32": "dir\\subdir\\somefile.txt",
-          "url": "dir/subdir/somefile.txt"
         }
       },
       "relative file (backslashes)": {
@@ -2919,11 +2657,6 @@
           "url": "dir/subdir/somefile.html"
         },
         "normalize": {
-          "posix": "dir\\subdir\\somefile.html",
-          "win32": "dir\\subdir\\somefile.html",
-          "url": "dir/subdir/somefile.html"
-        },
-        "join": {
           "posix": "dir\\subdir\\somefile.html",
           "win32": "dir\\subdir\\somefile.html",
           "url": "dir/subdir/somefile.html"
@@ -2988,11 +2721,6 @@
           "posix": "dir\\subdir/somedir\\somefile.txt",
           "win32": "dir\\subdir\\somedir\\somefile.txt",
           "url": "dir/subdir/somedir/somefile.txt"
-        },
-        "join": {
-          "posix": "dir\\subdir/somedir\\somefile.txt",
-          "win32": "dir\\subdir\\somedir\\somefile.txt",
-          "url": "dir/subdir/somedir/somefile.txt"
         }
       },
       "relative file (backslashes + forward slashes)": {
@@ -3053,11 +2781,6 @@
           "posix": "dir/subdir\\somedir/somefile.html",
           "win32": "dir\\subdir\\somedir\\somefile.html",
           "url": "dir/subdir/somedir/somefile.html"
-        },
-        "join": {
-          "posix": "dir/subdir\\somedir/somefile.html",
-          "win32": "dir\\subdir\\somedir\\somefile.html",
-          "url": "dir/subdir/somedir/somefile.html"
         }
       },
       "relative file (with . and .. segments)": {
@@ -3115,11 +2838,6 @@
           "url": ".././dir/subdir/././somedir/../somedir/./somefile.html"
         },
         "normalize": {
-          "posix": "../dir/subdir/somedir/somefile.html",
-          "win32": "..\\dir\\subdir\\somedir\\somefile.html",
-          "url": "../dir/subdir/somedir/somefile.html"
-        },
-        "join": {
           "posix": "../dir/subdir/somedir/somefile.html",
           "win32": "..\\dir\\subdir\\somedir\\somefile.html",
           "url": "../dir/subdir/somedir/somefile.html"
@@ -3184,11 +2902,6 @@
           "posix": "ftp:/localhost",
           "win32": "ftp:\\localhost",
           "url": "ftp://localhost/"
-        },
-        "join": {
-          "posix": "ftp:/localhost",
-          "win32": "ftp:\\localhost",
-          "url": "ftp://localhost/"
         }
       },
       "URL with only a host IP": {
@@ -3243,11 +2956,6 @@
           "url": "smb://192.168.1.256"
         },
         "normalize": {
-          "posix": "smb:/192.168.1.256",
-          "win32": "smb:\\192.168.1.256",
-          "url": "smb://192.168.1.256"
-        },
-        "join": {
           "posix": "smb:/192.168.1.256",
           "win32": "smb:\\192.168.1.256",
           "url": "smb://192.168.1.256"
@@ -3328,11 +3036,6 @@
           "posix": "gopher:/localhost?foo=bar&biz=baz",
           "win32": "gopher:\\localhost?foo=bar&biz=baz",
           "url": "gopher://localhost/?foo=bar&biz=baz"
-        },
-        "join": {
-          "posix": "gopher:/localhost",
-          "win32": "gopher:\\localhost",
-          "url": "gopher://localhost/"
         }
       },
       "URL with only a host and hash": {
@@ -3396,11 +3099,6 @@
           "posix": "apple-maps:/host.name#not?a=query",
           "win32": "apple-maps:\\host.name#not?a=query",
           "url": "apple-maps://host.name#not?a=query"
-        },
-        "join": {
-          "posix": "apple-maps:/host.name",
-          "win32": "apple-maps:\\host.name",
-          "url": "apple-maps://host.name"
         }
       },
       "URL with all parts": {
@@ -3486,11 +3184,6 @@
           "posix": "https:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
           "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
           "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        },
-        "join": {
-          "posix": "https:/user:pass@www.server.com:80/p/a/t/h",
-          "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h",
-          "url": "https://user:pass@www.server.com:80/p/a/t/h"
         }
       },
       "URL with unknown protocol": {
@@ -3576,11 +3269,6 @@
           "posix": "foobar:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
           "win32": "foobar:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
           "url": "foobar://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        },
-        "join": {
-          "posix": "foobar:/user:pass@www.server.com:80/p/a/t/h",
-          "win32": "foobar:\\user:pass@www.server.com:80\\p\\a\\t\\h",
-          "url": "foobar://user:pass@www.server.com:80/p/a/t/h"
         }
       },
       "URL with single-letter protocol": {
@@ -3668,11 +3356,6 @@
           "posix": "c:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
           "win32": "c:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
           "url": "c://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-        },
-        "join": {
-          "posix": "c:/user:pass@www.server.com:80/p/a/t/h",
-          "win32": "c:\\user:pass@www.server.com:80\\p\\a\\t\\h",
-          "url": "c://user:pass@www.server.com:80/p/a/t/h"
         }
       }
     },
@@ -3733,11 +3416,6 @@
           "url": ".dir/sub.dir/some.dir/"
         },
         "normalize": {
-          "posix": ".dir/sub.dir/some.dir/",
-          "win32": ".dir\\sub.dir\\some.dir\\",
-          "url": ".dir/sub.dir/some.dir/"
-        },
-        "join": {
           "posix": ".dir/sub.dir/some.dir/",
           "win32": ".dir\\sub.dir\\some.dir\\",
           "url": ".dir/sub.dir/some.dir/"
@@ -3803,11 +3481,6 @@
           "posix": "d:\\.dir\\sub.dir\\di.rec.tory\\",
           "win32": "d:\\.dir\\sub.dir\\di.rec.tory\\",
           "url": "d:/.dir/sub.dir/di.rec.tory/"
-        },
-        "join": {
-          "posix": "d:\\.dir\\sub.dir\\di.rec.tory\\",
-          "win32": "d:\\.dir\\sub.dir\\di.rec.tory\\",
-          "url": "d:/.dir/sub.dir/di.rec.tory/"
         }
       },
       "hidden directory": {
@@ -3862,11 +3535,6 @@
           "url": ".dir/sub.dir/.hidden/"
         },
         "normalize": {
-          "posix": ".dir\\sub.dir\\.hidden\\",
-          "win32": ".dir\\sub.dir\\.hidden\\",
-          "url": ".dir/sub.dir/.hidden/"
-        },
-        "join": {
           "posix": ".dir\\sub.dir\\.hidden\\",
           "win32": ".dir\\sub.dir\\.hidden\\",
           "url": ".dir/sub.dir/.hidden/"
@@ -3931,11 +3599,6 @@
           "posix": ".dir\\sub.dir/.hid.den\\",
           "win32": ".dir\\sub.dir\\.hid.den\\",
           "url": ".dir/sub.dir/.hid.den/"
-        },
-        "join": {
-          "posix": ".dir\\sub.dir/.hid.den\\",
-          "win32": ".dir\\sub.dir\\.hid.den\\",
-          "url": ".dir/sub.dir/.hid.den/"
         }
       },
       "file with an extension": {
@@ -3994,11 +3657,6 @@
           "url": ".dir/sub.dir/somefile.txt"
         },
         "normalize": {
-          "posix": ".dir/sub.dir/somefile.txt",
-          "win32": ".dir\\sub.dir\\somefile.txt",
-          "url": ".dir/sub.dir/somefile.txt"
-        },
-        "join": {
           "posix": ".dir/sub.dir/somefile.txt",
           "win32": ".dir\\sub.dir\\somefile.txt",
           "url": ".dir/sub.dir/somefile.txt"
@@ -4064,11 +3722,6 @@
           "posix": "d:\\.dir\\sub.dir\\somefile.min.js",
           "win32": "d:\\.dir\\sub.dir\\somefile.min.js",
           "url": "d:/.dir/sub.dir/somefile.min.js"
-        },
-        "join": {
-          "posix": "d:\\.dir\\sub.dir\\somefile.min.js",
-          "win32": "d:\\.dir\\sub.dir\\somefile.min.js",
-          "url": "d:/.dir/sub.dir/somefile.min.js"
         }
       },
       "hidden file": {
@@ -4123,11 +3776,6 @@
           "url": ".dir/sub.dir/.hidden"
         },
         "normalize": {
-          "posix": ".dir\\sub.dir\\.hidden",
-          "win32": ".dir\\sub.dir\\.hidden",
-          "url": ".dir/sub.dir/.hidden"
-        },
-        "join": {
           "posix": ".dir\\sub.dir\\.hidden",
           "win32": ".dir\\sub.dir\\.hidden",
           "url": ".dir/sub.dir/.hidden"
@@ -4189,11 +3837,6 @@
           "url": ".dir/sub.dir/.hidden.md"
         },
         "normalize": {
-          "posix": ".dir\\sub.dir/.hidden.md",
-          "win32": ".dir\\sub.dir\\.hidden.md",
-          "url": ".dir/sub.dir/.hidden.md"
-        },
-        "join": {
           "posix": ".dir\\sub.dir/.hidden.md",
           "win32": ".dir\\sub.dir\\.hidden.md",
           "url": ".dir/sub.dir/.hidden.md"
@@ -4265,11 +3908,6 @@
           "posix": "/path/?to=a/#file\\with#/slashes",
           "win32": "\\path\\?to=a\\#file\\with#\\slashes",
           "url": "/path/?to=a/#file%5Cwith#/slashes"
-        },
-        "join": {
-          "posix": "/path/?to=a/#file\\with#/slashes",
-          "win32": "\\path\\?to=a\\#file\\with#\\slashes",
-          "url": "/path/"
         }
       },
       "path with a query": {
@@ -4346,11 +3984,6 @@
           "posix": "path/to/a/file.html?foo=\\bar&biz=/baz",
           "win32": "path\\to\\a\\file.html?foo=\\bar&biz=/baz",
           "url": "path/to/a/file.html?foo=/bar&biz=/baz"
-        },
-        "join": {
-          "posix": "path/to/a/file.html",
-          "win32": "path\\to\\a\\file.html",
-          "url": "path/to/a/file.html"
         }
       },
       "path with a hash": {
@@ -4420,11 +4053,6 @@
           "posix": "D:\\path\\to/a\\direc.tory/#page1\\?not=a/&query",
           "win32": "D:\\path\\to\\a\\direc.tory\\#page1\\?not=a/&query",
           "url": "d:/path/to/a/direc.tory/#page1%5C?not=a/&query"
-        },
-        "join": {
-          "posix": "D:\\path\\to/a\\direc.tory/",
-          "win32": "D:\\path\\to\\a\\direc.tory\\",
-          "url": "d:/path/to/a/direc.tory/"
         }
       },
       "path with a query and a hash": {
@@ -4462,6 +4090,8 @@
             "sep": "\\",
             "delimiter": ";",
             "href": "\\\\server/path\\to/a\\direc.tory/?foo=\\bar&biz=/baz#page1\\?not=a/&query",
+            "hostname": "server",
+            "host": "server",
             "path": "\\\\server/path\\to/a\\direc.tory/?foo=\\bar&biz=/baz",
             "pathname": "\\\\server/path\\to/a\\direc.tory/",
             "root": "\\\\server/path\\",
@@ -4510,11 +4140,6 @@
           "posix": "\\\\server/path\\to/a\\direc.tory/?foo=\\bar&biz=/baz#page1\\?not=a/&query",
           "win32": "\\\\server\\path\\to\\a\\direc.tory\\?foo=\\bar&biz=/baz#page1\\?not=a/&query",
           "url": "/server/path/to/a/direc.tory/?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
-        },
-        "join": {
-          "posix": "\\\\server/path\\to/a\\direc.tory/",
-          "win32": "\\\\server\\path\\to\\a\\direc.tory\\",
-          "url": "/server/path/to/a/direc.tory/"
         }
       }
     },
@@ -4551,11 +4176,6 @@
           "url": ""
         },
         "normalize": {
-          "posix": ".",
-          "win32": ".",
-          "url": "."
-        },
-        "join": {
           "posix": ".",
           "win32": ".",
           "url": "."
@@ -4629,11 +4249,6 @@
           "posix": "/_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
           "win32": "\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
           "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__"
-        },
-        "join": {
-          "posix": "/_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__/__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
-          "win32": "\\_-9a.t+8r_({[ ! % , . > < ? & $ # @ ` ~ ,)}]__\\__({[ ! % , . > < ? & $ # @ ` ~ ,)}]__",
-          "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C"
         }
       },
       "path with encoded special characters": {
@@ -4704,11 +4319,6 @@
           "posix": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__",
           "win32": "\\_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__\\__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__",
           "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__"
-        },
-        "join": {
-          "posix": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__/__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__",
-          "win32": "\\_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__\\__(%7B[%20!%20%%20,%20.%20%3E%20%3C%20?%20&%20$%20#%20@%20%60%20~%20,)%7D]__",
-          "url": "/_-9a.t+8r_(%7B[%20!%20%%20,%20.%20%3E%20%3C%20"
         }
       }
     }
@@ -4790,11 +4400,6 @@
         "posix": "dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
         "win32": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
         "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
-      },
-      "join": {
-        "posix": "dir/.subdir/file.min.js",
-        "win32": "dir\\.subdir\\file.min.js",
-        "url": "dir/.subdir/file.min.js"
       }
     },
     "OmniPath.Windows": {
@@ -4870,11 +4475,6 @@
         "posix": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
         "win32": "dir\\.subdir\\file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query",
         "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
-      },
-      "join": {
-        "posix": "dir\\.subdir\\file.min.js",
-        "win32": "dir\\.subdir\\file.min.js",
-        "url": "dir/.subdir/file.min.js"
       }
     },
     "OmniPath.Url": {
@@ -4951,11 +4551,6 @@
         "posix": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
         "win32": "dir\\.subdir\\file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query",
         "url": "dir/.subdir/file.min.js?foo=%5Cbar&biz=/baz#page1%5C?not=a/&query"
-      },
-      "join": {
-        "posix": "dir/.subdir/file.min.js",
-        "win32": "dir\\.subdir\\file.min.js",
-        "url": "dir/.subdir/file.min.js"
       }
     },
     "URL object": {
@@ -5044,11 +4639,6 @@
         "posix": "https:/user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1",
         "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h?foo=bar&biz=baz#page1",
         "url": "https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1"
-      },
-      "join": {
-        "posix": "https:/user:pass@www.server.com:80/p/a/t/h",
-        "win32": "https:\\user:pass@www.server.com:80\\p\\a\\t\\h",
-        "url": "https://user:pass@www.server.com:80/p/a/t/h"
       }
     }
   };
