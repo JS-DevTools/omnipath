@@ -1,6 +1,6 @@
 {
   "name": "omnipath",
-  "version": "1.0.0-beta.16",
+  "version": "1.0.0",
   "description": "A consolidated API for file paths and URLs",
   "keywords": [
     "file",
