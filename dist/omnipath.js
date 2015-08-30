@@ -1,6 +1,6 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**!
- * OmniPath v1.0.0
+ * OmniPath v1.0.1
  *
  * @link https://github.com/BigstickCarpet/omnipath
  * @license MIT
@@ -1637,14 +1637,19 @@ OmniPath.resolve = function(from, to, options) {
 OmniPath.prototype.resolve = function(to, options) {
   var args = [this].concat(Array.prototype.slice.call(arguments));
   var parsed = util.fastParse(args);
+  var pathnames = parsed.pathnames;
 
   if (parsed.hasUrls) {
     // If any of the paths are URLs, then use URL-resolving logic
     return OmniPath.Url.resolve.apply(OmniPath.Url, parsed.hrefs);
   }
 
-  // Resolve the path, using OmniPath.cwd() as a fallback
-  var pathnames = [OmniPath.cwd()].concat(parsed.pathnames);
+  if (process.browser) {
+    // Use OmniPath.cwd() instead of Browserify's process.cwd() (which is always "/")
+    pathnames = [OmniPath.cwd()].concat(parsed.pathnames);
+  }
+
+  // Resolve the path
   var resolved = this._path.resolve.apply(this._path, pathnames);
 
   // Resolve the search and hash

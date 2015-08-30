@@ -57,6 +57,21 @@
           "posix": "//",
           "win32": "/\\",
           "url": "/"
+        },
+        "formatPart": {
+          protocol: "",
+          slashes: "",
+          auth: "",
+          hostname: "",
+          port: "",
+          host: "",
+          dir: "",
+          base: "",
+          pathname: "",
+          query: "",
+          search: "",
+          path: "",
+          hash: ""
         }
       },
       "root (backslash)": {
