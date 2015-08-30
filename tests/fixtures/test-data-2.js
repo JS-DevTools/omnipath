@@ -605,8 +605,8 @@
           "url": "."
         },
         "resolve": {
-          "posix": posixCWD.substr(0, urlCWD.length - 1),
-          "win32": windowsCWD.substr(0, urlCWD.length - 1),
+          "posix": posixCWD === '/' ? '/' : posixCWD.substr(0, urlCWD.length - 1),
+          "win32": windowsCWD === '\\' ? '\\' : windowsCWD.substr(0, urlCWD.length - 1),
           "url": userAgent.isBrowser ? urlCWD : urlCWD.substr(0, urlCWD.length - 1)
         }
       },
@@ -673,7 +673,7 @@
       "attempt to go above Windows root": {
         "p": [
           "C:\\",
-          "\\.\\..",
+          "\\.\\..\\..\\.",
           "..",
           "../."
         ],
@@ -684,7 +684,7 @@
           "url": "c://./"
         },
         "resolve": {
-          "posix": posixCWD.substr(0, posixCWD.length - 1),
+          "posix": posixCWD === '/' ? '/' : posixCWD.substr(0, posixCWD.length - 1),
           "win32": "C:\\",
           "url": "c:/"
         }
