@@ -1422,7 +1422,7 @@ var path        = require('./node/path'),
     url         = require('./node/url'),
     util        = require('./util'),
     querystring = require('querystring'),
-    parts       = ['protocol', 'slashes', 'auth', 'hostname', 'port', 'host', 'dir', 'base',
+    parts       = ['protocol', 'slashes', 'hostname', 'port', 'host', 'dir', 'base',
                    'pathname', 'query', 'search', 'path', 'hash'];
 
 /**
@@ -1744,7 +1744,7 @@ OmniPath.prototype.format = function() {
  */
 OmniPath.formatPart = function(p, part, options) {
   var Class = this;
-  return new Class(p, options).format(part);
+  return new Class(p, options).formatPart(part);
 };
 
 /**
@@ -1762,17 +1762,16 @@ OmniPath.prototype.formatPart = function(part) {
   var clone = this.clone();
   part < 0 && (clone.protocol = '');
   part < 1 && (clone.slashes = false);
-  part < 2 && (clone.auth = '');
-  part < 3 && (clone.hostname = '');
-  part < 4 && (clone.port = '');
-  part < 5 && (clone.host = '');
-  part < 6 && (clone.dir = '');
-  part < 7 && (clone.base = '');
-  part < 8 && (clone.pathname = '');
-  part < 9 && (clone.query = '');
-  part < 10 && (clone.search = '');
-  part < 11 && (clone.path = '');
-  part < 12 && (clone.hash = '');
+  part < 2 && (clone.hostname = '');
+  part < 3 && (clone.port = '');
+  part < 4 && (clone.host = '');
+  part < 5 && (clone.dir = '');
+  part < 6 && (clone.base = '');
+  part < 7 && (clone.pathname = '');
+  part < 8 && (clone.query = '');
+  part < 9 && (clone.search = '');
+  part < 10 && (clone.path = '');
+  part < 11 && (clone.hash = '');
   return clone.format();
 };
 
@@ -2449,6 +2448,19 @@ OmniWindows.prototype.parse = function(p, options) {
     }
   }
   return this;
+};
+
+/**
+ * Returns the formatted path or URL string.
+ *
+ * @returns {string}
+ */
+OmniWindows.prototype.format = function() {
+  if (this.isUnc && (this.host || this.hostname) && !this.dir && !this.base) {
+    // Special case for UNCs with only a host
+    return '\\\\' + (this.hostname || this.host);
+  }
+  return OmniPath.prototype.format.apply(this, arguments);
 };
 
 /**
