@@ -12,6 +12,7 @@ var baseConfig = {
 
     // OmniPath
     'dist/omnipath.min.js',
+    {pattern: 'dist/*.map', included: false, served: true},
 
     // Test Fixtures
     'tests/fixtures/**/*.js',

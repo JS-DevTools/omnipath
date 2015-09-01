@@ -8,7 +8,7 @@ matrix:
     # IO.js
     - node_js: iojs
       env: KARMA=false
-
+    
     # Node
     - node_js: 0.10
       env: KARMA=false
