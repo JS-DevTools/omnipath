@@ -1,7 +1,7 @@
 'use strict';
 
 describe('OmniPath.formatPart', function() {
-  helper.forEachTest.only('relative file (forward slashes)')(TestData, function(test) {
+  helper.forEachTest(TestData, function(test) {
     var results = [
       {part: 'protocol', formatPart: helper.invoke('formatPart', test, [test.p, 'protocol', test.options])},
       {part: 'slashes', formatPart: helper.invoke('formatPart', test, [test.p, 'slashes', test.options])},
