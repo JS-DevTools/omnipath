@@ -1,6 +1,6 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**!
- * OmniPath v1.1.0
+ * OmniPath v1.1.1
  *
  * @link https://github.com/BigstickCarpet/omnipath
  * @license MIT
@@ -16,10 +16,11 @@ module.exports.Url = module.exports.url = require('./omni-url');
 (function() {
   'use strict';
 
-  var nodeVersion = /\d+\.\d+/.exec(process.version);
-  if (nodeVersion && parseFloat(nodeVersion) >= 0.12) {
+  var path = require('path');
+
+  if (path.posix && path.windows) {
     // We're running in Node v0.12+, so use the built-in "path" module
-    module.exports = require('path');
+    module.exports = path;
     return;
   }
 
@@ -659,13 +660,13 @@ module.exports.Url = module.exports.url = require('./omni-url');
 }).call(this,require('_process'))
 
 },{"../util":8,"_process":9,"path":2}],3:[function(require,module,exports){
-(function (process){
 /* istanbul ignore next - Don't include native NodeJS code in code-coverage */
 (function() {
   'use strict';
 
-  var nodeVersion = /\d+\.\d+/.exec(process.version);
-  if (nodeVersion && parseFloat(nodeVersion) >= 0.12) {
+  var path = require('path');
+
+  if (path.posix && path.windows) {
     // We're running in Node v0.12+, so use the built-in "url" module
     module.exports = require('url');
     return;
@@ -1408,9 +1409,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
 })();
 
-}).call(this,require('_process'))
-
-},{"../util":8,"_process":9,"punycode":10,"querystring":13,"url":3}],4:[function(require,module,exports){
+},{"../util":8,"path":2,"punycode":10,"querystring":13,"url":3}],4:[function(require,module,exports){
 (function (process){
 'use strict';
 
