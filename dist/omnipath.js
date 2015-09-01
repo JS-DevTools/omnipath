@@ -1,6 +1,6 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**!
- * OmniPath v1.1.1
+ * OmniPath v1.1.2
  *
  * @link https://github.com/BigstickCarpet/omnipath
  * @license MIT
@@ -1565,16 +1565,7 @@ OmniPath.prototype.extname = function() {
  * @abstract
  */
 OmniPath.join = function(p, options) {
-  var type = util.getType(p);
-  if (type.isUrl) {
-    return OmniPath.Url.join.apply(OmniPath.Url, arguments);
-  }
-  else if (type.isWindows) {
-    return OmniPath.Windows.join.apply(OmniPath.Windows, arguments);
-  }
-  else {
-    return OmniPath.Posix.join.apply(OmniPath.Posix, arguments);
-  }
+  return callSubclassMethod('join', arguments);
 };
 
 /**
@@ -1609,16 +1600,7 @@ OmniPath.prototype.join = function(p, options) {
  * @returns {string}
  */
 OmniPath.resolve = function(from, to, options) {
-  var type = util.getType(from);
-  if (type.isUrl) {
-    return OmniPath.Url.resolve.apply(OmniPath.Url, arguments);
-  }
-  else if (type.isWindows) {
-    return OmniPath.Windows.resolve.apply(OmniPath.Windows, arguments);
-  }
-  else {
-    return OmniPath.Posix.resolve.apply(OmniPath.Posix, arguments);
-  }
+  return callSubclassMethod('resolve', arguments);
 };
 
 /**
@@ -2005,6 +1987,26 @@ OmniPath.prototype._getFormattedSearchAndHash = function() {
 
   return search + hash;
 };
+
+/**
+ * Passes the given arguments to the specified method of an {@link OmniPath} subclass,
+ * based on the first argument's type.
+ *
+ * @param {string} method - The method to call
+ * @param {Arguments} args - The arguments to pass to the method
+ */
+function callSubclassMethod(method, args) {
+  var type = util.getType(args[0]);
+  if (type.isUrl) {
+    return OmniPath.Url[method].apply(OmniPath.Url, args);
+  }
+  else if (type.isWindows) {
+    return OmniPath.Windows[method].apply(OmniPath.Windows, args);
+  }
+  else {
+    return OmniPath.Posix[method].apply(OmniPath.Posix, args);
+  }
+}
 
 }).call(this,require('_process'))
 
