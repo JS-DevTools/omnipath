@@ -48,8 +48,6 @@ module.exports.Url = module.exports.url = require('./omni-url');
   // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
   // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  'use strict';
-
 
   var isWindows = process.platform === 'win32';
   var util = require('../util');
@@ -1279,7 +1277,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
       if (psychotic) {
         result.hostname = result.host = srcPath.shift();
         //occationaly the auth can get stuck only in host
-        //this especially happens in cases like
+        //this especialy happens in cases like
         //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
         var authInHost = result.host && result.host.indexOf('@') > 0 ?
                          result.host.split('@') : false;
@@ -1318,8 +1316,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
     // then it must NOT get a trailing slash.
     var last = srcPath.slice(-1)[0];
     var hasTrailingSlash = (
-        (result.host || relative.host || srcPath.length > 1) &&
-        (last === '.' || last === '..') || last === '');
+        (result.host || relative.host) && (last === '.' || last === '..') ||
+        last === '');
 
     // strip single dots, resolve double dots to parent dir
     // if the path tries to go above the root, `up` ends up > 0
@@ -1361,7 +1359,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
       result.hostname = result.host = isAbsolute ? '' :
                                       srcPath.length ? srcPath.shift() : '';
       //occationaly the auth can get stuck only in host
-      //this especially happens in cases like
+      //this especialy happens in cases like
       //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
       var authInHost = result.host && result.host.indexOf('@') > 0 ?
                        result.host.split('@') : false;
