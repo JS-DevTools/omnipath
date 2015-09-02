@@ -6,11 +6,16 @@
   var windowsCWD = OmniPath.Windows.cwd();
   var urlCWD = OmniPath.Url.cwd();
 
-  var windowsDriveLetter = '', urlDriveLetter = '';
+  var windowsHost = '', urlHost = '', urlProtocol = '';
   if (userAgent.isWindows) {
-    windowsDriveLetter = windowsCWD.substr(0, 2);
-    urlDriveLetter = windowsDriveLetter.toLowerCase();
+    windowsHost = windowsCWD.substr(0, 2);
+    urlHost = urlProtocol = windowsHost.toLowerCase();
     posixCWD = posixCWD.substr(0, posixCWD.length -1) + '/';
+  }
+  else {
+    var u = new OmniPath.Url(urlCWD);
+    urlProtocol = u.protocol;
+    urlHost = u.formatPart('host');
   }
 
   global.TestData2 = {
@@ -29,8 +34,8 @@
         },
         "resolve": {
           "posix": "/dir/subdir/file.txt",
-          "win32": windowsDriveLetter + "\\dir\\subdir\\file.txt",
-          "url": urlDriveLetter + "/subdir/file.txt"
+          "win32": windowsHost + "\\dir\\subdir\\file.txt",
+          "url": urlHost + "/subdir/file.txt"
         }
       },
       "absolute + relative": {
@@ -47,8 +52,8 @@
         },
         "resolve": {
           "posix": "/anotherdir/file.html",
-          "win32": windowsDriveLetter + "\\anotherdir\\file.html",
-          "url": urlDriveLetter + "/anotherdir/file.html"
+          "win32": windowsHost + "\\anotherdir\\file.html",
+          "url": urlHost + "/anotherdir/file.html"
         }
       },
       "absolute + relative + absolute": {
@@ -65,8 +70,8 @@
         },
         "resolve": {
           "posix": "/fizz/buzz",
-          "win32": windowsDriveLetter + "\\fizz\\buzz",
-          "url": urlDriveLetter + "/fizz/buzz"
+          "win32": windowsHost + "\\fizz\\buzz",
+          "url": urlHost + "/fizz/buzz"
         }
       },
       "absolute + relative + absolute + relative": {
@@ -84,8 +89,8 @@
         },
         "resolve": {
           "posix": "/fizz/foo.bar",
-          "win32": windowsDriveLetter + "\\fizz\\foo.bar",
-          "url": urlDriveLetter + "/foo.bar"
+          "win32": windowsHost + "\\fizz\\foo.bar",
+          "url": urlHost + "/foo.bar"
         }
       },
       "absolute + relative + URL + relative": {
@@ -123,8 +128,8 @@
         },
         "resolve": {
           "posix": "/dir#page1/subdir/otherdir?fizz=buzz/foo.bar#page2",
-          "win32": windowsDriveLetter + "\\dir#page1\\subdir\\otherdir?fizz=buzz\\foo.bar#page2",
-          "url": urlDriveLetter + "/foo.bar#page2"
+          "win32": windowsHost + "\\dir#page1\\subdir\\otherdir?fizz=buzz\\foo.bar#page2",
+          "url": urlHost + "/foo.bar#page2"
         }
       },
       "file paths with query and hash": {
@@ -144,8 +149,8 @@
         },
         "resolve": {
           "posix": "/dir/subdir/otherdir?foo=bar#page3",
-          "win32": windowsDriveLetter + "\\dir\\subdir\\otherdir?foo=bar#page3",
-          "url": urlDriveLetter + "/subdir/otherdir?foo=bar#page3"
+          "win32": windowsHost + "\\dir\\subdir\\otherdir?foo=bar#page3",
+          "url": urlHost + "/subdir/otherdir?foo=bar#page3"
         }
       }
     },
@@ -200,8 +205,8 @@
         },
         "resolve": {
           "posix": posixCWD + "\\\\server/dir/subdir\\file.txt",
-          "win32": windowsDriveLetter + "\\server\\dir\\subdir\\file.txt",
-          "url": urlDriveLetter + "//server/subdir/file.txt"
+          "win32": windowsHost + "\\server\\dir\\subdir\\file.txt",
+          "url": urlProtocol + "//server/subdir/file.txt"
         }
       },
       "absolute + relative": {
@@ -369,7 +374,7 @@
         },
         "resolve": {
           "posix": "/server",
-          "win32": windowsDriveLetter + "\\server",
+          "win32": windowsHost + "\\server",
           "url": "http:///server"
         }
       },
@@ -490,8 +495,8 @@
         },
         "resolve": {
           "posix": "/\\/\\",
-          "win32": windowsDriveLetter + "\\",
-          "url": urlDriveLetter + "/"
+          "win32": windowsHost + "\\",
+          "url": urlHost + "/"
         }
       },
       "Windows root and slashes": {
@@ -549,8 +554,8 @@
         },
         "resolve": {
           "posix": "/",
-          "win32": windowsDriveLetter + "\\",
-          "url": urlDriveLetter + "//server/"
+          "win32": windowsHost + "\\",
+          "url": urlProtocol + "//server/"
         }
       },
       "protocol and slashes": {
@@ -591,7 +596,7 @@
         },
         "resolve": {
           "posix": "/",
-          "win32": windowsDriveLetter + "\\",
+          "win32": windowsHost + "\\",
           "url": "http:/"
         }
       }
@@ -614,7 +619,7 @@
         "resolve": {
           "posix": posixCWD === '/' ? '/' : posixCWD.substr(0, posixCWD.length - 1),
           "win32": windowsCWD === '\\' ? '\\' : windowsCWD.substr(0, windowsCWD.length - 1),
-          "url": urlCWD.substr(0, urlCWD.length - 1)
+          "url": userAgent.isBrowser ? urlCWD : urlCWD.substr(0, urlCWD.length - 1)
         }
       },
       "parent dir": {
@@ -653,8 +658,8 @@
         },
         "resolve": {
           "posix": userAgent.isPosix ? "/" : "../../../../../../../../../..",
-          "win32": windowsDriveLetter + "\\",
-          "url": urlDriveLetter + "/"
+          "win32": windowsHost + "\\",
+          "url": urlHost + "/"
         }
       },
       "attempt to go above root": {
@@ -673,8 +678,8 @@
         },
         "resolve": {
           "posix": "/",
-          "win32": windowsDriveLetter + "\\",
-          "url": urlDriveLetter + "/"
+          "win32": windowsHost + "\\",
+          "url": urlHost + "/"
         }
       },
       "attempt to go above Windows root": {
@@ -712,8 +717,8 @@
         },
         "resolve": {
           "posix": posixCWD + "\\\\server",
-          "win32": windowsDriveLetter + "\\",
-          "url": urlDriveLetter + "//server/share/"
+          "win32": windowsHost + "\\",
+          "url": urlProtocol + "//server/share/"
         }
       },
       "attempt to go above URL root": {

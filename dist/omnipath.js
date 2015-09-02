@@ -1849,9 +1849,12 @@ OmniPath.prototype.toUrlString = function() {
  */
 OmniPath.cwd = function() {
   if (process.browser) {
-    var page = window.location.pathname;
-    var lastSlash = page.lastIndexOf('/');
-    return page.substr(0, lastSlash + 1);
+    var u = new OmniPath.Url(window.location.href);
+    var dir = u.formatPart('dir');
+    if (dir.substr(-1) !== OmniPath.Url.sep) {
+      dir += OmniPath.Url.sep;
+    }
+    return dir;
   }
   else {
     return process.cwd() + path.sep;
@@ -2104,7 +2107,11 @@ OmniPosix.resolve = function(from, to, options) {
  */
 OmniPosix.cwd = function() {
   var cwd = OmniPath.cwd();
-  return OmniPosix.normalize(cwd);
+  cwd = posix.normalize(cwd);
+  if (!posix.isAbsolute(cwd)) {
+    cwd = posix.resolve(cwd) + posix.sep;
+  }
+  return cwd;
 };
 
 },{"./index":1,"./node/path":2,"./util":8}],6:[function(require,module,exports){
@@ -2248,7 +2255,7 @@ OmniUrl.join = function(p, options) {
           joined += posix.sep;
         }
       }
-      else if (endsWithSeparator(joined) || startsWithSeparator(segment)) {
+      else if (util.endsWithAnySeparator(joined) || util.startsWithAnySeparator(segment)) {
         joined += segment;
       }
       else {
@@ -2346,35 +2353,13 @@ OmniUrl.prototype._getFormattedPathname = function() {
     }
 
     // Maintain any trailing slash on the pathname, for consistency with Node's "url" module
-    if (endsWithSeparator(oldPathname) && !endsWithSeparator(pathname)) {
+    if (util.endsWithAnySeparator(oldPathname) && !util.endsWithAnySeparator(pathname)) {
       pathname += posix.sep;
     }
   }
 
   return pathname;
 };
-
-/**
- * Determines whether the given path (or path part) begins with a separator character.
- *
- * @param {string} p - A path, or path part
- * @returns {boolean}
- */
-function startsWithSeparator(p) {
-  var firstChar = p[0];
-  return firstChar === posix.sep || firstChar === '\\';
-}
-
-/**
- * Determines whether the given path (or path part) ends with a separator character.
- *
- * @param {string} p - A path, or path part
- * @returns {boolean}
- */
-function endsWithSeparator(p) {
-  var lastChar = p.substr(-1);
-  return lastChar === posix.sep || lastChar === '\\';
-}
 
 },{"./node/path":2,"./node/url":3,"./omni-path":4,"./util":8}],7:[function(require,module,exports){
 'use strict';
@@ -2514,7 +2499,11 @@ OmniWindows.resolve = function(from, to, options) {
  */
 OmniWindows.cwd = function() {
   var cwd = OmniPath.cwd();
-  return OmniWindows.normalize(cwd);
+  cwd = win32.normalize(cwd);
+  if (!win32.isAbsolute(cwd)) {
+    cwd = win32.resolve(cwd) + win32.sep;
+  }
+  return cwd;
 };
 
 },{"./index":1,"./node/path":2,"./util":8}],8:[function(require,module,exports){
@@ -2538,7 +2527,9 @@ var util = module.exports = {
   getType: getType,
   parsePath: parsePath,
   fastParse: fastParse,
-  getArgs: getArgs
+  getArgs: getArgs,
+  startsWithAnySeparator: startsWithAnySeparator,
+  endsWithAnySeparator: endsWithAnySeparator
 };
 
 var OmniPath        = require('./omni-path'),
@@ -2833,6 +2824,28 @@ function getArgs(args) {
   }
 
   return result;
+}
+
+/**
+ * Determines whether the given path (or segment) begins with a separator character.
+ *
+ * @param {string} p - A path or segment
+ * @returns {boolean}
+ */
+function startsWithAnySeparator(p) {
+  var firstChar = p[0];
+  return firstChar === '/' || firstChar === '\\';
+}
+
+/**
+ * Determines whether the given path (or segment) ends with a separator character.
+ *
+ * @param {string} p - A path or segment
+ * @returns {boolean}
+ */
+function endsWithAnySeparator(p) {
+  var lastChar = p.substr(-1);
+  return lastChar === '/' || lastChar === '\\';
 }
 
 }).call(this,require('_process'))
