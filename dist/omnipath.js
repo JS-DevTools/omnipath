@@ -2107,11 +2107,7 @@ OmniPosix.resolve = function(from, to, options) {
  */
 OmniPosix.cwd = function() {
   var cwd = OmniPath.cwd();
-  cwd = posix.normalize(cwd);
-  if (!posix.isAbsolute(cwd)) {
-    cwd = posix.resolve(cwd) + posix.sep;
-  }
-  return cwd;
+  return posix.normalize(cwd);
 };
 
 },{"./index":1,"./node/path":2,"./util":8}],6:[function(require,module,exports){
@@ -2499,11 +2495,7 @@ OmniWindows.resolve = function(from, to, options) {
  */
 OmniWindows.cwd = function() {
   var cwd = OmniPath.cwd();
-  cwd = win32.normalize(cwd);
-  if (!win32.isAbsolute(cwd)) {
-    cwd = win32.resolve(cwd) + win32.sep;
-  }
-  return cwd;
+  return win32.normalize(cwd);
 };
 
 },{"./index":1,"./node/path":2,"./util":8}],8:[function(require,module,exports){

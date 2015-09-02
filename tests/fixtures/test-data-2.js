@@ -12,8 +12,10 @@
     urlHost = urlProtocol = windowsHost.toLowerCase();
     posixCWD = posixCWD.substr(0, posixCWD.length -1) + '/';
   }
-  else {
+  else if (userAgent.isBrowser) {
     var u = new OmniPath.Url(urlCWD);
+    posixCWD = '/' + posixCWD;
+    windowsCWD = '\\' + windowsCWD;
     urlProtocol = u.protocol;
     urlHost = u.formatPart('host');
   }
