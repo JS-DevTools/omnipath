@@ -2,7 +2,7 @@ OmniPath
 ============================
 #### A consolidated API for file paths and URLs
 
-[![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg)](https://travis-ci.org/BigstickCarpet/omnipath)
+[![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg?branch=master)](https://travis-ci.org/BigstickCarpet/omnipath)
 [![Dependencies](https://david-dm.org/BigstickCarpet/omnipath.svg)](https://david-dm.org/BigstickCarpet/omnipath)
 [![Coverage Status](https://coveralls.io/repos/BigstickCarpet/omnipath/badge.svg?branch=master&service=github)](https://coveralls.io/r/BigstickCarpet/omnipath)
 [![Code Climate Score](https://codeclimate.com/github/BigstickCarpet/omnipath/badges/gpa.svg)](https://codeclimate.com/github/BigstickCarpet/omnipath)
