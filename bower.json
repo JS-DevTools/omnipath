@@ -41,8 +41,5 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "chai": "*",
-    "mocha": "*",
-    "sinon-js": "*"
   }
 }

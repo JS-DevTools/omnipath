@@ -3,13 +3,9 @@
 'use strict';
 
 var baseConfig = {
-  frameworks: ['mocha'],
-  reporters: ['mocha'],
+  frameworks: ['mocha', 'chai', 'sinon'],
+  reporters: ['verbose'],
   files: [
-    // Third-Party Libraries
-    'tests/bower_components/chai/chai.js',
-    'tests/bower_components/sinon-js/sinon.js',
-
     // OmniPath
     'dist/omnipath.min.js',
     {pattern: 'dist/*.map', included: false, served: true},
