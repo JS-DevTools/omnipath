@@ -18,7 +18,7 @@ describe('OmniPath.toUrl', function () {
     expect(urlString.url.href).to.equal(test.toUrlString.url);
     expect(urlString.url.format()).to.equal(test.toUrlString.url);
 
-    if (userAgent.isNode) {
+    if (host.node) {
       // Validate the object type
       expect(urlString.omni).to.be.an.instanceOf(url.Url);
       expect(urlString.posix).to.be.an.instanceOf(url.Url);

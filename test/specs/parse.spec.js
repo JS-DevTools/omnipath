@@ -8,7 +8,7 @@ describe('OmniPath.parse', function () {
     helper.deepEqual(parsed.url, test.parse.url);
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         var u = typeof (test.p) === 'string' ? test.p : test.p.format();
         var nodeUrl = url.parse(u, true);

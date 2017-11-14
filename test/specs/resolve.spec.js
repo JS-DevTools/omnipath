@@ -18,7 +18,7 @@ describe('OmniPath.resolve', function () {
     }
 
     // Compare to Node's native behavior
-    if (userAgent.isNode && test.matchesNative !== false) {
+    if (host.node && test.matchesNative !== false) {
       if (!test.isUrl) {
         var args = test.p.map(function (p) {
           return p instanceof OmniPath ? p.format() : p;
@@ -48,7 +48,7 @@ describe('OmniPath.resolve', function () {
     expect(multiResolve.url).to.be.a('string');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         var u = test.p instanceof OmniPath ? test.p.format() : test.p;
         var nodeUrlResolve = url.resolve(OmniPath.cwd(), u);

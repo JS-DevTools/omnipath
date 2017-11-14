@@ -12,29 +12,15 @@
 
   if (typeof (window) === 'object') {
     // Expose Browser globals
-    window.global = window;
-    window.expect = chai.expect;
-    window.userAgent = {
-      isNode: false,
-      isWindows: false,
-      isPosix: false,
-      isBrowser: true
-    };
+    host.global.expect = chai.expect;
   }
   else {
     // Expose Node globals
-    global.OmniPath = require('../../');
-    global.expect = require('chai').expect;
-    global.sinon = require('sinon');
-    global.path = require('../../lib/node/path');
-    global.url = require('../../lib/node/url');
-
-    global.userAgent = {
-      isNode: true,
-      isWindows: process.platform.substr(0, 3) === 'win',
-      isPosix: process.platform.substr(0, 3) !== 'win',
-      isBrowser: false
-    };
+    host.global.OmniPath = require('../../');
+    host.global.expect = require('chai').expect;
+    host.global.sinon = require('sinon');
+    host.global.path = require('../../lib/node/path');
+    host.global.url = require('../../lib/node/url');
   }
 
 }());

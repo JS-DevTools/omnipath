@@ -16,7 +16,7 @@ describe('OmniPath.extname', function () {
     expect(extname.url).to.equal(test.parse.url.ext);
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         var nodeExt = path.extname(test.parse.url.pathname);
         expect(extname.omni).to.equal(nodeExt);

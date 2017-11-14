@@ -4,7 +4,7 @@
   /**
    * Helper methods for use in tests
    */
-  global.helper = {
+  host.global.helper = {
     forEachTest: forEachTest,
     invoke: invoke,
     deepEqual: deepEqual,
@@ -112,14 +112,14 @@
     else if (test.p.isWindows || (test.p[0] && test.p[0].isWindows)) {
       expect(s.omni).to.deep.equal(s.win32, 'omni !== win32');
     }
-    else if (userAgent.isPosix) {
-      expect(s.omni).to.deep.equal(s.posix, 'omni !== posix');
+    else if (host.browser) {
+      expect(s.omni).to.deep.equal(s.url, 'omni !== url');
     }
-    else if (userAgent.isWindows) {
+    else if (host.os.windows) {
       expect(s.omni).to.deep.equal(s.win32, 'omni !== win32');
     }
-    else if (userAgent.isBrowser) {
-      expect(s.omni).to.deep.equal(s.url, 'omni !== url');
+    else if (host.os.mac || host.os.linux) {
+      expect(s.omni).to.deep.equal(s.posix, 'omni !== posix');
     }
 
     return {

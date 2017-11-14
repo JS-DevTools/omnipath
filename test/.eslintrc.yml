@@ -14,7 +14,10 @@ globals:
 
   # Test Libraries
   sinon: false
-  userAgent: false
+
+  # karma-host-environment
+  # https://www.npmjs.com/package/karma-host-environment
+  host: false
 
   # Test Fixtures
   helper: false

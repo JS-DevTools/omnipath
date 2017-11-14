@@ -16,7 +16,7 @@ describe('OmniPath.normalize', function () {
     expect(normalized.url).to.equal(test.normalize.url, 'url');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         expect(normalized.url).to.contain(path.posix.normalize(test.parse.url.pathname), 'native url');
       }

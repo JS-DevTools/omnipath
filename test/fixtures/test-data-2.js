@@ -6,12 +6,12 @@
   var urlCWD = OmniPath.Url.cwd();
 
   var windowsHost = '', urlHost = '', urlProtocol = '';
-  if (userAgent.isWindows) {
+  if (host.os.windows && !host.browser) {
     windowsHost = windowsCWD.substr(0, 2);
     urlHost = urlProtocol = windowsHost.toLowerCase();
     posixCWD = posixCWD.substr(0, posixCWD.length - 1) + '/';
   }
-  else if (userAgent.isBrowser) {
+  else if (host.browser) {
     var u = new OmniPath.Url(urlCWD);
     posixCWD = '/' + posixCWD;
     windowsCWD = '\\' + windowsCWD;
@@ -19,7 +19,7 @@
     urlHost = u.formatPart('host');
   }
 
-  global.TestData2 = {
+  host.global.TestData2 = {
     'POSIX paths': {
       'root + path': {
         p: [
@@ -620,7 +620,7 @@
         resolve: {
           posix: posixCWD === '/' ? '/' : posixCWD.substr(0, posixCWD.length - 1),
           win32: windowsCWD === '\\' ? '\\' : windowsCWD.substr(0, windowsCWD.length - 1),
-          url: userAgent.isBrowser ? urlCWD : urlCWD.substr(0, urlCWD.length - 1)
+          url: host.browser ? urlCWD : urlCWD.substr(0, urlCWD.length - 1)
         }
       },
       'parent dir': {
@@ -658,7 +658,7 @@
           url: '../../../../../../../../../../../'
         },
         resolve: {
-          posix: userAgent.isPosix ? '/' : '../../../../../../../../../..',
+          posix: (host.os.mac || host.os.linux) && !host.browser ? '/' : '../../../../../../../../../..',
           win32: windowsHost + '\\',
           url: urlHost + '/'
         }
@@ -744,8 +744,8 @@
     }
   };
 
-  // global.TestData2 = {};
-  global.TestData2.objects = {
+  // host.global.TestData2 = {};
+  host.global.TestData2.objects = {
     'OmniPath.Posix': {
       p: [
         new OmniPath.Posix('dir/#page1', { allowFileHash: true }),
@@ -812,7 +812,7 @@
       var u3 = './..\\.';
       var u4 = 'file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query';
 
-      if (userAgent.isNode) {
+      if (host.node) {
         return {
           p: [url.parse(u1), url.parse(u2), url.parse(u3), url.parse(u4)],
           options: {

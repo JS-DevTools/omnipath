@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  global.TestData = {
+  host.global.TestData = {
     'root paths': {
       'root (forward slash)': {
         p: '/',
@@ -5381,8 +5381,8 @@
     }
   };
 
-  // global.TestData = {};
-  global.TestData.objects = {
+  // host.global.TestData = {};
+  host.global.TestData.objects = {
     'OmniPath.Posix': {
       p: new OmniPath.Posix('dir/.subdir/file.min.js?foo=\\bar&biz=/baz#page1\\?not=a/&query', { allowFileQuery: true, allowFileHash: true }),
       isUrl: false,
@@ -5681,7 +5681,7 @@
     'URL object': {
       p: (function () {
         var u = 'https://user:pass@www.server.com:80/p/a/t/h?foo=bar&biz=baz#page1';
-        return userAgent.isNode ? url.parse(u, true) : u;
+        return host.node ? url.parse(u, true) : u;
       }()),
       options: {
         allowFileQuery: true,

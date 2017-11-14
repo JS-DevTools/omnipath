@@ -33,7 +33,7 @@ describe('OmniPath.basename', function () {
       });
 
       // Compare to Node's native behavior
-      if (userAgent.isNode) {
+      if (host.node) {
         if (test.isUrl) {
           var nodeBase = path.basename(test.parse.url.pathname, result.ext);
           expect(result.basename.omni).to.equal(nodeBase, 'native omni');

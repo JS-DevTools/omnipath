@@ -16,7 +16,7 @@ describe('OmniPath.join', function () {
     expect(joined.url).to.equal(test.join.url, 'url');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode && test.matchesNative !== false) {
+    if (host.node && test.matchesNative !== false) {
       expect(joined.posix).to.equal(path.posix.join.apply(null, test.p), 'native posix');
       expect(joined.win32).to.equal(path.win32.join.apply(null, test.p), 'native win32');
     }
@@ -48,7 +48,7 @@ describe('OmniPath.join', function () {
     expect(multiJoin.url).to.be.a('string');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         expect(singleJoin.url).to.contain(path.posix.join(test.parse.url.pathname), 'native url');
         var nodeMultiJoin = path.posix.join.apply([test.parse.url.pathname].concat(multiJoinArgs.slice(1)));

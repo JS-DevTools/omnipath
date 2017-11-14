@@ -16,7 +16,7 @@ describe('OmniPath.format', function () {
     expect(formatted.url).to.equal(test.format.url, 'url');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         var nodeFormat = url.format(test.parse.url);
         expect(formatted.omni).to.equal(nodeFormat, 'native omni');

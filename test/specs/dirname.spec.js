@@ -16,7 +16,7 @@ describe('OmniPath.dirname', function () {
     expect(dirname.url).to.equal(test.parse.url.dir || '.');
 
     // Compare to Node's native behavior
-    if (userAgent.isNode) {
+    if (host.node) {
       if (test.isUrl) {
         var nodeDirname = path.dirname(test.parse.url.pathname);
         expect(dirname.omni).to.equal(nodeDirname);
