@@ -1,6 +1,6 @@
 {
   "name": "omnipath",
-  "version": "1.1.5",
+  "version": "2.0.0-beta.0",
   "description": "A consolidated API for file paths and URLs",
   "keywords": [
     "file",
@@ -37,7 +37,7 @@
   ],
   "scripts": {
     "lint": "eslint lib test --fix",
-    "build": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
+    "build": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --bundle --debug --minify",
     "mocha": "mocha",
     "cover": "istanbul cover _mocha --dir coverage/node",
     "karma": "karma start --single-run",

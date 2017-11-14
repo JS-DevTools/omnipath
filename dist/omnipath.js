@@ -1,10 +1,14 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**!
- * OmniPath v1.1.5
- *
- * @link https://github.com/BigstickCarpet/omnipath
+/*!
+ * Omnipath v2.0.0-beta.0 (November 14th 2017)
+ * 
+ * https://github.com/bigstickcarpet/omnipath
+ * 
+ * @author  James Messinger (http://bigstickcarpet.com)
  * @license MIT
  */
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.OmniPath = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 module.exports = require('./omni-path');
 module.exports.Posix = module.exports.posix = require('./omni-posix');
 module.exports.Windows = module.exports.windows = module.exports.win32 = require('./omni-windows');
@@ -13,7 +17,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
 },{"./omni-path":4,"./omni-posix":5,"./omni-url":6,"./omni-windows":7}],2:[function(require,module,exports){
 (function (process){
 /* istanbul ignore next - Don't include native NodeJS code in code-coverage */
-(function() {
+/* eslint-disable */
+(function () {
   'use strict';
 
   var path = require('path');
@@ -58,22 +63,23 @@ module.exports.Url = module.exports.url = require('./omni-url');
   // must be no slashes or device names (c:\) in the array
   // (so also no leading and trailing slashes - it does not distinguish
   // relative and absolute paths)
-  function normalizeArray(parts, allowAboveRoot) {
+  function normalizeArray (parts, allowAboveRoot) {
     var res = [];
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
 
       // ignore empty parts
-      if (!p || p === '.')
-        continue;
+      if (!p || p === '.') { continue; }
 
       if (p === '..') {
         if (res.length && res[res.length - 1] !== '..') {
           res.pop();
-        } else if (allowAboveRoot) {
+        }
+        else if (allowAboveRoot) {
           res.push('..');
         }
-      } else {
+      }
+      else {
         res.push(p);
       }
     }
@@ -83,24 +89,20 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
   // returns an array with empty elements removed from either end of the input
   // array or the original array if no elements need to be removed
-  function trimArray(arr) {
+  function trimArray (arr) {
     var lastIndex = arr.length - 1;
     var start = 0;
     for (; start <= lastIndex; start++) {
-      if (arr[start])
-        break;
+      if (arr[start]) { break; }
     }
 
     var end = lastIndex;
     for (; end >= 0; end--) {
-      if (arr[end])
-        break;
+      if (arr[end]) { break; }
     }
 
-    if (start === 0 && end === lastIndex)
-      return arr;
-    if (start > end)
-      return [];
+    if (start === 0 && end === lastIndex) { return arr; }
+    if (start > end) { return []; }
     return arr.slice(start, end + 1);
   }
 
@@ -116,7 +118,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
   var win32 = {};
 
   // Function to split a filename into [root, dir, basename, ext]
-  function win32SplitPath(filename) {
+  function win32SplitPath (filename) {
     // Separate device+slash from tail
     var result = splitDeviceRe.exec(filename),
         device = (result[1] || '') + (result[2] || ''),
@@ -129,7 +131,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
     return [device, dir, basename, ext];
   }
 
-  function win32StatPath(path) {
+  function win32StatPath (path) {
     var result = splitDeviceRe.exec(path),
         device = result[1] || '',
         isUnc = !!device && device[1] !== ':';
@@ -141,12 +143,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
     };
   }
 
-  function normalizeUNCRoot(device) {
+  function normalizeUNCRoot (device) {
     return '\\\\' + device.replace(/^[\\\/]+/, '').replace(/[\\\/]+/g, '\\');
   }
 
   // path.resolve([from ...], to)
-  win32.resolve = function() {
+  win32.resolve = function () {
     var resolvedDevice = '',
         resolvedTail = '',
         resolvedAbsolute = false;
@@ -155,9 +157,11 @@ module.exports.Url = module.exports.url = require('./omni-url');
       var path;
       if (i >= 0) {
         path = arguments[i];
-      } else if (!resolvedDevice) {
+      }
+      else if (!resolvedDevice) {
         path = process.cwd();
-      } else {
+      }
+      else {
         // Windows has the concept of drive-specific current working
         // directories. If we've resolved a drive letter but not yet an
         // absolute path, get cwd for that drive. We're sure the device is not
@@ -174,7 +178,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
       // Skip empty and invalid entries
       if (!util.isString(path)) {
         throw new TypeError('Arguments to path.resolve must be strings');
-      } else if (!path) {
+      }
+      else if (!path) {
         continue;
       }
 
@@ -216,14 +221,14 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     // Normalize the tail path
     resolvedTail = normalizeArray(resolvedTail.split(/[\\\/]+/),
-                                  !resolvedAbsolute).join('\\');
+      !resolvedAbsolute).join('\\');
 
     return (resolvedDevice + (resolvedAbsolute ? '\\' : '') + resolvedTail) ||
            '.';
   };
 
 
-  win32.normalize = function(path) {
+  win32.normalize = function (path) {
     var result = win32StatPath(path),
         device = result.device,
         isUnc = result.isUnc,
@@ -251,11 +256,11 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32.isAbsolute = function(path) {
+  win32.isAbsolute = function (path) {
     return win32StatPath(path).isAbsolute;
   };
 
-  win32.join = function() {
+  win32.join = function () {
     var paths = [];
     for (var i = 0; i < arguments.length; i++) {
       var arg = arguments[i];
@@ -295,7 +300,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
   // from = 'C:\\orandea\\test\\aaa'
   // to = 'C:\\orandea\\impl\\bbb'
   // The output of the function should be: '..\\..\\impl\\bbb'
-  win32.relative = function(from, to) {
+  win32.relative = function (from, to) {
     from = win32.resolve(from);
     to = win32.resolve(to);
 
@@ -332,10 +337,9 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32._makeLong = function(path) {
+  win32._makeLong = function (path) {
     // Note: this will *probably* throw somewhere.
-    if (!util.isString(path))
-      return path;
+    if (!util.isString(path)) { return path; }
 
     if (!path) {
       return '';
@@ -347,7 +351,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
       // path is local filesystem path, which needs to be converted
       // to long UNC path.
       return '\\\\?\\' + resolvedPath;
-    } else if (/^\\\\[^?.]/.test(resolvedPath)) {
+    }
+    else if (/^\\\\[^?.]/.test(resolvedPath)) {
       // path is network UNC path, which needs to be converted
       // to long UNC path.
       return '\\\\?\\UNC\\' + resolvedPath.substring(2);
@@ -357,7 +362,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32.dirname = function(path) {
+  win32.dirname = function (path) {
     var result = win32SplitPath(path),
         root = result[0],
         dir = result[1];
@@ -376,7 +381,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32.basename = function(path, ext) {
+  win32.basename = function (path, ext) {
     var f = win32SplitPath(path)[2];
     // TODO: make this comparison case-insensitive on windows?
     if (ext && f.substr(-1 * ext.length) === ext) {
@@ -386,15 +391,15 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32.extname = function(path) {
+  win32.extname = function (path) {
     return win32SplitPath(path)[3];
   };
 
 
-  win32.format = function(pathObject) {
+  win32.format = function (pathObject) {
     if (!util.isObject(pathObject)) {
       throw new TypeError(
-          "Parameter 'pathObject' must be an object, not " + typeof pathObject
+        "Parameter 'pathObject' must be an object, not " + typeof pathObject
       );
     }
 
@@ -402,7 +407,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     if (!util.isString(root)) {
       throw new TypeError(
-          "'pathObject.root' must be a string or undefined, not " +
+        "'pathObject.root' must be a string or undefined, not " +
           typeof pathObject.root
       );
     }
@@ -419,10 +424,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  win32.parse = function(pathString) {
+  win32.parse = function (pathString) {
     if (!util.isString(pathString)) {
       throw new TypeError(
-          "Parameter 'pathString' must be a string, not " + typeof pathString
+        "Parameter 'pathString' must be a string, not " + typeof pathString
       );
     }
     var allParts = win32SplitPath(pathString);
@@ -450,14 +455,14 @@ module.exports.Url = module.exports.url = require('./omni-url');
   var posix = {};
 
 
-  function posixSplitPath(filename) {
+  function posixSplitPath (filename) {
     return splitPathRe.exec(filename).slice(1);
   }
 
 
   // path.resolve([from ...], to)
   // posix version
-  posix.resolve = function() {
+  posix.resolve = function () {
     var resolvedPath = '',
         resolvedAbsolute = false;
 
@@ -467,7 +472,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
       // Skip empty and invalid entries
       if (!util.isString(path)) {
         throw new TypeError('Arguments to path.resolve must be strings');
-      } else if (!path) {
+      }
+      else if (!path) {
         continue;
       }
 
@@ -480,14 +486,14 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     // Normalize the path
     resolvedPath = normalizeArray(resolvedPath.split('/'),
-                                  !resolvedAbsolute).join('/');
+      !resolvedAbsolute).join('/');
 
     return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
   };
 
   // path.normalize(path)
   // posix version
-  posix.normalize = function(path) {
+  posix.normalize = function (path) {
     var isAbsolute = posix.isAbsolute(path),
         trailingSlash = path && path[path.length - 1] === '/';
 
@@ -505,12 +511,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
   // posix version
-  posix.isAbsolute = function(path) {
+  posix.isAbsolute = function (path) {
     return path.charAt(0) === '/';
   };
 
   // posix version
-  posix.join = function() {
+  posix.join = function () {
     var path = '';
     for (var i = 0; i < arguments.length; i++) {
       var segment = arguments[i];
@@ -520,7 +526,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
       if (segment) {
         if (!path) {
           path += segment;
-        } else {
+        }
+        else {
           path += '/' + segment;
         }
       }
@@ -531,7 +538,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
   // path.relative(from, to)
   // posix version
-  posix.relative = function(from, to) {
+  posix.relative = function (from, to) {
     from = posix.resolve(from).substr(1);
     to = posix.resolve(to).substr(1);
 
@@ -558,12 +565,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  posix._makeLong = function(path) {
+  posix._makeLong = function (path) {
     return path;
   };
 
 
-  posix.dirname = function(path) {
+  posix.dirname = function (path) {
     var result = posixSplitPath(path),
         root = result[0],
         dir = result[1];
@@ -582,7 +589,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  posix.basename = function(path, ext) {
+  posix.basename = function (path, ext) {
     var f = posixSplitPath(path)[2];
     // TODO: make this comparison case-insensitive on windows?
     if (ext && f.substr(-1 * ext.length) === ext) {
@@ -592,15 +599,15 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  posix.extname = function(path) {
+  posix.extname = function (path) {
     return posixSplitPath(path)[3];
   };
 
 
-  posix.format = function(pathObject) {
+  posix.format = function (pathObject) {
     if (!util.isObject(pathObject)) {
       throw new TypeError(
-          "Parameter 'pathObject' must be an object, not " + typeof pathObject
+        "Parameter 'pathObject' must be an object, not " + typeof pathObject
       );
     }
 
@@ -608,7 +615,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     if (!util.isString(root)) {
       throw new TypeError(
-          "'pathObject.root' must be a string or undefined, not " +
+        "'pathObject.root' must be a string or undefined, not " +
           typeof pathObject.root
       );
     }
@@ -619,10 +626,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
 
-  posix.parse = function(pathString) {
+  posix.parse = function (pathString) {
     if (!util.isString(pathString)) {
       throw new TypeError(
-          "Parameter 'pathString' must be a string, not " + typeof pathString
+        "Parameter 'pathString' must be a string, not " + typeof pathString
       );
     }
     var allParts = posixSplitPath(pathString);
@@ -647,21 +654,21 @@ module.exports.Url = module.exports.url = require('./omni-url');
   posix.delimiter = ':';
 
 
-  if (isWindows)
-    module.exports = win32;
+  if (isWindows) { module.exports = win32; }
   else /* posix */
-    module.exports = posix;
+  { module.exports = posix; }
 
   module.exports.posix = posix;
   module.exports.win32 = win32;
 
-})();
+}());
 
 }).call(this,require('_process'))
 
 },{"../util":8,"_process":9,"path":2}],3:[function(require,module,exports){
 /* istanbul ignore next - Don't include native NodeJS code in code-coverage */
-(function() {
+/* eslint-disable */
+(function () {
   'use strict';
 
   var path = require('path');
@@ -707,7 +714,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
   exports.Url = Url;
 
-  function Url() {
+  function Url () {
     this.protocol = null;
     this.slashes = null;
     this.auth = null;
@@ -752,21 +759,21 @@ module.exports.Url = module.exports.url = require('./omni-url');
       hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
       // protocols that can allow "unsafe" and "unwise" chars.
       unsafeProtocol = {
-        'javascript': true,
+        javascript: true,
         'javascript:': true
       },
       // protocols that never have a hostname.
       hostlessProtocol = {
-        'javascript': true,
+        javascript: true,
         'javascript:': true
       },
       // protocols that always contain a // bit.
       slashedProtocol = {
-        'http': true,
-        'https': true,
-        'ftp': true,
-        'gopher': true,
-        'file': true,
+        http: true,
+        https: true,
+        ftp: true,
+        gopher: true,
+        file: true,
         'http:': true,
         'https:': true,
         'ftp:': true,
@@ -775,15 +782,15 @@ module.exports.Url = module.exports.url = require('./omni-url');
       },
       querystring = require('querystring');
 
-  function urlParse(url, parseQueryString, slashesDenoteHost) {
-    if (url && util.isObject(url) && url instanceof Url) return url;
+  function urlParse (url, parseQueryString, slashesDenoteHost) {
+    if (url && util.isObject(url) && url instanceof Url) { return url; }
 
-    var u = new Url;
+    var u = new Url();
     u.parse(url, parseQueryString, slashesDenoteHost);
     return u;
   }
 
-  Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+  Url.prototype.parse = function (url, parseQueryString, slashesDenoteHost) {
     if (!util.isString(url)) {
       throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
     }
@@ -816,10 +823,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
           this.search = simplePath[2];
           if (parseQueryString) {
             this.query = querystring.parse(this.search.substr(1));
-          } else {
+          }
+          else {
             this.query = this.search.substr(1);
           }
-        } else if (parseQueryString) {
+        }
+        else if (parseQueryString) {
           this.search = '';
           this.query = {};
         }
@@ -869,8 +878,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
       var hostEnd = -1;
       for (var i = 0; i < hostEndingChars.length; i++) {
         var hec = rest.indexOf(hostEndingChars[i]);
-        if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-          hostEnd = hec;
+        if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) { hostEnd = hec; }
       }
 
       // at this point, either we have an explicit point where the
@@ -879,7 +887,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
       if (hostEnd === -1) {
         // atSign can be anywhere.
         atSign = rest.lastIndexOf('@');
-      } else {
+      }
+      else {
         // atSign must be in auth portion.
         // http://a@b/c@d => host:b auth:a path:/c@d
         atSign = rest.lastIndexOf('@', hostEnd);
@@ -897,12 +906,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
       hostEnd = -1;
       for (var i = 0; i < nonHostChars.length; i++) {
         var hec = rest.indexOf(nonHostChars[i]);
-        if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-          hostEnd = hec;
+        if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) { hostEnd = hec; }
       }
       // if we still have not hit it, then the entire thing is a host.
-      if (hostEnd === -1)
-        hostEnd = rest.length;
+      if (hostEnd === -1) { hostEnd = rest.length; }
 
       this.host = rest.slice(0, hostEnd);
       rest = rest.slice(hostEnd);
@@ -924,7 +931,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
         var hostparts = this.hostname.split(/\./);
         for (var i = 0, l = hostparts.length; i < l; i++) {
           var part = hostparts[i];
-          if (!part) continue;
+          if (!part) { continue; }
           if (!part.match(hostnamePartPattern)) {
             var newpart = '';
             for (var j = 0, k = part.length; j < k; j++) {
@@ -933,7 +940,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
                 // we need this to make sure size of hostname is not
                 // broken by replacing non-ASCII by nothing
                 newpart += 'x';
-              } else {
+              }
+              else {
                 newpart += part[j];
               }
             }
@@ -958,7 +966,8 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
       if (this.hostname.length > hostnameMaxLen) {
         this.hostname = '';
-      } else {
+      }
+      else {
         // hostnames are always lower case.
         this.hostname = this.hostname.toLowerCase();
       }
@@ -995,8 +1004,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
       // need to be.
       for (var i = 0, l = autoEscape.length; i < l; i++) {
         var ae = autoEscape[i];
-        if (rest.indexOf(ae) === -1)
-          continue;
+        if (rest.indexOf(ae) === -1) { continue; }
         var esc = encodeURIComponent(ae);
         if (esc === ae) {
           esc = escape(ae);
@@ -1021,18 +1029,19 @@ module.exports.Url = module.exports.url = require('./omni-url');
         this.query = querystring.parse(this.query);
       }
       rest = rest.slice(0, qm);
-    } else if (parseQueryString) {
+    }
+    else if (parseQueryString) {
       // no query string, but parseQueryString still requested
       this.search = '';
       this.query = {};
     }
-    if (rest) this.pathname = rest;
+    if (rest) { this.pathname = rest; }
     if (slashedProtocol[lowerProto] &&
         this.hostname && !this.pathname) {
       this.pathname = '/';
     }
 
-    //to support http.request
+    // to support http.request
     if (this.pathname || this.search) {
       var p = this.pathname || '';
       var s = this.search || '';
@@ -1045,17 +1054,17 @@ module.exports.Url = module.exports.url = require('./omni-url');
   };
 
   // format a parsed object into a url string
-  function urlFormat(obj) {
+  function urlFormat (obj) {
     // ensure it's an object, and not a string url.
     // If it's an obj, this is a no-op.
     // this way, you can call url_format() on strings
     // to clean up potentially wonky urls.
-    if (util.isString(obj)) obj = urlParse(obj);
-    if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
+    if (util.isString(obj)) { obj = urlParse(obj); }
+    if (!(obj instanceof Url)) { return Url.prototype.format.call(obj); }
     return obj.format();
   }
 
-  Url.prototype.format = function() {
+  Url.prototype.format = function () {
     var auth = this.auth || '';
     if (auth) {
       auth = encodeURIComponent(auth);
@@ -1071,10 +1080,11 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     if (this.host) {
       host = auth + this.host;
-    } else if (this.hostname) {
-      host = auth + (this.hostname.indexOf(':') === -1 ?
-          this.hostname :
-          '[' + this.hostname + ']');
+    }
+    else if (this.hostname) {
+      host = auth + (this.hostname.indexOf(':') === -1
+        ? this.hostname
+        : '[' + this.hostname + ']');
       if (this.port) {
         host += ':' + this.port;
       }
@@ -1088,22 +1098,23 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     var search = this.search || (query && ('?' + query)) || '';
 
-    if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+    if (protocol && protocol.substr(-1) !== ':') { protocol += ':'; }
 
     // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
     // unless they had them to begin with.
     if (this.slashes ||
         (!protocol || slashedProtocol[protocol]) && host !== false) {
       host = '//' + (host || '');
-      if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
-    } else if (!host) {
+      if (pathname && pathname.charAt(0) !== '/') { pathname = '/' + pathname; }
+    }
+    else if (!host) {
       host = '';
     }
 
-    if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
-    if (search && search.charAt(0) !== '?') search = '?' + search;
+    if (hash && hash.charAt(0) !== '#') { hash = '#' + hash; }
+    if (search && search.charAt(0) !== '?') { search = '?' + search; }
 
-    pathname = pathname.replace(/[?#]/g, function(match) {
+    pathname = pathname.replace(/[?#]/g, function (match) {
       return encodeURIComponent(match);
     });
     search = search.replace('#', '%23');
@@ -1111,20 +1122,20 @@ module.exports.Url = module.exports.url = require('./omni-url');
     return protocol + host + pathname + search + hash;
   };
 
-  function urlResolve(source, relative) {
+  function urlResolve (source, relative) {
     return urlParse(source, false, true).resolve(relative);
   }
 
-  Url.prototype.resolve = function(relative) {
+  Url.prototype.resolve = function (relative) {
     return this.resolveObject(urlParse(relative, false, true)).format();
   };
 
-  function urlResolveObject(source, relative) {
-    if (!source) return relative;
+  function urlResolveObject (source, relative) {
+    if (!source) { return relative; }
     return urlParse(source, false, true).resolveObject(relative);
   }
 
-  Url.prototype.resolveObject = function(relative) {
+  Url.prototype.resolveObject = function (relative) {
     if (util.isString(relative)) {
       var rel = new Url();
       rel.parse(relative, false, true);
@@ -1154,11 +1165,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
       var rkeys = Object.keys(relative);
       for (var rk = 0; rk < rkeys.length; rk++) {
         var rkey = rkeys[rk];
-        if (rkey !== 'protocol')
-          result[rkey] = relative[rkey];
+        if (rkey !== 'protocol') { result[rkey] = relative[rkey]; }
       }
 
-      //urlParse appends trailing / to urls like http://www.example.com
+      // urlParse appends trailing / to urls like http://www.example.com
       if (slashedProtocol[result.protocol] &&
           result.hostname && !result.pathname) {
         result.path = result.pathname = '/';
@@ -1190,13 +1200,14 @@ module.exports.Url = module.exports.url = require('./omni-url');
       result.protocol = relative.protocol;
       if (!relative.host && !hostlessProtocol[relative.protocol]) {
         var relPath = (relative.pathname || '').split('/');
-        while (relPath.length && !(relative.host = relPath.shift()));
-        if (!relative.host) relative.host = '';
-        if (!relative.hostname) relative.hostname = '';
-        if (relPath[0] !== '') relPath.unshift('');
-        if (relPath.length < 2) relPath.unshift('');
+        while (relPath.length && !(relative.host = relPath.shift())) { }
+        if (!relative.host) { relative.host = ''; }
+        if (!relative.hostname) { relative.hostname = ''; }
+        if (relPath[0] !== '') { relPath.unshift(''); }
+        if (relPath.length < 2) { relPath.unshift(''); }
         result.pathname = relPath.join('/');
-      } else {
+      }
+      else {
         result.pathname = relative.pathname;
       }
       result.search = relative.search;
@@ -1218,7 +1229,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
         isRelAbs = (
-            relative.host ||
+          relative.host ||
             relative.pathname && relative.pathname.charAt(0) === '/'
         ),
         mustEndAbs = (isRelAbs || isSourceAbs ||
@@ -1237,16 +1248,16 @@ module.exports.Url = module.exports.url = require('./omni-url');
       result.hostname = '';
       result.port = null;
       if (result.host) {
-        if (srcPath[0] === '') srcPath[0] = result.host;
-        else srcPath.unshift(result.host);
+        if (srcPath[0] === '') { srcPath[0] = result.host; }
+        else { srcPath.unshift(result.host); }
       }
       result.host = '';
       if (relative.protocol) {
         relative.hostname = null;
         relative.port = null;
         if (relative.host) {
-          if (relPath[0] === '') relPath[0] = relative.host;
-          else relPath.unshift(relative.host);
+          if (relPath[0] === '') { relPath[0] = relative.host; }
+          else { relPath.unshift(relative.host); }
         }
         relative.host = null;
       }
@@ -1255,33 +1266,35 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     if (isRelAbs) {
       // it's absolute.
-      result.host = (relative.host || relative.host === '') ?
-                    relative.host : result.host;
-      result.hostname = (relative.hostname || relative.hostname === '') ?
-                        relative.hostname : result.hostname;
+      result.host = (relative.host || relative.host === '')
+        ? relative.host : result.host;
+      result.hostname = (relative.hostname || relative.hostname === '')
+        ? relative.hostname : result.hostname;
       result.search = relative.search;
       result.query = relative.query;
       srcPath = relPath;
       // fall through to the dot-handling below.
-    } else if (relPath.length) {
+    }
+    else if (relPath.length) {
       // it's relative
       // throw away the existing file, and take the new path instead.
-      if (!srcPath) srcPath = [];
+      if (!srcPath) { srcPath = []; }
       srcPath.pop();
       srcPath = srcPath.concat(relPath);
       result.search = relative.search;
       result.query = relative.query;
-    } else if (!util.isNullOrUndefined(relative.search)) {
+    }
+    else if (!util.isNullOrUndefined(relative.search)) {
       // just pull out the search.
       // like href='?foo'.
       // Put this after the other two cases because it simplifies the booleans
       if (psychotic) {
         result.hostname = result.host = srcPath.shift();
-        //occationaly the auth can get stuck only in host
-        //this especialy happens in cases like
-        //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-        var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                         result.host.split('@') : false;
+        // occationaly the auth can get stuck only in host
+        // this especialy happens in cases like
+        // url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+        var authInHost = result.host && result.host.indexOf('@') > 0
+          ? result.host.split('@') : false;
         if (authInHost) {
           result.auth = authInHost.shift();
           result.host = result.hostname = authInHost.shift();
@@ -1289,7 +1302,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
       }
       result.search = relative.search;
       result.query = relative.query;
-      //to support http.request
+      // to support http.request
       if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
         result.path = (result.pathname ? result.pathname : '') +
                       (result.search ? result.search : '');
@@ -1302,10 +1315,11 @@ module.exports.Url = module.exports.url = require('./omni-url');
       // no path at all.  easy.
       // we've already handled the other stuff above.
       result.pathname = null;
-      //to support http.request
+      // to support http.request
       if (result.search) {
         result.path = '/' + result.search;
-      } else {
+      }
+      else {
         result.path = null;
       }
       result.href = result.format();
@@ -1317,7 +1331,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
     // then it must NOT get a trailing slash.
     var last = srcPath.slice(-1)[0];
     var hasTrailingSlash = (
-        (result.host || relative.host) && (last === '.' || last === '..') ||
+      (result.host || relative.host) && (last === '.' || last === '..') ||
         last === '');
 
     // strip single dots, resolve double dots to parent dir
@@ -1327,10 +1341,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
       last = srcPath[i];
       if (last === '.') {
         srcPath.splice(i, 1);
-      } else if (last === '..') {
+      }
+      else if (last === '..') {
         srcPath.splice(i, 1);
         up++;
-      } else if (up) {
+      }
+      else if (up) {
         srcPath.splice(i, 1);
         up--;
       }
@@ -1357,13 +1373,13 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
     // put the host back
     if (psychotic) {
-      result.hostname = result.host = isAbsolute ? '' :
-                                      srcPath.length ? srcPath.shift() : '';
-      //occationaly the auth can get stuck only in host
-      //this especialy happens in cases like
-      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-      var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                       result.host.split('@') : false;
+      result.hostname = result.host = isAbsolute ? ''
+        : srcPath.length ? srcPath.shift() : '';
+      // occationaly the auth can get stuck only in host
+      // this especialy happens in cases like
+      // url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+      var authInHost = result.host && result.host.indexOf('@') > 0
+        ? result.host.split('@') : false;
       if (authInHost) {
         result.auth = authInHost.shift();
         result.host = result.hostname = authInHost.shift();
@@ -1379,11 +1395,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
     if (!srcPath.length) {
       result.pathname = null;
       result.path = null;
-    } else {
+    }
+    else {
       result.pathname = srcPath.join('/');
     }
 
-    //to support request.http
+    // to support request.http
     if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
       result.path = (result.pathname ? result.pathname : '') +
                     (result.search ? result.search : '');
@@ -1394,7 +1411,7 @@ module.exports.Url = module.exports.url = require('./omni-url');
     return result;
   };
 
-  Url.prototype.parseHost = function() {
+  Url.prototype.parseHost = function () {
     var host = this.host;
     var port = portPattern.exec(host);
     if (port) {
@@ -1404,10 +1421,10 @@ module.exports.Url = module.exports.url = require('./omni-url');
       }
       host = host.substr(0, host.length - port.length);
     }
-    if (host) this.hostname = host;
+    if (host) { this.hostname = host; }
   };
 
-})();
+}());
 
 },{"../util":8,"path":2,"punycode":10,"querystring":13,"url":3}],4:[function(require,module,exports){
 (function (process){
@@ -1415,12 +1432,12 @@ module.exports.Url = module.exports.url = require('./omni-url');
 
 module.exports = OmniPath;
 
-var path        = require('./node/path'),
-    url         = require('./node/url'),
-    util        = require('./util'),
+var path = require('./node/path'),
+    url = require('./node/url'),
+    util = require('./util'),
     querystring = require('querystring'),
-    parts       = ['protocol', 'slashes', 'hostname', 'port', 'host', 'dir', 'base',
-                   'pathname', 'query', 'search', 'path', 'hash'];
+    parts = ['protocol', 'slashes', 'hostname', 'port', 'host', 'dir', 'base',
+      'pathname', 'query', 'search', 'path', 'hash'];
 
 /**
  * A parsed URL or file path. This object has the same properties as a parsed URL (via {@link url.parse},
@@ -1433,7 +1450,7 @@ var path        = require('./node/path'),
  * @param {PathOptions}         [options] - Options that determine how paths are parsed
  * @constructor
  */
-function OmniPath(p, options) {
+function OmniPath (p, options) {
   // If it's already an OmniPath, then just clone it as-is
   if (p instanceof OmniPath) {
     return p.clone(options);
@@ -1454,8 +1471,8 @@ function OmniPath(p, options) {
 }
 
 // Create fast shortcut methods for the basic type checks
-['isUrl', 'isPosix', 'isWindows'].forEach(function(prop) {
-  OmniPath[prop] = function(p) {
+['isUrl', 'isPosix', 'isWindows'].forEach(function (prop) {
+  OmniPath[prop] = function (p) {
     if (p instanceof OmniPath) {
       return p[prop];
     }
@@ -1464,9 +1481,9 @@ function OmniPath(p, options) {
 });
 
 // Create shortcut methods for all OmniPath properties
-util.props.forEach(function(prop) {
+util.props.forEach(function (prop) {
   if (OmniPath[prop] === undefined) {
-    OmniPath[prop] = function(p, options) {
+    OmniPath[prop] = function (p, options) {
       var Class = this;
       var omniPath = new Class(p, options);
       return omniPath[prop];
@@ -1483,7 +1500,7 @@ util.props.forEach(function(prop) {
  * @param   {PathOptions}          [options]  - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.dirname = function(p, options) {
+OmniPath.dirname = function (p, options) {
   var Class = this;
   var omniPath = new Class(p, options);
   return omniPath.dirname();
@@ -1496,7 +1513,7 @@ OmniPath.dirname = function(p, options) {
  *
  * @returns {string}
  */
-OmniPath.prototype.dirname = function() {
+OmniPath.prototype.dirname = function () {
   return this._path.dirname(this.pathname);
 };
 
@@ -1510,8 +1527,8 @@ OmniPath.prototype.dirname = function() {
  * @param   {PathOptions}          [options]  - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.basename = function(p, ext, options) {
-  if (typeof(ext) === 'object') {
+OmniPath.basename = function (p, ext, options) {
+  if (typeof (ext) === 'object') {
     options = ext;
     ext = undefined;
   }
@@ -1528,7 +1545,7 @@ OmniPath.basename = function(p, ext, options) {
  * @param   {string} [ext] - The portion of the file extension to leave off
  * @returns {string}
  */
-OmniPath.prototype.basename = function(ext) {
+OmniPath.prototype.basename = function (ext) {
   return this._path.basename(this.base, ext);
 };
 
@@ -1550,7 +1567,7 @@ OmniPath.extname = OmniPath.ext;
  *
  * @returns {string}
  */
-OmniPath.prototype.extname = function() {
+OmniPath.prototype.extname = function () {
   return this.ext;
 };
 
@@ -1564,7 +1581,7 @@ OmniPath.prototype.extname = function() {
  * @returns {string}
  * @abstract
  */
-OmniPath.join = function(p, options) {
+OmniPath.join = function (p, options) {
   return callSubclassMethod('join', arguments);
 };
 
@@ -1577,7 +1594,7 @@ OmniPath.join = function(p, options) {
  * @param   {PathOptions}                   options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.prototype.join = function(p, options) {
+OmniPath.prototype.join = function (p, options) {
   var args = [this].concat(Array.prototype.slice.call(arguments));
   var parsed = util.fastParse(args, false, true);
   var joined = this._path.join.apply(this._path, parsed.pathnames);
@@ -1599,7 +1616,7 @@ OmniPath.prototype.join = function(p, options) {
  * @param   {PathOptions}                   options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.resolve = function(from, to, options) {
+OmniPath.resolve = function (from, to, options) {
   return callSubclassMethod('resolve', arguments);
 };
 
@@ -1613,7 +1630,7 @@ OmniPath.resolve = function(from, to, options) {
  * @param   {PathOptions}                   options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.prototype.resolve = function(to, options) {
+OmniPath.prototype.resolve = function (to, options) {
   var args = [this].concat(Array.prototype.slice.call(arguments));
   var parsed = util.fastParse(args);
   var pathnames = parsed.pathnames;
@@ -1656,7 +1673,7 @@ OmniPath.prototype.resolve = function(to, options) {
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.normalize = function(p, options) {
+OmniPath.normalize = function (p, options) {
   var Class = this;
   return new Class(p, options).normalize();
 };
@@ -1669,7 +1686,7 @@ OmniPath.normalize = function(p, options) {
  *
  * @returns {string}
  */
-OmniPath.prototype.normalize = function() {
+OmniPath.prototype.normalize = function () {
   var formatted = this.pathname || this._path.format(this);
   var normalized = this._path.normalize(formatted);
   var searchAndHash = this._getFormattedSearchAndHash();
@@ -1686,7 +1703,7 @@ OmniPath.prototype.normalize = function() {
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.format = function(p, options) {
+OmniPath.format = function (p, options) {
   var Class = this;
   return new Class(p, options).format();
 };
@@ -1699,7 +1716,7 @@ OmniPath.format = function(p, options) {
  *
  * @returns {string}
  */
-OmniPath.prototype.format = function() {
+OmniPath.prototype.format = function () {
   var pathname = this._path.format(this);
   var searchAndHash = this._getFormattedSearchAndHash();
   return pathname + searchAndHash;
@@ -1721,7 +1738,7 @@ OmniPath.prototype.format = function() {
  *
  * @returns {string}
  */
-OmniPath.formatPart = function(p, part, options) {
+OmniPath.formatPart = function (p, part, options) {
   var Class = this;
   return new Class(p, options).formatPart(part);
 };
@@ -1736,7 +1753,7 @@ OmniPath.formatPart = function(p, part, options) {
  *
  * @returns {string}
  */
-OmniPath.prototype.formatPart = function(part) {
+OmniPath.prototype.formatPart = function (part) {
   part = parts.indexOf(part);
   var clone = this.clone();
   part < 0 && (clone.protocol = '');
@@ -1775,7 +1792,7 @@ OmniPath.prototype.valueOf = OmniPath.prototype.format;
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @returns {Url}
  */
-OmniPath.toUrl = function(p, options) {
+OmniPath.toUrl = function (p, options) {
   var Class = this;
   return new Class(p, options).toUrl();
 };
@@ -1786,7 +1803,7 @@ OmniPath.toUrl = function(p, options) {
  *
  * @returns {Url}
  */
-OmniPath.prototype.toUrl = function() {
+OmniPath.prototype.toUrl = function () {
   return url.parse(this.toUrlString(), true);
 };
 
@@ -1797,7 +1814,7 @@ OmniPath.prototype.toUrl = function() {
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPath.toUrlString = function(p, options) {
+OmniPath.toUrlString = function (p, options) {
   var Class = this;
   return new Class(p, options).toUrlString();
 };
@@ -1808,7 +1825,7 @@ OmniPath.toUrlString = function(p, options) {
  *
  * @returns {string}
  */
-OmniPath.prototype.toUrlString = function() {
+OmniPath.prototype.toUrlString = function () {
   var hostname = this.hostname;
   var pathname = this.pathname;
   var search = this.search;
@@ -1833,7 +1850,7 @@ OmniPath.prototype.toUrlString = function() {
   var parsed = url.parse(formatted);
 
   // Re-format the URL, this time with encoding
-  //noinspection UnnecessaryLocalVariableJS
+  // noinspection UnnecessaryLocalVariableJS
   var encoded = parsed.format();
   return encoded;
 };
@@ -1847,7 +1864,7 @@ OmniPath.prototype.toUrlString = function() {
  *
  * @returns {string}
  */
-OmniPath.cwd = function() {
+OmniPath.cwd = function () {
   if (process.browser) {
     var u = new OmniPath.Url(window.location.href);
     var dir = u.formatPart('dir');
@@ -1872,11 +1889,9 @@ OmniPath.cwd = function() {
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @returns {OmniPath}
  */
-OmniPath.parse = function(p, options) {
+OmniPath.parse = function (p, options) {
   var Class = this;
-  // jscs:disable jsDoc
   return new Class(p, options);
-  // jscs:enable jsDoc
 };
 
 /**
@@ -1890,7 +1905,7 @@ OmniPath.parse = function(p, options) {
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  * @abstract
  */
-OmniPath.prototype.parse = function(p, options) {
+OmniPath.prototype.parse = function (p, options) {
   // If the path is already parsed, then just copy it
   if (p instanceof this.constructor) {
     util.copy(p, this);
@@ -1937,7 +1952,7 @@ OmniPath.prototype.parse = function(p, options) {
  *
  * @returns {object}
  */
-OmniPath.prototype.toJSON = function() {
+OmniPath.prototype.toJSON = function () {
   var json = {};
   for (var i = 0; i < util.props.length; i++) {
     var prop = util.props[i];
@@ -1952,11 +1967,9 @@ OmniPath.prototype.toJSON = function() {
  * @param {PathOptions} [options] - Options that determine how paths are parsed
  * @returns {OmniPath}
  */
-OmniPath.prototype.clone = function(options) {
+OmniPath.prototype.clone = function (options) {
   var Class = this.constructor;
-  // jscs:disable jsDoc
   return new Class(this, options);
-  // jscs:enable jsDoc
 };
 
 /**
@@ -1966,7 +1979,7 @@ OmniPath.prototype.clone = function(options) {
  * @returns {string}
  * @private
  */
-OmniPath.prototype._getFormattedSearchAndHash = function() {
+OmniPath.prototype._getFormattedSearchAndHash = function () {
   var search = this.search || '';
   var hash = this.hash || '';
 
@@ -1998,7 +2011,7 @@ OmniPath.prototype._getFormattedSearchAndHash = function() {
  * @param {string} method - The method to call
  * @param {Arguments} args - The arguments to pass to the method
  */
-function callSubclassMethod(method, args) {
+function callSubclassMethod (method, args) {
   var type = util.getType(args[0]);
   if (type.isUrl) {
     return OmniPath.Url[method].apply(OmniPath.Url, args);
@@ -2018,16 +2031,16 @@ function callSubclassMethod(method, args) {
 
 module.exports = OmniPosix;
 
-var posix    = require('./node/path').posix,
+var posix = require('./node/path').posix,
     OmniPath = require('./index'),
-    util     = require('./util');
+    util = require('./util');
 
 /**
  * An {@link OmniPath} subclass that always treats paths as POSIX paths.
  *
  * @constructor
  */
-function OmniPosix(p, options) {
+function OmniPosix (p, options) {
   if (!(this instanceof OmniPosix)) {
     throw new TypeError('Use the "new" keyword when creating an instance of OmniPath.Posix');
   }
@@ -2041,9 +2054,9 @@ OmniPosix.sep = posix.sep;
 OmniPosix.delimiter = posix.delimiter;
 
 // Override the basic type checks
-OmniPosix.isUrl = function() {return false;};
-OmniPosix.isPosix = function() {return true;};
-OmniPosix.isWindows = function() {return false;};
+OmniPosix.isUrl = function () { return false; };
+OmniPosix.isPosix = function () { return true; };
+OmniPosix.isWindows = function () { return false; };
 
 /**
  * Parses the given path as a POSIX path, and sets the corresponding properties of this {@link OmniPosix} object.
@@ -2051,9 +2064,9 @@ OmniPosix.isWindows = function() {return false;};
  * @param   {string|Url|OmniPosix}  p         - The file path or URL to parse
  * @param   {PathOptions}           [options] - Options that determine how paths are parsed
  */
-OmniPosix.prototype.parse = function(p, options) {
+OmniPosix.prototype.parse = function (p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (typeof(p) === 'string') {
+  if (typeof (p) === 'string') {
     var split = util.parsePath(p, this._options);
     var parsed = posix.parse(split.pathname);
 
@@ -2084,8 +2097,8 @@ OmniPosix.prototype.parse = function(p, options) {
  * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPosix.join = function(p, options) {
-  return OmniPath.prototype.join.apply({_path: posix, href: ''}, arguments);
+OmniPosix.join = function (p, options) {
+  return OmniPath.prototype.join.apply({ _path: posix, href: '' }, arguments);
 };
 
 /**
@@ -2096,8 +2109,8 @@ OmniPosix.join = function(p, options) {
  * @param   {PathOptions}         options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniPosix.resolve = function(from, to, options) {
-  return OmniPath.prototype.resolve.apply({_path: posix, href: ''}, arguments);
+OmniPosix.resolve = function (from, to, options) {
+  return OmniPath.prototype.resolve.apply({ _path: posix, href: '' }, arguments);
 };
 
 /**
@@ -2105,7 +2118,7 @@ OmniPosix.resolve = function(from, to, options) {
  *
  * @returns {string}
  */
-OmniPosix.cwd = function() {
+OmniPosix.cwd = function () {
   var cwd = OmniPath.cwd();
   return posix.normalize(cwd);
 };
@@ -2115,11 +2128,11 @@ OmniPosix.cwd = function() {
 
 module.exports = OmniUrl;
 
-var posix                = require('./node/path').posix,
-    url                  = require('./node/url'),
-    OmniPath             = require('./omni-path'),
-    util                 = require('./util'),
-    slashesPattern       = /^\/*/,
+var posix = require('./node/path').posix,
+    url = require('./node/url'),
+    OmniPath = require('./omni-path'),
+    util = require('./util'),
+    slashesPattern = /^\/*/,
     looseProtocolPattern = /^[a-z0-9.+-]+:/i;
 
 /**
@@ -2127,7 +2140,7 @@ var posix                = require('./node/path').posix,
  *
  * @constructor
  */
-function OmniUrl(p, options) {
+function OmniUrl (p, options) {
   if (!(this instanceof OmniUrl)) {
     throw new TypeError('Use the "new" keyword when creating an instance of OmniPath.Url');
   }
@@ -2140,9 +2153,9 @@ util.inherits(OmniUrl, OmniPath);
 OmniUrl.sep = posix.sep;
 
 // Override the basic type checks
-OmniUrl.isUrl = function() {return true;};
-OmniUrl.isPosix = function() {return false;};
-OmniUrl.isWindows = function() {return false;};
+OmniUrl.isUrl = function () { return true; };
+OmniUrl.isPosix = function () { return false; };
+OmniUrl.isWindows = function () { return false; };
 
 /**
  * Parses the given path as a URL, and sets the corresponding properties of this {@link OmniUrl} object.
@@ -2150,9 +2163,9 @@ OmniUrl.isWindows = function() {return false;};
  * @param   {string|Url|OmniUrl}  p         - The file path or URL to parse
  * @param   {PathOptions}         [options] - Options that determine how paths are parsed
  */
-OmniUrl.prototype.parse = function(p, options) {
+OmniUrl.prototype.parse = function (p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (typeof(p) === 'string') {
+  if (typeof (p) === 'string') {
     var parsedUrl = url.parse(p, true);
     var parsedPath = posix.parse(parsedUrl.pathname || '');
 
@@ -2186,7 +2199,7 @@ OmniUrl.prototype.parse = function(p, options) {
  *
  * @returns {string}
  */
-OmniUrl.prototype.normalize = function() {
+OmniUrl.prototype.normalize = function () {
   var formatted = this.pathname || this._getFormattedPathname();
   var normalized = posix.normalize(formatted);
 
@@ -2215,7 +2228,7 @@ OmniUrl.prototype.normalize = function() {
  *
  * @returns {string}
  */
-OmniUrl.prototype.format = function() {
+OmniUrl.prototype.format = function () {
   var clone = this.clone();
   clone.pathname = this._getFormattedPathname();
   return url.format(clone);
@@ -2226,7 +2239,7 @@ OmniUrl.prototype.format = function() {
  *
  * @returns {string}
  */
-OmniUrl.prototype.toUrlString = function() {
+OmniUrl.prototype.toUrlString = function () {
   return url.format(this);
 };
 
@@ -2237,7 +2250,7 @@ OmniUrl.prototype.toUrlString = function() {
  * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniUrl.join = function(p, options) {
+OmniUrl.join = function (p, options) {
   var parsed = util.fastParse(arguments, true);
   var joined = parsed.pathnames[0];
 
@@ -2276,7 +2289,7 @@ OmniUrl.join = function(p, options) {
  * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniUrl.prototype.join = function(p, options) {
+OmniUrl.prototype.join = function (p, options) {
   return OmniUrl.join.apply(OmniUrl, [this].concat(Array.prototype.slice.call(arguments)));
 };
 
@@ -2288,7 +2301,7 @@ OmniUrl.prototype.join = function(p, options) {
  * @param   {PathOptions}         options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniUrl.resolve = function(from, to, options) {
+OmniUrl.resolve = function (from, to, options) {
   var args = util.getArgs(arguments);
   var paths = args.paths;
   to = util.toString(paths[paths.length - 1]);
@@ -2313,7 +2326,7 @@ OmniUrl.resolve = function(from, to, options) {
  * @param   {PathOptions}                   options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniUrl.prototype.resolve = function(to, options) {
+OmniUrl.prototype.resolve = function (to, options) {
   return OmniUrl.resolve.apply(OmniUrl, [this].concat(Array.prototype.slice.call(arguments)));
 };
 
@@ -2322,7 +2335,7 @@ OmniUrl.prototype.resolve = function(to, options) {
  *
  * @returns {string}
  */
-OmniUrl.cwd = function() {
+OmniUrl.cwd = function () {
   var cwd = OmniPath.cwd();
   return OmniUrl.normalize(cwd);
 };
@@ -2333,7 +2346,7 @@ OmniUrl.cwd = function() {
  * @returns {string}
  * @private
  */
-OmniUrl.prototype._getFormattedPathname = function() {
+OmniUrl.prototype._getFormattedPathname = function () {
   var pathname = this.pathname;
 
   if (this.dir || this.base) {
@@ -2362,10 +2375,10 @@ OmniUrl.prototype._getFormattedPathname = function() {
 
 module.exports = OmniWindows;
 
-var win32           = require('./node/path').win32,
-    OmniPath        = require('./index'),
-    util            = require('./util'),
-    uncPattern      = /^[\\\/]{2}([^\\\/]+)[\\\/]+[^\\\/]+/, // This matches Node 0.12.7
+var win32 = require('./node/path').win32,
+    OmniPath = require('./index'),
+    util = require('./util'),
+    uncPattern = /^[\\\/]{2}([^\\\/]+)[\\\/]+[^\\\/]+/, // This matches Node 0.12.7
     splitUncPattern = /^\/+([^\/]+)(.*)/;
 
 /**
@@ -2373,7 +2386,7 @@ var win32           = require('./node/path').win32,
  *
  * @constructor
  */
-function OmniWindows(p, options) {
+function OmniWindows (p, options) {
   if (!(this instanceof OmniWindows)) {
     throw new TypeError('Use the "new" keyword when creating an instance of OmniPath.Windows');
   }
@@ -2387,9 +2400,9 @@ OmniWindows.sep = win32.sep;
 OmniWindows.delimiter = win32.delimiter;
 
 // Override the basic type checks
-OmniWindows.isUrl = function() {return false;};
-OmniWindows.isPosix = function() {return false;};
-OmniWindows.isWindows = function() {return true;};
+OmniWindows.isUrl = function () { return false; };
+OmniWindows.isPosix = function () { return false; };
+OmniWindows.isWindows = function () { return true; };
 
 /**
  * Parses the given path as a WINDOWS path, and sets the corresponding properties of this {@link OmniWindows} object.
@@ -2397,9 +2410,9 @@ OmniWindows.isWindows = function() {return true;};
  * @param   {string|Url|OmniWindows}  p         - The file path or URL to parse
  * @param   {PathOptions}             [options] - Options that determine how paths are parsed
  */
-OmniWindows.prototype.parse = function(p, options) {
+OmniWindows.prototype.parse = function (p, options) {
   p = OmniPath.prototype.parse.apply(this, arguments);
-  if (typeof(p) === 'string') {
+  if (typeof (p) === 'string') {
     var split = util.parsePath(p, this._options);
     var parsed = win32.parse(split.pathname);
     var unc = uncPattern.exec(split.pathname);
@@ -2435,7 +2448,7 @@ OmniWindows.prototype.parse = function(p, options) {
  *
  * @returns {string}
  */
-OmniWindows.prototype.format = function() {
+OmniWindows.prototype.format = function () {
   if (this.isUnc && (this.host || this.hostname) && !this.dir && !this.base) {
     // Special case for UNCs with only a host
     return '\\\\' + (this.hostname || this.host);
@@ -2448,7 +2461,7 @@ OmniWindows.prototype.format = function() {
  *
  * @returns {string}
  */
-OmniWindows.prototype.toUrlString = function() {
+OmniWindows.prototype.toUrlString = function () {
   var clone = this.clone();
 
   // Convert Windows path separators to forward slashes
@@ -2472,8 +2485,8 @@ OmniWindows.prototype.toUrlString = function() {
  * @param   {PathOptions}                   [options] - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniWindows.join = function(p, options) {
-  return OmniPath.prototype.join.apply({_path: win32, href: ''}, arguments);
+OmniWindows.join = function (p, options) {
+  return OmniPath.prototype.join.apply({ _path: win32, href: '' }, arguments);
 };
 
 /**
@@ -2484,8 +2497,8 @@ OmniWindows.join = function(p, options) {
  * @param   {PathOptions}         options - Options that determine how paths are parsed
  * @returns {string}
  */
-OmniWindows.resolve = function(from, to, options) {
-  return OmniPath.prototype.resolve.apply({_path: win32, href: ''}, arguments);
+OmniWindows.resolve = function (from, to, options) {
+  return OmniPath.prototype.resolve.apply({ _path: win32, href: '' }, arguments);
 };
 
 /**
@@ -2493,7 +2506,7 @@ OmniWindows.resolve = function(from, to, options) {
  *
  * @returns {string}
  */
-OmniWindows.cwd = function() {
+OmniWindows.cwd = function () {
   var cwd = OmniPath.cwd();
   return win32.normalize(cwd);
 };
@@ -2524,9 +2537,9 @@ var util = module.exports = {
   endsWithAnySeparator: endsWithAnySeparator
 };
 
-var OmniPath        = require('./omni-path'),
-    url             = require('./node/url'),
-    querystring     = require('querystring'),
+var OmniPath = require('./omni-path'),
+    url = require('./node/url'),
+    querystring = require('querystring'),
     protocolPattern = /^[a-z0-9.+-]+:\/\//i;
 
 /**
@@ -2535,8 +2548,8 @@ var OmniPath        = require('./omni-path'),
  * @param {*} arg - The value to check
  * @returns {boolean}
  */
-function isString(arg) {
-  return typeof(arg) === 'string';
+function isString (arg) {
+  return typeof (arg) === 'string';
 }
 
 /**
@@ -2545,8 +2558,8 @@ function isString(arg) {
  * @param {*} arg - The value to check
  * @returns {boolean}
  */
-function isObject(arg) {
-  return typeof(arg) === 'object' && arg !== null;
+function isObject (arg) {
+  return typeof (arg) === 'object' && arg !== null;
 }
 
 /**
@@ -2555,7 +2568,7 @@ function isObject(arg) {
  * @param {*} arg - The value to check
  * @returns {boolean}
  */
-function isNull(arg) {
+function isNull (arg) {
   return arg === null;
 }
 
@@ -2565,8 +2578,8 @@ function isNull(arg) {
  * @param {*} arg - The value to check
  * @returns {boolean}
  */
-function isNullOrUndefined(arg) {
-  return arg == null; // jshint ignore:line
+function isNullOrUndefined (arg) {
+  return arg === null || arg === undefined;
 }
 
 /**
@@ -2575,8 +2588,8 @@ function isNullOrUndefined(arg) {
  * @param   {string|Url|OmniPath} p - The file path or URL to format.
  * @returns {string}
  */
-function toString(p) {
-  if (typeof(p) === 'string') {
+function toString (p) {
+  if (typeof (p) === 'string') {
     return p;
   }
   else if (p instanceof url.Url) {
@@ -2585,11 +2598,11 @@ function toString(p) {
   else if (p instanceof OmniPath) {
     return p.format();
   }
-  else if (p && typeof(p.href) === 'string') {
+  else if (p && typeof (p.href) === 'string') {
     return p.href;
   }
 
-  throw new Error('Expected a file path or URL, but got ' + typeof(p) + ' ' + p);
+  throw new Error('Expected a file path or URL, but got ' + typeof (p) + ' ' + p);
 }
 
 /**
@@ -2598,14 +2611,14 @@ function toString(p) {
  * @param {Class} Child - The class that inherits from Super
  * @param {Class} Super - The parent class
  */
-function inherits(Child, Super) {
+function inherits (Child, Super) {
   Child.prototype = Object.create(Super.prototype);
   Child.prototype.constructor = Child;
 
   var staticMembers = Object.keys(Super);
-  staticMembers.forEach(function(staticMember) {
-    if (typeof(Super[staticMember]) === 'function') {
-      Child[staticMember] = function() {
+  staticMembers.forEach(function (staticMember) {
+    if (typeof (Super[staticMember]) === 'function') {
+      Child[staticMember] = function () {
         return Super[staticMember].apply(Child, arguments);
       };
     }
@@ -2622,7 +2635,7 @@ function inherits(Child, Super) {
  * @param   {OmniPath} dest  - The destination object, whose properties will be set
  * @returns {OmniPath}
  */
-function copy(src, dest) {
+function copy (src, dest) {
   // Copy all public properties
   for (var i = 0; i < util.props.length; i++) {
     var prop = util.props[i];
@@ -2638,11 +2651,11 @@ function copy(src, dest) {
  * @param   {*} p - The path to inspect. Will be coerced to a string if necessary.
  * @returns {object}
  */
-function getType(p) {
+function getType (p) {
   if (p instanceof OmniPath) {
     return p;
   }
-  else if (typeof(p) !== 'string') {
+  else if (typeof (p) !== 'string') {
     p = toString(p);
   }
 
@@ -2650,18 +2663,18 @@ function getType(p) {
   // regardless of the runtime environment, and even if the path
   // could also be a valid filesystem path for the environment.
   if (protocolPattern.test(p)) {
-    return {isUrl: true};
+    return { isUrl: true };
   }
 
   // Parse the path based on the runtime environment
   if (process.browser) {
-    return {isUrl: true};
+    return { isUrl: true };
   }
   else if (process.platform === 'win32') {
-    return {isWindows: true};
+    return { isWindows: true };
   }
   else {
-    return {isPosix: true};
+    return { isPosix: true };
   }
 }
 
@@ -2672,7 +2685,7 @@ function getType(p) {
  * @param   {PathOptions}     options - Options that determine whether queries and hashes are allowed
  * @returns {object}
  */
-function parsePath(p, options) {
+function parsePath (p, options) {
   var hash = '', search = '', query = {};
   options = options || {};
 
@@ -2714,7 +2727,7 @@ function parsePath(p, options) {
  * @param   {boolean} [isFS]      - Whether to treat all paths as filesystem paths
  * @returns {object}
  */
-function fastParse(args, isUrl, isFS) {
+function fastParse (args, isUrl, isFS) {
   args = getArgs(args);
   var paths = args.paths;
   var options = args.options;
@@ -2758,7 +2771,7 @@ function fastParse(args, isUrl, isFS) {
       if (isUrl || (!isFS && protocolPattern.test(href))) {
         // It's a URL
         result.hasUrls = true;
-        parsedPath = parsePath(href, {allowFileQuery: true, allowFileHash: true, parseQueryString: false});
+        parsedPath = parsePath(href, { allowFileQuery: true, allowFileHash: true, parseQueryString: false });
         pathname = parsedPath.pathname;
         search = parsedPath.search;
         hash = parsedPath.hash;
@@ -2768,7 +2781,7 @@ function fastParse(args, isUrl, isFS) {
         if (options) {
           // Split the pathname from the search/hash
           parsedPath = parsePath(href,
-            {allowFileQuery: options.allowFileQuery, allowFileHash: options.allowFileHash, parseQueryString: false});
+            { allowFileQuery: options.allowFileQuery, allowFileHash: options.allowFileHash, parseQueryString: false });
           pathname = parsedPath.pathname;
           search = parsedPath.search;
           hash = parsedPath.hash;
@@ -2796,7 +2809,7 @@ function fastParse(args, isUrl, isFS) {
  * @param   {Arguments} args - The argument list to be split
  * @returns {{paths: Array, options: ?Options}}
  */
-function getArgs(args) {
+function getArgs (args) {
   var result = {
     paths: [],
     options: null
@@ -2804,7 +2817,7 @@ function getArgs(args) {
 
   if (args && args.length > 0) {
     var lastArg = args[args.length - 1];
-    if (typeof(lastArg) === 'string' || lastArg instanceof OmniPath || lastArg instanceof url.Url) {
+    if (typeof (lastArg) === 'string' || lastArg instanceof OmniPath || lastArg instanceof url.Url) {
       // There is no "options" argument.  All arguments are paths.
       result.paths = Array.prototype.slice.call(args);
     }
@@ -2824,7 +2837,7 @@ function getArgs(args) {
  * @param {string} p - A path or segment
  * @returns {boolean}
  */
-function startsWithAnySeparator(p) {
+function startsWithAnySeparator (p) {
   var firstChar = p[0];
   return firstChar === '/' || firstChar === '\\';
 }
@@ -2835,7 +2848,7 @@ function startsWithAnySeparator(p) {
  * @param {string} p - A path or segment
  * @returns {boolean}
  */
-function endsWithAnySeparator(p) {
+function endsWithAnySeparator (p) {
   var lastChar = p.substr(-1);
   return lastChar === '/' || lastChar === '\\';
 }
@@ -2844,14 +2857,103 @@ function endsWithAnySeparator(p) {
 
 },{"./node/url":3,"./omni-path":4,"_process":9,"querystring":13}],9:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -2867,7 +2969,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = setTimeout(cleanUpNextTick);
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -2875,14 +2977,16 @@ function drainQueue() {
         currentQueue = queue;
         queue = [];
         while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
         queueIndex = -1;
         len = queue.length;
     }
     currentQueue = null;
     draining = false;
-    clearTimeout(timeout);
+    runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -2894,7 +2998,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
+        runTimeout(drainQueue);
     }
 };
 
@@ -2922,12 +3026,15 @@ process.off = noop;
 process.removeListener = noop;
 process.removeAllListeners = noop;
 process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
@@ -2936,7 +3043,7 @@ process.umask = function() { return 0; };
 
 },{}],10:[function(require,module,exports){
 (function (global){
-/*! https://mths.be/punycode v1.3.2 by @mathias */
+/*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
 
 	/** Detect free variables */
@@ -3002,7 +3109,7 @@ process.umask = function() { return 0; };
 	 * @returns {Error} Throws a `RangeError` with the applicable error message.
 	 */
 	function error(type) {
-		throw RangeError(errors[type]);
+		throw new RangeError(errors[type]);
 	}
 
 	/**
@@ -3149,7 +3256,7 @@ process.umask = function() { return 0; };
 
 	/**
 	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
 	 * @private
 	 */
 	function adapt(delta, numPoints, firstTime) {
@@ -3424,7 +3531,7 @@ process.umask = function() { return 0; };
 		 * @memberOf punycode
 		 * @type String
 		 */
-		'version': '1.3.2',
+		'version': '1.4.1',
 		/**
 		 * An object of methods to convert from JavaScript's internal character
 		 * representation (UCS-2) to Unicode code points, and back.
@@ -3454,14 +3561,17 @@ process.umask = function() { return 0; };
 			return punycode;
 		});
 	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) { // in Node.js or RingoJS v0.8.0+
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
 			freeModule.exports = punycode;
-		} else { // in Narwhal or RingoJS v0.7.0-
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
 			for (key in punycode) {
 				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
 			}
 		}
-	} else { // in Rhino or a web browser
+	} else {
+		// in Rhino or a web browser
 		root.punycode = punycode;
 	}
 
