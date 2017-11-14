@@ -26,8 +26,8 @@
     global.OmniPath = require('../../');
     global.expect = require('chai').expect;
     global.sinon = require('sinon');
-    global.path = require('path');
-    global.url = require('url');
+    global.path = require('../../lib/node/path');
+    global.url = require('../../lib/node/url');
 
     global.userAgent = {
       isNode: true,
