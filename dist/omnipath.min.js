@@ -1,5 +1,5 @@
 /*!
- * Omnipath v2.0.0-beta.0 (November 14th 2017)
+ * Omnipath v2.0.0 (November 14th 2017)
  * 
  * https://github.com/bigstickcarpet/omnipath
  * 
