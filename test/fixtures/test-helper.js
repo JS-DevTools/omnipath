@@ -24,19 +24,12 @@
    * @param {function}            run      - The function to run for each test object in `testData`
    */
   function forEachTest (testData, run) {
-    // Prettify the `fn.toString()` output in Mocha
-    function toString () {
-      return run.toString();
-    }
-
     Object.keys(testData).forEach(function (suite) {
       describe(suite, function () {
         Object.keys(testData[suite]).forEach(function (test) {
           function runTest () {
             run(testData[suite][test]);
           }
-
-          runTest.toString = toString;
 
           if (test === forEachTest._only) {
             it.only(test, runTest);
