@@ -27,10 +27,7 @@
     "url": "https://github.com/bigstickcarpet/omnipath.git"
   },
   "main": "lib/index.js",
-  "browser": {
-    "path": "./lib/node/path.js",
-    "url": "./lib/node/url.js"
-  },
+  "browser": "lib/index.js",
   "files": [
     "lib",
     "dist"
