@@ -18,7 +18,7 @@ OmniPath is a single API that consolidates Node's native [path](https://nodejs.o
 
 You can use `OmniPath.win32`, `OmniPath.posix`, or `OmniPath.url` to treat paths a particular way, or you can just use `OmniPath` to automatically adjust based on the runtime environment.
 
-[Tested](http://bigstickcarpet.github.io/omnipath/test/index.html) in Node, IO.js, and all modern web browsers on Mac, Windows, Linux, iOS, and Android.
+[Tested](http://bigstickcarpet.github.io/omnipath/test/index.html) in Node and all modern web browsers on Mac, Windows, and Linux.
 
 
 Example
