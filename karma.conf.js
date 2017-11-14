@@ -11,10 +11,10 @@ var baseConfig = {
     {pattern: 'dist/*.map', included: false, served: true},
 
     // Test Fixtures
-    'tests/fixtures/**/*.js',
+    'test/fixtures/**/*.js',
 
     // Tests
-    'tests/specs/**/*.spec.js'
+    'test/specs/**/*.spec.js'
   ]
 };
 

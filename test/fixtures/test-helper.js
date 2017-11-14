@@ -197,7 +197,7 @@
   }
 
   /**
-   * Returns the current page URL (e.g. "http://localhost:1234/omnipath/tests/index.html")
+   * Returns the current page URL (e.g. "http://localhost:1234/omnipath/test/index.html")
    *
    * @returns {string}
    */
@@ -206,7 +206,7 @@
   }
 
   /**
-   * Returns the current directory path (e.g. "/omnipath/tests")
+   * Returns the current directory path (e.g. "/omnipath/test")
    *
    * @returns {string}
    */
