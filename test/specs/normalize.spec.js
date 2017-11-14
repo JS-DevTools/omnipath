@@ -1,7 +1,7 @@
-'use strict';
+describe('OmniPath.normalize', function () {
+  'use strict';
 
-describe('OmniPath.normalize', function() {
-  helper.forEachTest(TestData, function(test) {
+  helper.forEachTest(TestData, function (test) {
     var normalized = helper.invoke('normalize', test);
 
     // Validate the return type

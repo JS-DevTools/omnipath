@@ -1,7 +1,7 @@
-'use strict';
+describe('OmniPath.format', function () {
+  'use strict';
 
-describe('OmniPath.format', function() {
-  helper.forEachTest(TestData, function(test) {
+  helper.forEachTest(TestData, function (test) {
     var formatted = helper.invoke('format', test);
 
     // Validate the return type

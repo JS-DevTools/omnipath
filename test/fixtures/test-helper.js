@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   /**
@@ -23,16 +23,16 @@
    * @param {TestData|TestData2} testData - Either {@link TestData} or {@link TestData2}
    * @param {function}            run      - The function to run for each test object in `testData`
    */
-  function forEachTest(testData, run) {
+  function forEachTest (testData, run) {
     // Prettify the `fn.toString()` output in Mocha
-    var toString = function() {
+    function toString () {
       return run.toString();
-    };
+    }
 
-    Object.keys(testData).forEach(function(suite) {
-      describe(suite, function() {
-        Object.keys(testData[suite]).forEach(function(test) {
-          function runTest() {
+    Object.keys(testData).forEach(function (suite) {
+      describe(suite, function () {
+        Object.keys(testData[suite]).forEach(function (test) {
+          function runTest () {
             run(testData[suite][test]);
           }
 
@@ -51,7 +51,7 @@
     forEachTest._only = undefined;
   }
 
-  forEachTest.only = function(testName) {
+  forEachTest.only = function (testName) {
     forEachTest._only = testName;
     return forEachTest;
   };
@@ -65,7 +65,7 @@
    * @param   {*[]}     [args]  - Arguments to pass to the invoked method (defaults to test.p and test.options)
    * @returns {object}
    */
-  function invoke(method, test, args) {
+  function invoke (method, test, args) {
     if (arguments.length === 2) {
       if (Array.isArray(test.p)) {
         args = test.p.concat(test.options);
@@ -144,16 +144,16 @@
    * @param {object} actual   - The object to check
    * @param {object} expected - The expected properties & values
    */
-  function deepEqual(actual, expected) {
+  function deepEqual (actual, expected) {
     // Compare the keys
-    var actualKeys = Object.keys(actual).filter(function(key) {
+    var actualKeys = Object.keys(actual).filter(function (key) {
       return key[0] !== '_';
     });
     var expectedKeys = Object.keys(expected);
     expect(actualKeys).to.have.same.members(expectedKeys);
 
     // Compare each property value
-    expectedKeys.forEach(function(key) {
+    expectedKeys.forEach(function (key) {
       var actualValue = actual[key];
       var expectedValue = expected[key];
       expect(actualValue).to.deep.equal(expectedValue, key + ' does not match');
@@ -172,8 +172,8 @@
    * @param {OmniPath} omniPath - The {@link OmniPath} object to check
    * @param {object} expected - The expected properties & values
    */
-  function equalsNative(omniPath, expected) {
-    Object.keys(expected).forEach(function(key) {
+  function equalsNative (omniPath, expected) {
+    Object.keys(expected).forEach(function (key) {
       var actualValue = omniPath[key];
       var expectedValue = expected[key];
 
@@ -192,7 +192,7 @@
    *
    * @returns {string}
    */
-  function server() {
+  function server () {
     return location.protocol + '//' + location.host;
   }
 
@@ -201,7 +201,7 @@
    *
    * @returns {string}
    */
-  function page() {
+  function page () {
     return server() + location.pathname;
   }
 
@@ -210,7 +210,7 @@
    *
    * @returns {string}
    */
-  function dirname() {
+  function dirname () {
     return location.pathname.substr(0, location.pathname.lastIndexOf('/'));
   }
 
@@ -219,7 +219,7 @@
    *
    * @returns {string}
    */
-  function basename() {
+  function basename () {
     return location.pathname.substr(location.pathname.lastIndexOf('/') + 1);
   }
 
@@ -228,7 +228,7 @@
    *
    * @returns {string}
    */
-  function name() {
+  function name () {
     var base = basename();
     return base.substr(0, base.lastIndexOf('.'));
   }
@@ -238,7 +238,7 @@
    *
    * @returns {string}
    */
-  function ext() {
+  function ext () {
     var base = basename();
     return base.substr(base.lastIndexOf('.'));
   }
@@ -251,8 +251,8 @@
    * @param   {*[]}     args  - Arguments to pass if `prop` is a function
    * @returns {*}
    */
-  function result(obj, prop, args) {
-    if (typeof(obj[prop]) === 'function') {
+  function result (obj, prop, args) {
+    if (typeof (obj[prop]) === 'function') {
       return obj[prop].apply(obj, args);
     }
     else {
@@ -260,5 +260,5 @@
     }
   }
 
-})();
+}());
 

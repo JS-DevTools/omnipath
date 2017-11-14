@@ -8,7 +8,7 @@ var baseConfig = {
   files: [
     // OmniPath
     'dist/omnipath.min.js',
-    {pattern: 'dist/*.map', included: false, served: true},
+    { pattern: 'dist/*.map', included: false, served: true },
 
     // Test Fixtures
     'test/fixtures/**/*.js',
@@ -18,7 +18,7 @@ var baseConfig = {
   ]
 };
 
-module.exports = function(config) {
+module.exports = function (config) {
   var karma = process.env.KARMA ? process.env.KARMA === 'true' : true;
   var coverage = process.env.KARMA_COVERAGE ? process.env.KARMA_COVERAGE === 'true' : true;
   var sauce = process.env.KARMA_SAUCE ? process.env.KARMA_SAUCE === 'true' : true;
@@ -49,13 +49,13 @@ module.exports = function(config) {
 /**
  * Configures the code-coverage reporter
  */
-function configureCodeCoverage(config) {
+function configureCodeCoverage (config) {
   config.reporters.push('coverage');
   config.files.splice(config.files.indexOf('dist/omnipath.min.js'), 1, 'dist/omnipath.test.js');
   config.coverageReporter = {
     reporters: [
-      {type: 'text-summary'},
-      {type: 'lcov'}
+      { type: 'text-summary' },
+      { type: 'lcov' }
     ]
   };
 }
@@ -63,10 +63,10 @@ function configureCodeCoverage(config) {
 /**
  * Configures the browsers for the current platform
  */
-function configureLocalBrowsers(config) {
-  var isMac     = /^darwin/.test(process.platform),
+function configureLocalBrowsers (config) {
+  var isMac = /^darwin/.test(process.platform),
       isWindows = /^win/.test(process.platform),
-      isLinux   = !(isMac || isWindows);
+      isLinux = !(isMac || isWindows);
 
   if (isMac) {
     config.browsers = ['PhantomJS', 'Firefox', 'Chrome', 'Safari'];
@@ -94,7 +94,7 @@ function configureLocalBrowsers(config) {
  * Configures Sauce Labs emulated browsers/devices.
  * https://github.com/karma-runner/karma-sauce-launcher
  */
-function configureSauceLabs(config) {
+function configureSauceLabs (config) {
   var project = require('./package.json');
   var testName = project.name + ' v' + project.version;
   var build = testName + ' Build #' + process.env.TRAVIS_JOB_NUMBER + ' @ ' + new Date();

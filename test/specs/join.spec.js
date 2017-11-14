@@ -1,7 +1,7 @@
-'use strict';
+describe('OmniPath.join', function () {
+  'use strict';
 
-describe('OmniPath.join', function() {
-  helper.forEachTest(TestData2, function(test) {
+  helper.forEachTest(TestData2, function (test) {
     var joined = helper.invoke('join', test);
 
     // Validate the return type
@@ -22,7 +22,7 @@ describe('OmniPath.join', function() {
     }
   });
 
-  helper.forEachTest(TestData, function(test) {
+  helper.forEachTest(TestData, function (test) {
     // Test a single-parameter join, which is basically the same as normalize
     var singleJoin = helper.invoke('join', test);
 

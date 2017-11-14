@@ -1,7 +1,7 @@
-'use strict';
+describe('OmniPath.extname', function () {
+  'use strict';
 
-describe('OmniPath.extname', function() {
-  helper.forEachTest(TestData, function(test) {
+  helper.forEachTest(TestData, function (test) {
     var extname = helper.invoke('extname', test);
 
     // Validate the return type

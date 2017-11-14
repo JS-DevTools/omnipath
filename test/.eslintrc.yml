@@ -5,3 +5,18 @@
 extends:
   - modular/test
   - modular/browser
+
+globals:
+  # OmniPath
+  OmniPath: false
+  path: false
+  url: false
+
+  # Test Libraries
+  sinon: false
+  userAgent: false
+
+  # Test Fixtures
+  helper: false
+  TestData: false
+  TestData2: false

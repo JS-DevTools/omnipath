@@ -1,7 +1,7 @@
-'use strict';
+describe('OmniPath.resolve', function () {
+  'use strict';
 
-describe('OmniPath.resolve', function() {
-  helper.forEachTest(TestData2, function(test) {
+  helper.forEachTest(TestData2, function (test) {
     var resolved = helper.invoke('resolve', test);
 
     // Validate the return type
@@ -20,7 +20,7 @@ describe('OmniPath.resolve', function() {
     // Compare to Node's native behavior
     if (userAgent.isNode && test.matchesNative !== false) {
       if (!test.isUrl) {
-        var args = test.p.map(function(p) {
+        var args = test.p.map(function (p) {
           return p instanceof OmniPath ? p.format() : p;
         });
         expect(resolved.posix).to.equal(path.posix.resolve.apply(null, args), 'native posix');
@@ -29,7 +29,7 @@ describe('OmniPath.resolve', function() {
     }
   });
 
-  helper.forEachTest(TestData, function(test) {
+  helper.forEachTest(TestData, function (test) {
     // Test a single-parameter resolve
     var singleResolve = helper.invoke('resolve', test);
 
