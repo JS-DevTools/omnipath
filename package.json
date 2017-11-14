@@ -36,7 +36,7 @@
     "dist"
   ],
   "scripts": {
-    "lint": "jshint . --verbose && jscs . --verbose",
+    "lint": "eslint lib test --fix",
     "build": "npm run lint && npm run browserify",
     "browserify": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --debug --minify",
     "watch": "npm run browserify -- --watch",
@@ -49,6 +49,8 @@
     "release": "npm run upgrade && npm test && npm run bump && npm publish"
   },
   "devDependencies": {
+    "eslint": "^4.5.0",
+    "eslint-config-modular": "^4.1.0",
     "simplifyify": "^1.4.1",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
@@ -66,8 +68,6 @@
     "mocha": "^2.3.0",
     "chai": "^3.2.0",
     "sinon": "^1.16.1",
-    "jscs": "^2.1.1",
-    "jshint": "^2.8.0",
     "npm-check-updates": "^2.2.0",
     "version-bump-prompt": "^1.5.1"
   },

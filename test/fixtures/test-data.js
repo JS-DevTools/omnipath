@@ -1,5 +1,4 @@
 (function() {
-  // jscs:disable
   'use strict';
 
   global.TestData = {

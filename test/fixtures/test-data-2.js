@@ -1,5 +1,4 @@
 (function() {
-  // jscs:disable
   'use strict';
 
   var posixCWD = OmniPath.Posix.cwd();
