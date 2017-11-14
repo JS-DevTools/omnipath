@@ -42,7 +42,7 @@
     "cover": "istanbul cover _mocha --dir coverage/node",
     "karma": "karma start --single-run",
     "test": "npm run build -- --test && npm run cover && npm run karma && npm run lint",
-    "upgrade": "ncu --upgradeAll && npm update",
+    "upgrade": "npm-check -u",
     "bump": "bump --prompt --grep lib/index.js dist/* --tag --push --all",
     "release": "npm run upgrade && npm test && npm run bump && npm publish"
   },
@@ -66,7 +66,7 @@
     "mocha": "^2.3.0",
     "chai": "^3.2.0",
     "sinon": "^1.16.1",
-    "npm-check-updates": "^2.2.0",
+    "npm-check": "^5.4.5",
     "version-bump-prompt": "^1.5.1"
   },
   "dependencies": {}
