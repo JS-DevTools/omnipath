@@ -23,21 +23,21 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/BigstickCarpet/omnipath",
-  "main": "dist/omnipath.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/BigstickCarpet/omnipath.git"
   },
+  "main": "dist/omnipath.js",
   "ignore": [
     "/bower_components",
-    "/lib",
-    "/www",
     "/dist/*.test.js",
-    "/tests",
-    "/karma.conf.js",
+    "/lib",
+    "/test",
     "/.*",
-    "/index.html",
-    "/package.json"
+    "/*.js",
+    "/*.json",
+    "/*.txt",
+    "/*.yml"
   ],
   "dependencies": {},
   "devDependencies": {

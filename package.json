@@ -22,7 +22,19 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/bigstickcarpet/omnipath",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bigstickcarpet/omnipath.git"
+  },
   "main": "lib/index.js",
+  "browser": {
+    "path": "./lib/node/path.js",
+    "url": "./lib/node/url.js"
+  },
+  "files": [
+    "lib",
+    "dist"
+  ],
   "scripts": {
     "lint": "jshint . --verbose && jscs . --verbose",
     "build": "npm run lint && npm run browserify",
@@ -35,10 +47,6 @@
     "upgrade": "ncu --upgradeAll && npm update",
     "bump": "bump --prompt --grep lib/index.js dist/* --tag --push --all",
     "release": "npm run upgrade && npm test && npm run bump && npm publish"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bigstickcarpet/omnipath.git"
   },
   "devDependencies": {
     "simplifyify": "^1.4.1",
@@ -63,9 +71,5 @@
     "npm-check-updates": "^2.2.0",
     "version-bump-prompt": "^1.5.1"
   },
-  "dependencies": {},
-  "browser": {
-    "path": "./lib/node/path.js",
-    "url": "./lib/node/url.js"
-  }
+  "dependencies": {}
 }
