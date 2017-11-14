@@ -7,5 +7,10 @@ root: true
 extends:
   - modular/best-practices
   - modular/style
+  - modular/browser
   - modular/node
   - modular/es5
+
+rules:
+  # This rule erroneously fails when the `arguments` object is used
+  no-unused-vars: off
