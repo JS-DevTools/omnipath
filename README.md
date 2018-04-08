@@ -5,7 +5,7 @@ OmniPath
 [![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg?branch=master)](https://travis-ci.org/BigstickCarpet/omnipath)
 [![Dependencies](https://david-dm.org/BigstickCarpet/omnipath.svg)](https://david-dm.org/BigstickCarpet/omnipath)
 [![Coverage Status](https://coveralls.io/repos/BigstickCarpet/omnipath/badge.svg?branch=master&service=github)](https://coveralls.io/r/BigstickCarpet/omnipath)
-[![Codacy Score](https://www.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/jamesmessinger/omnipath)
+[![Codacy Score](https://api.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/jamesmessinger/omnipath)
 [![Inline docs](http://inch-ci.org/github/BigstickCarpet/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/BigstickCarpet/omnipath)
 
 [![npm](http://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
