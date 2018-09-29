@@ -143,5 +143,5 @@ function configureSauceLabs (config) {
   };
 
   config.reporters.push('saucelabs');
-  config.browsers = Object.keys(sauceLaunchers);
+  config.browsers = Object.keys(config.customLaunchers);
 }
