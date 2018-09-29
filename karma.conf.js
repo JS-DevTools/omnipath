@@ -106,8 +106,15 @@ function configureSauceLabs (config) {
   var testName = project.name + ' v' + project.version;
   var build = testName + ' Build #' + process.env.TRAVIS_JOB_NUMBER + ' @ ' + new Date();
 
-  /* eslint camelcase:off */
-  var sauceLaunchers = {
+  config.sauceLabs = {
+    build: build,
+    testName: testName,
+    tags: [project.name],
+    recordVideo: true,
+    recordScreenshots: true
+  };
+
+  config.customLaunchers = {
     SauceLabs_Chrome_Latest: {
       base: 'SauceLabs',
       platform: 'Windows 10',
@@ -137,10 +144,4 @@ function configureSauceLabs (config) {
 
   config.reporters.push('saucelabs');
   config.browsers = Object.keys(sauceLaunchers);
-  config.customLaunchers = Object.assign(config.customLaunchers || {}, sauceLaunchers);
-  config.sauceLabs = {
-    build: build,
-    testName: testName,
-    tags: [project.name],
-  };
 }
