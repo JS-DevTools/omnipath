@@ -2,11 +2,11 @@ OmniPath
 ============================
 #### A consolidated API for file paths and URLs
 
-[![Build Status](https://api.travis-ci.org/BigstickCarpet/omnipath.svg?branch=master)](https://travis-ci.org/BigstickCarpet/omnipath)
-[![Dependencies](https://david-dm.org/BigstickCarpet/omnipath.svg)](https://david-dm.org/BigstickCarpet/omnipath)
-[![Coverage Status](https://coveralls.io/repos/BigstickCarpet/omnipath/badge.svg?branch=master&service=github)](https://coveralls.io/r/BigstickCarpet/omnipath)
+[![Build Status](https://api.travis-ci.org/James-Messinger/omnipath.svg?branch=master)](https://travis-ci.org/James-Messinger/omnipath)
+[![Dependencies](https://david-dm.org/James-Messinger/omnipath.svg)](https://david-dm.org/James-Messinger/omnipath)
+[![Coverage Status](https://coveralls.io/repos/github/James-Messinger/omnipath/badge.svg?branch=master)](https://coveralls.io/github/James-Messinger/omnipath)
 [![Codacy Score](https://api.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/jamesmessinger/omnipath)
-[![Inline docs](http://inch-ci.org/github/BigstickCarpet/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/BigstickCarpet/omnipath)
+[![Inline docs](http://inch-ci.org/github/James-Messinger/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/James-Messinger/omnipath)
 
 [![npm](http://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
 [![Bower](http://img.shields.io/bower/v/omnipath.svg)](#bower)
@@ -18,7 +18,7 @@ OmniPath is a single API that consolidates Node's native [path](https://nodejs.o
 
 You can use `OmniPath.win32`, `OmniPath.posix`, or `OmniPath.url` to treat paths a particular way, or you can just use `OmniPath` to automatically adjust based on the runtime environment.
 
-[Tested](http://bigstickcarpet.github.io/omnipath/test/index.html) in Node and all modern web browsers on Mac, Windows, and Linux.
+[Tested](https://jamesmessinger.com/omnipath/test/index.html) in Node and all modern web browsers on Mac, Windows, and Linux.
 
 
 Example
@@ -552,13 +552,13 @@ path.query;                             // => {foo: "bar"}
 
 Contributing
 --------------------------
-I welcome any contributions, enhancements, and bug-fixes.  [File an issue](https://github.com/BigstickCarpet/omnipath/issues) on GitHub and [submit a pull request](https://github.com/BigstickCarpet/omnipath/pulls).
+I welcome any contributions, enhancements, and bug-fixes.  [File an issue](https://github.com/James-Messinger/omnipath/issues) on GitHub and [submit a pull request](https://github.com/James-Messinger/omnipath/pulls).
 
 #### Building/Testing
 To build/test the project locally on your computer:
 
 1. __Clone this repo__<br>
-`git clone https://github.com/bigstickcarpet/omnipath.git`
+`git clone https://github.com/James-Messinger/omnipath.git`
 
 2. __Install dependencies__<br>
 `npm install`

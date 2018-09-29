@@ -18,14 +18,14 @@
   "authors": [
     {
       "name": "James Messinger",
-      "homepage": "http://bigstickcarpet.com"
+      "homepage": "https://jamesmessinger.com"
     }
   ],
   "license": "MIT",
-  "homepage": "https://github.com/BigstickCarpet/omnipath",
+  "homepage": "https://github.com/James-Messinger/omnipath",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BigstickCarpet/omnipath.git"
+    "url": "https://github.com/James-Messinger/omnipath.git"
   },
   "main": "dist/omnipath.js",
   "ignore": [
