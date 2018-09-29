@@ -34,7 +34,7 @@
           // These browsers sporadically fail when run in SauceLabs via Karma.
           // So only run a subset of the tests to reduce the chance of failure.
           tests = tests.filter(function (test, index) {
-            if (index % 5 === 0) {
+            if (index % 15 === 0) {
               return test;
             }
           });
