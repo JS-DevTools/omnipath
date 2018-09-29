@@ -557,9 +557,7 @@ To build/test the project locally on your computer:
 `npm run build`
 
 4. __Run the tests__<br>
-`npm run mocha` (test in Node)<br>
-`npm run karma` (test in web browsers)<br>
-`npm test` (test in Node and browsers, and report code coverage)
+`npm test`
 
 
 License
