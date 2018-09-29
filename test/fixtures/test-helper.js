@@ -30,8 +30,8 @@
       describe(suite, function () {
         var tests = Object.keys(testData[suite]);
 
-        if (host.env.CI && host.karma && host.browser && (host.browser.IE || host.browser.safari)) {
-          // These browsers sporadically fail when run in SauceLabs via Karma.
+        if (host.env.CI && host.karma && host.browser) {
+          // We have too many tests, which causes SauceLabs browser tests to frequently fail.
           // So only run a subset of the tests to reduce the chance of failure.
           tests = tests.filter(function (test, index) {
             if (index % 25 === 0) {
