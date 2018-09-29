@@ -9,7 +9,6 @@ OmniPath
 [![Inline docs](http://inch-ci.org/github/James-Messinger/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/James-Messinger/omnipath)
 
 [![npm](http://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
-[![Bower](http://img.shields.io/bower/v/omnipath.svg)](#bower)
 [![License](https://img.shields.io/npm/l/omnipath.svg)](LICENSE)
 
 [![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](https://saucelabs.com/u/omnipath)
@@ -76,22 +75,13 @@ var OmniPath = require('omnipath');
 ```
 
 #### Web Browsers
-Install using [bower](http://bower.io/):
-
-```bash
-bower install omnipath
-```
-
-Then reference [`omnipath.js`](dist/omnipath.js) or [`omnipath.min.js`](dist/omnipath.min.js) in your HTML:
+Reference [`omnipath.js`](dist/omnipath.js) or [`omnipath.min.js`](dist/omnipath.min.js) in your HTML:
 
 ```html
-<script src="bower_components/omnipath/dist/omnipath.js"></script>
-```
-
-Or, if you're using AMD (Require.js), then import it into your module:
-
-```javascript
-define(["omnipath"], function(OmniPath) { /* your module's code */ })
+<script src="https://cdn.rawgit.com/James-Messinger/omnipath/master/dist/omnipath.js"></script>
+<script>
+    OmniPath.resolve(somePath, someOtherPath);
+</script>
 ```
 
 
