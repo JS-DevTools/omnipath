@@ -263,15 +263,15 @@
     }
   }
 
-  function getRandomSlice(array, size) {
+  function getRandomSlice (array, size) {
     var random = Math.floor(Math.random() * (array.lenth + 1));
     return array.slice(random, random + size);
   }
 
-  function getRandomInt(min, max) {
+  function getRandomInt (min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
   }
 
 }());
