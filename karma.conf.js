@@ -8,6 +8,7 @@ module.exports = function (karma) {
     frameworks: ['mocha', 'chai', 'sinon', 'host-environment'],
     reporters: ['verbose'],
     concurrency: 1,
+    disconnectTolerance: 5,
     files: [
       // OmniPath
       'dist/omnipath.min.js',
