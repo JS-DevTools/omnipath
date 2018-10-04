@@ -2,13 +2,13 @@ OmniPath
 ============================
 #### A consolidated API for file paths and URLs
 
-[![Build Status](https://api.travis-ci.org/James-Messinger/omnipath.svg?branch=master)](https://travis-ci.org/James-Messinger/omnipath)
-[![Dependencies](https://david-dm.org/James-Messinger/omnipath.svg)](https://david-dm.org/James-Messinger/omnipath)
-[![Coverage Status](https://coveralls.io/repos/github/James-Messinger/omnipath/badge.svg?branch=master)](https://coveralls.io/github/James-Messinger/omnipath)
-[![Codacy Score](https://api.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/jamesmessinger/omnipath)
-[![Inline docs](http://inch-ci.org/github/James-Messinger/omnipath.svg?branch=master&style=shields)](http://inch-ci.org/github/James-Messinger/omnipath)
+[![Build Status](https://api.travis-ci.org/JS-DevTools/omnipath.svg?branch=master)](https://travis-ci.org/JS-DevTools/omnipath)
+[![Dependencies](https://david-dm.org/JS-DevTools/omnipath.svg)](https://david-dm.org/JS-DevTools/omnipath)
+[![Coverage Status](https://coveralls.io/repos/github/JS-DevTools/omnipath/badge.svg?branch=master)](https://coveralls.io/github/JS-DevTools/omnipath)
+[![Codacy Score](https://api.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/JamesMessinger/omnipath)
+[![Inline docs](https://inch-ci.org/github/JS-DevTools/omnipath.svg?branch=master&style=shields)](https://inch-ci.org/github/JS-DevTools/omnipath)
 
-[![npm](http://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
+[![npm](https://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
 [![License](https://img.shields.io/npm/l/omnipath.svg)](LICENSE)
 
 [![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](https://saucelabs.com/u/omnipath)
@@ -17,7 +17,7 @@ OmniPath is a single API that consolidates Node's native [path](https://nodejs.o
 
 You can use `OmniPath.win32`, `OmniPath.posix`, or `OmniPath.url` to treat paths a particular way, or you can just use `OmniPath` to automatically adjust based on the runtime environment.
 
-[Tested](https://jamesmessinger.com/omnipath/test/index.html) in Node and all modern web browsers on Mac, Windows, and Linux.
+[Tested](https://jsdevtools.org/omnipath/test/index.html) in Node and all modern web browsers on Mac, Windows, and Linux.
 
 
 Example
@@ -78,7 +78,7 @@ var OmniPath = require('omnipath');
 Reference [`omnipath.js`](dist/omnipath.js) or [`omnipath.min.js`](dist/omnipath.min.js) in your HTML:
 
 ```html
-<script src="https://cdn.rawgit.com/James-Messinger/omnipath/master/dist/omnipath.js"></script>
+<script src="https://cdn.rawgit.com/JS-DevTools/omnipath/master/dist/omnipath.js"></script>
 <script>
     OmniPath.resolve(somePath, someOtherPath);
 </script>
@@ -542,13 +542,13 @@ path.query;                             // => {foo: "bar"}
 
 Contributing
 --------------------------
-I welcome any contributions, enhancements, and bug-fixes.  [File an issue](https://github.com/James-Messinger/omnipath/issues) on GitHub and [submit a pull request](https://github.com/James-Messinger/omnipath/pulls).
+I welcome any contributions, enhancements, and bug-fixes.  [File an issue](https://github.com/JS-DevTools/omnipath/issues) on GitHub and [submit a pull request](https://github.com/JS-DevTools/omnipath/pulls).
 
 #### Building/Testing
 To build/test the project locally on your computer:
 
 1. __Clone this repo__<br>
-`git clone https://github.com/James-Messinger/omnipath.git`
+`git clone https://github.com/JS-DevTools/omnipath.git`
 
 2. __Install dependencies__<br>
 `npm install`

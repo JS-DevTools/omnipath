@@ -1,7 +1,7 @@
 /*!
  * Omnipath v2.0.2 (January 17th 2018)
  *
- * https://github.com/James-Messinger/omnipath
+ * https://github.com/JS-DevTools/omnipath
  *
  * @author  James Messinger (https://jamesmessinger.com)
  * @license MIT

@@ -21,10 +21,10 @@
     "url": "https://jamesmessinger.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/James-Messinger/omnipath",
+  "homepage": "https://github.com/JS-DevTools/omnipath",
   "repository": {
     "type": "git",
-    "url": "https://github.com/James-Messinger/omnipath.git"
+    "url": "https://github.com/JS-DevTools/omnipath.git"
   },
   "main": "lib/index.js",
   "browser": {
