@@ -1,5 +1,5 @@
 /*!
- * Omnipath v2.0.2 (January 17th 2018)
+ * Omnipath v2.0.3 (January 17th 2018)
  *
  * https://github.com/JS-DevTools/omnipath
  *
