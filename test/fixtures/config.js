@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  if (typeof (mocha) === 'object') {
+  if (host.browser) {
     // Configure Mocha
     mocha.setup('bdd');
     mocha.fullTrace();

@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  if (typeof (window) === 'object') {
+  if (host.browser) {
     // Expose Browser globals
     host.global.expect = chai.expect;
   }
