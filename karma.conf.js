@@ -7,7 +7,6 @@ module.exports = function (karma) {
   var config = {
     frameworks: ['mocha', 'chai', 'sinon', 'host-environment'],
     reporters: ['verbose'],
-    concurrency: 1,
     disconnectTolerance: 5,
     files: [
       // OmniPath
@@ -111,8 +110,6 @@ function configureSauceLabs (config) {
     build: build,
     testName: testName,
     tags: [project.name],
-    recordVideo: true,
-    recordScreenshots: true
   };
 
   config.customLaunchers = {
@@ -145,4 +142,10 @@ function configureSauceLabs (config) {
 
   config.reporters.push('saucelabs');
   config.browsers = Object.keys(config.customLaunchers);
+  config.concurrency = 1;
+  config.captureTimeout = 60000;
+  config.browserDisconnectTolerance = 5,
+  config.browserDisconnectTimeout = 60000;
+  config.browserNoActivityTimeout = 60000;
+  // config.logLevel = 'debug';
 }
