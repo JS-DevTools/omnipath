@@ -36,7 +36,7 @@
     "dist"
   ],
   "scripts": {
-    "lint": "eslint lib test --fix",
+    "lint": "eslint lib test",
     "build": "simplifyify lib/index.js --outfile dist/omnipath.js --standalone OmniPath --bundle --debug --minify",
     "test": "npm run test:node && npm run test:browser && npm run lint",
     "test:node": "mocha",
