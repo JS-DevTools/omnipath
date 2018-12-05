@@ -1,17 +1,12 @@
+☠ This package is no longer maintained ☠
+==============================================
+
 OmniPath
 ============================
 #### A consolidated API for file paths and URLs
 
-[![Build Status](https://api.travis-ci.org/JS-DevTools/omnipath.svg?branch=master)](https://travis-ci.org/JS-DevTools/omnipath)
-[![Dependencies](https://david-dm.org/JS-DevTools/omnipath.svg)](https://david-dm.org/JS-DevTools/omnipath)
-[![Coverage Status](https://coveralls.io/repos/github/JS-DevTools/omnipath/badge.svg?branch=master)](https://coveralls.io/github/JS-DevTools/omnipath)
-[![Codacy Score](https://api.codacy.com/project/badge/2659dc57d28a466590b03eb539c8a91f)](https://www.codacy.com/public/JamesMessinger/omnipath)
-[![Inline docs](https://inch-ci.org/github/JS-DevTools/omnipath.svg?branch=master&style=shields)](https://inch-ci.org/github/JS-DevTools/omnipath)
-
 [![npm](https://img.shields.io/npm/v/omnipath.svg)](https://www.npmjs.com/package/omnipath)
 [![License](https://img.shields.io/npm/l/omnipath.svg)](LICENSE)
-
-[![Browser Compatibility](https://saucelabs.com/browser-matrix/omnipath.svg)](https://saucelabs.com/u/omnipath)
 
 OmniPath is a single API that consolidates Node's native [path](https://nodejs.org/api/path.html#path_path) and [url](https://nodejs.org/api/url.html#url_url) modules, so you can write clean code without separate branches for different types of paths.  It has all the methods you're familiar with ([`parse`](#parsepath-options), [`format`](#formatpath-options), [`join`](#joinpath1-path2--options), [`resolve`](#resolvefrom-to-options), [`cwd`](#cwd), [`dirname`](#dirnamepath-options), [`basename`](#basenamepath-ext-options), etc.), and they _all_ support POSIX paths, Windows paths, UNC paths, and URLs.
 
